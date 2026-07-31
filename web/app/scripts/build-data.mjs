@@ -11,6 +11,7 @@ import {
   buildHiddenLocalityIds,
   buildMetadataIndex,
   buildMunicipalityFallbackDisplay,
+  buildNationalResultsPayload,
   buildPartyRegistryIndex,
   buildResultPayload,
   parseCsv,
@@ -38,9 +39,12 @@ async function main() {
       electionConfig,
       partyOverrideConfig,
       partyRegistryRows,
+      electionRuleRows,
+      electionMandateRows,
       localityDisplayOverrideRows,
       statisticalAreaDisplayOverrideRows,
       statisticalAreaDisplayGroupRows,
+      statisticalAreaResultAggregateRows,
       summaryRows,
       geographySummary,
       statisticalMetadataRows,
@@ -50,16 +54,28 @@ async function main() {
       statisticalAreaBackdrop,
       compositeLocalities,
       customGeographies,
+      statisticalAreaResultAggregates,
+      statisticalAreaPollingGroupDisplayRows,
+      statisticalAreaPollingGroupDisplays,
     ] = await Promise.all([
       readJson(resolve(APP_ROOT, 'config', 'elections.json')),
       readJson(resolve(APP_ROOT, 'config', 'party-overrides.json')),
       readCsv(resolve(REPOSITORY_ROOT, 'data', 'manual', 'party_registry.csv')),
+      readCsv(resolve(REPOSITORY_ROOT, 'data', 'manual', 'election_rules.csv')),
+      readCsv(resolve(REPOSITORY_ROOT, 'data', 'manual', 'election_mandates.csv')),
       readCsv(resolve(REPOSITORY_ROOT, 'data', 'manual', 'locality_display_overrides.csv')),
       readCsv(
         resolve(REPOSITORY_ROOT, 'data', 'manual', 'statistical_area_display_overrides.csv'),
       ),
       readCsv(
         resolve(REPOSITORY_ROOT, 'data', 'manual', 'statistical_area_display_groups.csv'),
+      ),
+      readCsv(
+        resolve(
+          sourceRoot,
+          'geographies',
+          'statistical_area_result_aggregates.metadata.csv',
+        ),
       ),
       readCsv(resolve(sourceRoot, 'public', 'election_summary.csv')),
       readJson(resolve(sourceRoot, 'geographies', 'geography_build_summary.json')),
@@ -76,6 +92,19 @@ async function main() {
       ),
       readJson(resolve(sourceRoot, 'geographies', 'composite_localities.simplified.geojson')),
       readJson(resolve(sourceRoot, 'geographies', 'custom_geographies.geojson')),
+      readJson(
+        resolve(sourceRoot, 'geographies', 'statistical_area_result_aggregates.geojson'),
+      ),
+      readCsv(
+        resolve(sourceRoot, 'public', 'statistical_area_polling_group_displays.csv'),
+      ),
+      readJson(
+        resolve(
+          sourceRoot,
+          'geographies',
+          'statistical_area_polling_group_displays.geojson',
+        ),
+      ),
     ])
     const historicalStatisticalSources = await Promise.all(
       HISTORICAL_STATISTICAL_AREA_VINTAGES.map(async (vintage) => [
@@ -102,6 +131,16 @@ async function main() {
     validateConfiguration(electionConfig, partyOverrideConfig)
     const partyRegistryByElection = buildPartyRegistryIndex(partyRegistryRows)
     validatePartyRegistryElections(electionConfig, partyRegistryByElection)
+    const electionRulesByElection = uniqueRowsByElection(electionRuleRows, 'election rules')
+    const electionMandatesByElection = groupRowsByElection(
+      electionMandateRows,
+      'election mandates',
+    )
+    validateNationalResultElections(
+      electionConfig,
+      electionRulesByElection,
+      electionMandatesByElection,
+    )
 
     const summaryByElection = new Map(summaryRows.map((row) => [row.election, row]))
     const statisticalMetadataByVintage = new Map(
@@ -124,12 +163,18 @@ async function main() {
       electionConfig,
       statisticalMetadataByVintage,
     )
+    const statisticalCustomGeographies = mergeFeatureCollections(
+      customGeographies,
+      statisticalAreaResultAggregates,
+      statisticalAreaPollingGroupDisplays,
+    )
     const customMetadata = buildCustomMetadataIndex(customGeographies)
+    const statisticalCustomMetadata = buildCustomMetadataIndex(statisticalCustomGeographies)
     const statisticalAreaDisplayGroups = buildStatisticalAreaDisplayGroupIndex(
-      statisticalAreaDisplayGroupRows,
+      [...statisticalAreaDisplayGroupRows, ...statisticalAreaResultAggregateRows],
       electionConfig,
       statisticalMetadataByVintage,
-      customMetadata,
+      statisticalCustomMetadata,
     )
     const coverageByElection = new Map(
       electionConfig.map((election) => [
@@ -144,7 +189,11 @@ async function main() {
     const prunedStatisticalAreasByVintage = new Map(
       [...statisticalSourcesByVintage].map(([vintage, source]) => [
         vintage,
-        pruneGeography(source.geography, 'statistical-area', customGeographies),
+        pruneGeography(
+          source.geography,
+          'statistical-area',
+          vintage === 2011 ? statisticalCustomGeographies : customGeographies,
+        ),
       ]),
     )
     const prunedLocalities = pruneGeography(
@@ -258,6 +307,7 @@ async function main() {
       vintage: 2022,
       geometryUrl: 'geographies/localities.geojson',
       markerGeometryUrl: 'geographies/locality-markers.geojson',
+      backdropGeometryUrl: statisticalAreaBackdropUrl,
       featureCount: prunedLocalities.features.length,
       markerFeatureCount: localityMarkers.features.length,
     }
@@ -327,9 +377,25 @@ async function main() {
         prunedLocalities,
         election.id,
       )
-      const statisticalCustomRows = customRows.filter(
-        (row) => !row.geography_mode || row.geography_mode === 'statistical-area',
+      const pollingGroupRows = statisticalAreaPollingGroupDisplayRows
+        .filter((row) => row.election === election.id)
+        .map((row) =>
+          Object.fromEntries(
+            Object.entries(row).filter(([, value]) => String(value ?? '').trim() !== ''),
+          ),
+        )
+      const pollingGroupHiddenIds = pollingGroupRows.flatMap((row) =>
+        String(row.component_stat_area_ids ?? '')
+          .split('|')
+          .map((value) => value.trim())
+          .filter(Boolean),
       )
+      const statisticalCustomRows = [
+        ...customRows.filter(
+          (row) => !row.geography_mode || row.geography_mode === 'statistical-area',
+        ),
+        ...pollingGroupRows,
+      ]
       const localityCustomRows = customRows.filter(
         (row) => !row.geography_mode || row.geography_mode === 'locality',
       )
@@ -339,10 +405,15 @@ async function main() {
         customRows,
         groups: statisticalAreaDisplayGroups.get(election.id),
       })
+      const pollingGroupHiddenIdSet = new Set(pollingGroupHiddenIds)
+      const statisticalPrimaryRows = statisticalDisplay.primaryRows.filter(
+        (row) => !pollingGroupHiddenIdSet.has(row.stat_area_id),
+      )
       const hiddenStatisticalIds = [
         ...new Set([
           ...configuredHiddenStatisticalIds,
           ...statisticalDisplay.hiddenGeographyIds,
+          ...pollingGroupHiddenIds,
           ...fallbackDisplay.hiddenGeographyIds,
         ]),
       ].toSorted()
@@ -354,7 +425,7 @@ async function main() {
       const statisticalPayload = buildResultPayload({
         electionId: election.id,
         mode: 'statistical-area',
-        primaryRows: statisticalDisplay.primaryRows,
+        primaryRows: statisticalPrimaryRows,
         customRows: [
           ...statisticalCustomRows,
           ...statisticalDisplay.displayRows,
@@ -363,7 +434,7 @@ async function main() {
         envelopeRows,
         metadataById: electionStatisticalMetadata,
         customMetadataById: new Map([
-          ...customMetadata,
+          ...statisticalCustomMetadata,
           ...fallbackDisplay.metadataById,
         ]),
         coverage: coverageByMode['statistical-area'],
@@ -389,14 +460,25 @@ async function main() {
         excludedPartyColumns,
         validatePartyTotals: true,
       })
+      const nationalPayload = buildNationalResultsPayload({
+        electionId: election.id,
+        electionRule: electionRulesByElection.get(election.id),
+        mandateRows: electionMandatesByElection.get(election.id),
+        partyRegistry,
+        partyColorsByBallotLetter: partyOverrideConfig.ballotLetterColors,
+        partyOverrides: overrides,
+        excludedPartyColumns,
+      })
 
       const resultUrls = {
         'statistical-area': `results/${electionSlug}/statistical-areas.json`,
         locality: `results/${electionSlug}/localities.json`,
+        national: `results/${electionSlug}/national.json`,
       }
       await Promise.all([
         writeJsonAsset(resultUrls['statistical-area'], statisticalPayload),
         writeJsonAsset(resultUrls.locality, localityPayload),
+        writeJsonAsset(resultUrls.national, nationalPayload),
       ])
 
       catalogElections.push({
@@ -421,7 +503,7 @@ async function main() {
       throw new Error('Missing current 2022 statistical-area geography asset')
     }
     const catalog = {
-      schemaVersion: 3,
+      schemaVersion: 4,
       buildId,
       generatedAt: new Date().toISOString(),
       source: {
@@ -650,52 +732,70 @@ function buildStatisticalAreaDisplayGroupIndex(
 
   for (const row of rows) {
     const displayGeographyId = String(row.display_geography_id ?? '').trim()
-    const componentStatAreaId = String(row.component_stat_area_id ?? '').trim()
+    const componentStatAreaIds = [
+      ...String(row.component_stat_area_ids ?? '')
+        .split('|')
+        .map((value) => value.trim())
+        .filter(Boolean),
+      ...String(row.component_stat_area_id ?? '')
+        .split('|')
+        .map((value) => value.trim())
+        .filter(Boolean),
+    ]
     const electionIds = String(row.elections ?? '')
       .split('|')
       .map((value) => value.trim())
       .filter(Boolean)
     const note = String(row.note ?? '').trim()
+    const aggregationMethod = String(
+      row.aggregation_method ?? 'validated-locality-aggregate',
+    ).trim()
 
     if (!customMetadata.has(displayGeographyId)) {
       throw new Error(
         `Unknown statistical display-group target: ${displayGeographyId || '(blank ID)'}`,
       )
     }
-    if (!componentStatAreaId || electionIds.length === 0) {
-      throw new Error(`Invalid statistical display-group component: ${componentStatAreaId}`)
+    if (componentStatAreaIds.length === 0 || electionIds.length === 0) {
+      throw new Error(`Invalid statistical display-group component: ${displayGeographyId}`)
     }
 
     for (const electionId of electionIds) {
       const election = electionById.get(electionId)
       if (!election) {
         throw new Error(
-          `${componentStatAreaId} has an unknown display-group election: ${electionId}`,
+          `${displayGeographyId} has an unknown display-group election: ${electionId}`,
         )
       }
-      const metadata = metadataByVintage.get(Number(election.statisticalAreaVintage))
-      if (!metadata?.has(componentStatAreaId)) {
-        throw new Error(
-          `${electionId} display group references unavailable area ${componentStatAreaId}`,
-        )
-      }
-
-      const componentOwners = componentOwnersByElection.get(electionId)
-      const existingOwner = componentOwners.get(componentStatAreaId)
-      if (existingOwner) {
-        throw new Error(
-          `${electionId} display component ${componentStatAreaId} is already assigned to ${existingOwner}`,
-        )
-      }
-      componentOwners.set(componentStatAreaId, displayGeographyId)
-
       const electionGroups = groupsByElection.get(electionId)
       const group = electionGroups.get(displayGeographyId) ?? {
         displayGeographyId,
         componentIds: [],
+        aggregationMethod,
         note,
       }
-      group.componentIds.push(componentStatAreaId)
+      if (group.aggregationMethod !== aggregationMethod) {
+        throw new Error(
+          `${electionId} display group ${displayGeographyId} mixes aggregation methods`,
+        )
+      }
+      const metadata = metadataByVintage.get(Number(election.statisticalAreaVintage))
+      const componentOwners = componentOwnersByElection.get(electionId)
+      for (const componentStatAreaId of componentStatAreaIds) {
+        if (!metadata?.has(componentStatAreaId)) {
+          throw new Error(
+            `${electionId} display group references unavailable area ${componentStatAreaId}`,
+          )
+        }
+        const existingOwner = componentOwners.get(componentStatAreaId)
+        if (existingOwner) {
+          throw new Error(
+            `${electionId} display component ${componentStatAreaId} is already assigned to ${existingOwner}`,
+          )
+        }
+        componentOwners.set(componentStatAreaId, displayGeographyId)
+        group.componentIds.push(componentStatAreaId)
+      }
       electionGroups.set(displayGeographyId, group)
     }
   }
@@ -710,6 +810,17 @@ function buildStatisticalAreaDisplayGroupIndex(
         ),
     ]),
   )
+}
+
+function mergeFeatureCollections(...collections) {
+  const features = []
+  for (const collection of collections) {
+    if (collection?.type !== 'FeatureCollection' || !Array.isArray(collection.features)) {
+      throw new Error('Cannot merge an invalid GeoJSON feature collection')
+    }
+    features.push(...collection.features)
+  }
+  return { type: 'FeatureCollection', features }
 }
 
 function applyMetadataNameOverrides(metadataById, overrides) {
@@ -806,6 +917,52 @@ function validatePartyRegistryElections(elections, partyRegistryByElection) {
       `Party registry election coverage is invalid; missing: ${missing.join(', ') || '(none)'}; ` +
         `extra: ${extra.join(', ') || '(none)'}`,
     )
+  }
+}
+
+function uniqueRowsByElection(rows, sourceName) {
+  const byElection = new Map()
+  for (const row of rows) {
+    const electionId = String(row.election ?? '').trim()
+    if (!/^K\d+$/.test(electionId)) {
+      throw new Error(`${sourceName} contains an invalid election ID: ${electionId || '(blank)'}`)
+    }
+    if (byElection.has(electionId)) {
+      throw new Error(`${sourceName} repeats election ${electionId}`)
+    }
+    byElection.set(electionId, row)
+  }
+  return byElection
+}
+
+function groupRowsByElection(rows, sourceName) {
+  const byElection = new Map()
+  for (const row of rows) {
+    const electionId = String(row.election ?? '').trim()
+    if (!/^K\d+$/.test(electionId)) {
+      throw new Error(`${sourceName} contains an invalid election ID: ${electionId || '(blank)'}`)
+    }
+    const electionRows = byElection.get(electionId) ?? []
+    electionRows.push(row)
+    byElection.set(electionId, electionRows)
+  }
+  return byElection
+}
+
+function validateNationalResultElections(elections, rulesByElection, mandatesByElection) {
+  const configuredIds = new Set(elections.map((election) => election.id))
+  for (const electionId of configuredIds) {
+    if (!rulesByElection.has(electionId) || !mandatesByElection.has(electionId)) {
+      throw new Error(`${electionId} is missing national-result rules or mandates`)
+    }
+  }
+  for (const electionId of new Set([
+    ...rulesByElection.keys(),
+    ...mandatesByElection.keys(),
+  ])) {
+    if (!configuredIds.has(electionId)) {
+      throw new Error(`National-result sources contain unknown election ${electionId}`)
+    }
   }
 }
 

@@ -45,8 +45,14 @@ python scripts/run_pipeline.py --skip-geographies
 11. build final row-level assignments in evidence-precedence order, including
     approved cross-election polling-register reviews;
 12. classify every unresolved row and historical polygon coverage state;
-13. aggregate statistical-area, locality, custom, envelope, contribution, and unresolved outputs;
-14. build the committed schema-v2 `public-data/v1` release and validation report.
+13. aggregate statistical-area, locality, custom, envelope, contribution, and
+    unresolved outputs;
+14. audit official planned/final polling-group networks;
+15. identify exact closed polygon/polling-group units with transport-flow
+    bounds;
+16. solve representative polygon ownership for the remaining networks;
+17. generate exact closed, representative, and broad-fallback display layers;
+18. build the committed schema-v2 `public-data/v1` release and validation report.
 
 ## Assignment Precedence
 
@@ -242,6 +248,14 @@ Verified from the offline rebuild on 2026-07-18:
   high-confidence polling-register continuity links and their source evidence.
 - `data/manual/party_registry.csv` covers every election-specific result column;
   map colors remain presentation configuration under `web/app/`.
+
+Polling-group display ownership is intentionally not a manual input. The
+pipeline rebuilds it from the audited official-register evidence, validates
+unique ballot and polygon ownership, and fails if either the flow analysis or
+bounded ownership solver does not finish. It currently publishes 255 exact
+closed units without uncertainty notices, 1,962 representative units with
+notices, and passes nine broad network fallbacks to
+`build_statistical_area_result_aggregates.py`.
 
 ## Web Build
 

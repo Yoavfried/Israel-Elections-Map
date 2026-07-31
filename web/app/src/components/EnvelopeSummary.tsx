@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import { formatNumber, formatPercent } from '../domain/format'
 import type { Language, Party, ResultRecord } from '../domain/schemas'
 import { translate } from '../i18n/translations'
@@ -32,7 +33,12 @@ export function EnvelopeSummary({
     >
       <span className="envelope-summary__heading">
         <strong>{translate(language, 'envelopeVotes')}</strong>
-        <span>{translate(language, 'notMapped')}</span>
+        <ChevronDown
+          className="envelope-summary__chevron"
+          size={18}
+          strokeWidth={2.2}
+          aria-hidden="true"
+        />
       </span>
       <span className="envelope-summary__result">
         <strong>{formatNumber(record.totals.actualVoters, language)}</strong>

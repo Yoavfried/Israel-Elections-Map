@@ -1,15 +1,23 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { ControlPanel } from './components/ControlPanel'
-import { CoverageNotice } from './components/CoverageNotice'
 import { DetailsPanel } from './components/DetailsPanel'
 import { EnvelopeSummary } from './components/EnvelopeSummary'
 import { LoadingState } from './components/LoadingState'
-import { loadCatalog, loadElectionResults, resolveDataUrl } from './data/client'
+import { NationalResultsScreen } from './components/NationalResultsScreen'
+import { PrimaryTabs } from './components/PrimaryTabs'
+import type { AppView } from './components/PrimaryTabs'
+import {
+  loadCatalog,
+  loadElectionResults,
+  loadNationalResults,
+  resolveDataUrl,
+} from './data/client'
 import type {
   AppCatalog,
   ElectionResults,
   GeographyMode,
   Language,
+  NationalResults,
 } from './domain/schemas'
 import { translate } from './i18n/translations'
 import { loadPreferences, savePreferences } from './state/preferences'
@@ -29,6 +37,10 @@ export default function App() {
   )
   const [catalogState, setCatalogState] = useState<Loadable<AppCatalog>>({ status: 'loading' })
   const [resultsState, setResultsState] = useState<Loadable<ElectionResults>>({ status: 'loading' })
+  const [nationalResultsState, setNationalResultsState] = useState<Loadable<NationalResults>>({
+    status: 'loading',
+  })
+  const [activeView, setActiveView] = useState<AppView>('map')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { language, electionId, geographyMode } = preferences
 
@@ -68,7 +80,7 @@ export default function App() {
   const selectedGeography = selectedElection?.geographiesByMode[geographyMode]
 
   useEffect(() => {
-    if (!selectedElection) {
+    if (!selectedElection || activeView !== 'map') {
       return
     }
     let active = true
@@ -91,7 +103,29 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [geographyMode, selectedElection])
+  }, [activeView, geographyMode, selectedElection])
+
+  useEffect(() => {
+    if (!selectedElection || activeView !== 'national') {
+      return
+    }
+    let active = true
+    setNationalResultsState({ status: 'loading' })
+    loadNationalResults(selectedElection.id, selectedElection.resultUrls.national)
+      .then((nationalResults) => {
+        if (active) {
+          setNationalResultsState({ status: 'ready', data: nationalResults })
+        }
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setNationalResultsState({ status: 'error', message: errorMessage(error) })
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [activeView, selectedElection])
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -115,6 +149,11 @@ export default function App() {
     [results],
   )
   const selectedRecord = selectedId ? resultsById.get(selectedId) ?? null : null
+  const nationalResults =
+    nationalResultsState.status === 'ready' &&
+    nationalResultsState.data.electionId === electionId
+      ? nationalResultsState.data
+      : null
 
   const updatePreferences = (nextPreferences: typeof preferences) => {
     setPreferences(nextPreferences)
@@ -131,6 +170,10 @@ export default function App() {
   const toggleLanguage = () => {
     const nextLanguage: Language = language === 'en' ? 'he' : 'en'
     updatePreferences({ ...preferences, language: nextLanguage })
+  }
+  const handleViewChange = (nextView: AppView) => {
+    setSelectedId(null)
+    setActiveView(nextView)
   }
 
   if (catalogState.status === 'loading') {
@@ -152,7 +195,7 @@ export default function App() {
   }
 
   return (
-    <main className="app-shell" data-language={language}>
+    <main className="app-shell" data-language={language} data-view={activeView}>
       <header className="app-header">
         <div className="brand-lockup">
           <span className="brand-mark" aria-hidden="true">IL</span>
@@ -161,69 +204,84 @@ export default function App() {
             <p>{translate(language, 'appSubtitle')}</p>
           </div>
         </div>
+        <PrimaryTabs
+          activeView={activeView}
+          language={language}
+          onChange={handleViewChange}
+        />
         <button className="language-toggle" type="button" onClick={toggleLanguage}>
           {translate(language, 'languageAction')}
         </button>
       </header>
 
-      <div className="map-stage">
-        {resultsState.status === 'ready' && results ? (
-          <Suspense fallback={<LoadingState language={language} kind="map" />}>
-            <MapCanvas
-              language={language}
-              geometryUrl={resolveDataUrl(selectedGeography.geometryUrl)}
-              markerGeometryUrl={resolveDataUrl(selectedGeography.markerGeometryUrl)}
-              backdropGeometryUrl={
-                selectedGeography.backdropGeometryUrl
-                  ? resolveDataUrl(selectedGeography.backdropGeometryUrl)
-                  : null
-              }
-              bounds={catalog.bounds}
-              records={results.records}
-              parties={results.parties}
-              hiddenGeographyIds={results.hiddenGeographyIds}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-            />
-          </Suspense>
-        ) : resultsState.status === 'error' ? (
-          <div className="map-error" role="alert">
-            <strong>{translate(language, 'dataError')}</strong>
-            <span>{resultsState.message}</span>
-          </div>
-        ) : (
-          <LoadingState language={language} />
-        )}
+      {activeView === 'map' ? (
+        <div className="map-stage">
+          {resultsState.status === 'ready' && results ? (
+            <Suspense fallback={<LoadingState language={language} kind="map" />}>
+              <MapCanvas
+                language={language}
+                geographyMode={geographyMode}
+                geometryUrl={resolveDataUrl(selectedGeography.geometryUrl)}
+                markerGeometryUrl={resolveDataUrl(selectedGeography.markerGeometryUrl)}
+                backdropGeometryUrl={
+                  selectedGeography.backdropGeometryUrl
+                    ? resolveDataUrl(selectedGeography.backdropGeometryUrl)
+                    : null
+                }
+                bounds={catalog.bounds}
+                records={results.records}
+                parties={results.parties}
+                hiddenGeographyIds={results.hiddenGeographyIds}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+            </Suspense>
+          ) : resultsState.status === 'error' ? (
+            <div className="map-error" role="alert">
+              <strong>{translate(language, 'dataError')}</strong>
+              <span>{resultsState.message}</span>
+            </div>
+          ) : (
+            <LoadingState language={language} />
+          )}
 
-        <div className="left-rail">
-          <ControlPanel
-            language={language}
-            elections={catalog.elections}
-            geographyModes={catalog.geographyModes}
-            electionId={electionId}
-            geographyMode={geographyMode}
-            onElectionChange={handleElectionChange}
-            onGeographyModeChange={handleGeographyChange}
-          />
-          <CoverageNotice
-            coverage={results?.coverage ?? selectedElection.coverageByMode[geographyMode]}
-            language={language}
-          />
-          <EnvelopeSummary
-            language={language}
-            record={results?.envelope ?? null}
-            parties={results?.parties ?? []}
-            selected={selectedId === results?.envelope?.id}
-            onSelect={() => setSelectedId(results?.envelope?.id ?? null)}
-          />
-          <p className="color-policy">{translate(language, 'provisionalColors')}</p>
-          <DetailsPanel
-            language={language}
-            record={selectedRecord}
-            parties={results?.parties ?? []}
-          />
+          <div className="left-rail">
+            <ControlPanel
+              language={language}
+              elections={catalog.elections}
+              geographyModes={catalog.geographyModes}
+              electionId={electionId}
+              geographyMode={geographyMode}
+              onElectionChange={handleElectionChange}
+              onGeographyModeChange={handleGeographyChange}
+            />
+            <EnvelopeSummary
+              language={language}
+              record={results?.envelope ?? null}
+              parties={results?.parties ?? []}
+              selected={selectedId === results?.envelope?.id}
+              onSelect={() => setSelectedId(results?.envelope?.id ?? null)}
+            />
+            <DetailsPanel
+              language={language}
+              record={selectedRecord}
+              parties={results?.parties ?? []}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        <NationalResultsScreen
+          language={language}
+          elections={catalog.elections}
+          electionId={electionId}
+          results={nationalResults}
+          loading={nationalResultsState.status === 'loading'}
+          error={
+            nationalResultsState.status === 'error' ? nationalResultsState.message : null
+          }
+          onElectionChange={handleElectionChange}
+        />
+      )}
     </main>
   )
 }

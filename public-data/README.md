@@ -127,6 +127,9 @@ an info notice. This does not assign any ballot or change coverage. The 308
 map substitutions and their represented totals are disclosed in
 [`historical_municipality_display_fallbacks.csv`](v1/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
 
-Original project software and documentation are available under the
-[MIT License](../LICENSE). Official and third-party source data retain their
-source terms; see [Third-Party Data Notices](../THIRD_PARTY_NOTICES.md).
+The project-authored portions of this release, including its original
+selection, arrangement, normalization, annotations, and assignment metadata,
+are available under the [MIT Data License](LICENSE). Official and third-party
+source data retain their source terms; see
+[Third-Party Data Notices](../THIRD_PARTY_NOTICES.md). The website and other
+project materials are not included in this data license.

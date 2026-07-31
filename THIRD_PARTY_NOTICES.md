@@ -1,8 +1,10 @@
 # Third-Party Data Notices
 
-The repository's original software and documentation are licensed under the
-MIT License. That license does not replace terms attached to source data,
-third-party content, trademarks, or bundled dependencies.
+The MIT Data License applies only to the project-authored portions of the paths
+identified in the root `LICENSE` notice. It does not replace terms attached to
+official source data, third-party content, trademarks, or bundled dependencies.
+The website and other protected project materials are governed separately by
+`LICENSE-WEBSITE`.
 
 ## Israel Central Bureau of Statistics
 

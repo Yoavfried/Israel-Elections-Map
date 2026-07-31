@@ -68,6 +68,16 @@ Production stages:
 - `build_public_outputs.py` writes aggregates, contributions, coverage, and
   pending rows, plus display-only whole-locality fallbacks for elections where
   a locality has no supported area assignments.
+- `audit_statistical_area_polling_group_evidence.py` links official planned and
+  final polling registers and emits nationwide overlapping-area networks.
+- `build_statistical_area_polling_group_policy.py` first uses
+  `polling_group_flow.py` to publish provably closed polygon/polling-group
+  units, then uses `polling_group_ownership.py` for the remaining
+  representative placements. Exact closed units have no uncertainty notice.
+- `build_statistical_area_result_aggregates.py` and
+  `build_statistical_area_polling_group_displays.py` generate broad fallback,
+  exact closed, and representative presentation layers without changing
+  row-level assignments.
 - `build_public_data_release.py` publishes `public-data/v1` ballot CSVs,
   aggregate tables, full-resolution geography ZIPs, metadata, checksums, and
   release validation.

@@ -29,7 +29,11 @@ describe('ControlPanel', () => {
               'statistical-area': coverage,
               locality: coverage,
             },
-            resultUrls: { 'statistical-area': 'stat.json', locality: 'locality.json' },
+            resultUrls: {
+              'statistical-area': 'stat.json',
+              locality: 'locality.json',
+              national: 'national.json',
+            },
             geographiesByMode: {
               'statistical-area': {
                 vintage: 2011,

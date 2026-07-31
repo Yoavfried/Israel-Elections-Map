@@ -1,6 +1,9 @@
 # Israel Election Map Web App
 
-Local-first React/TypeScript map client for the K17-K25 pipeline. The app does not read working CSV files at runtime. A build-time compiler validates them and writes disposable web assets under `public/data/v2/`.
+Local-first React/TypeScript client for the K17-K25 pipeline. Primary top-bar
+views expose the geographic map and complete national results. The app does not
+read working CSV files at runtime. A build-time compiler validates them and
+writes disposable web assets under `public/data/v2/`.
 
 ## Run Locally
 
@@ -31,9 +34,11 @@ To compile from another processed-data directory:
 npm run data:build -- --source C:\path\to\data\processed
 ```
 
-## Isolation From the Data Pipeline
+## Build-Time Inputs
 
-- `scripts/build-data.mjs` only reads `data/processed/`.
+- `scripts/build-data.mjs` reads promoted outputs under `data/processed/` plus
+  reviewed party, threshold, mandate, and display metadata under `data/manual/`
+  and `web/app/config/`.
 - Generated web assets are ignored by Git.
 - The compiler writes to a staging directory and replaces only `web/app/public/data/v2/` after a successful build.
 - The web build does not modify pipeline scripts or review files.
@@ -50,6 +55,20 @@ inferring their polygons.
 Party/list metadata and presentation configuration are compiled into the map
 separately from the downloadable public-data release.
 
+The national-results view publishes every positive-vote list for the selected election,
+including official votes, vote share, the applicable threshold, final
+mandates, color-review state, and separate Hebrew/English Wikipedia controls.
+Missing article links remain visibly disabled so the screen can be used for the
+ongoing metadata audit.
+
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data contract and
 [`../../docs/PROJECT_STATUS.md`](../../docs/PROJECT_STATUS.md) for the sole
 project completion tracker.
+
+## License
+
+The web application source, visual design, interaction design, copy, map
+presentation, and presentation configuration are source-visible but all rights
+reserved under [`../../LICENSE-WEBSITE`](../../LICENSE-WEBSITE). The separately
+published data release is governed by the MIT Data License described in the
+repository root.

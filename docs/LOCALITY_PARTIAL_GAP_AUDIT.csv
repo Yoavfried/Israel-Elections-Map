@@ -1,0 +1,228 @@
+﻿election,reference_year,locality_code,locality_name_he_2022,cbs_present,cbs_name,cbs_population,cbs_founded_year,cbs_form,classification
+K17,2005,1278,באר מילכה,False,,,,,absent_from_cbs_reference
+K17,2005,1335,ערב אל נעים,False,,,,,absent_from_cbs_reference
+K17,2005,1336,אירוס,False,,,,,absent_from_cbs_reference
+K17,2005,1338,כדיתה,False,,,,,absent_from_cbs_reference
+K17,2005,1345,צור יצחק,False,,,,,absent_from_cbs_reference
+K17,2005,1360,סעוה,False,,,,,absent_from_cbs_reference
+K17,2005,1361,בת חן,False,,,,,absent_from_cbs_reference
+K17,2005,1363,בני נצרים,False,,,,,absent_from_cbs_reference
+K17,2005,1364,שלומית,False,,,,,absent_from_cbs_reference
+K17,2005,1365,אליאב,False,,,,,absent_from_cbs_reference
+K17,2005,1366,נווה,False,,,,,absent_from_cbs_reference
+K17,2005,1367,כחלה,False,,,,,absent_from_cbs_reference
+K17,2005,1368,בני דקלים,False,,,,,absent_from_cbs_reference
+K17,2005,1369,נטע,False,,,,,absent_from_cbs_reference
+K17,2005,1370,מצפה אילן,False,,,,,absent_from_cbs_reference
+K17,2005,1371,גני טל,False,,,,,absent_from_cbs_reference
+K17,2005,1372,נצר חזני,False,,,,,absent_from_cbs_reference
+K17,2005,1374,כרמי קטיף,False,,,,,absent_from_cbs_reference
+K17,2005,1375,אבו תלול,False,,,,,absent_from_cbs_reference
+K17,2005,1376,באר גנים,False,,,,,absent_from_cbs_reference
+K17,2005,1377,שבי דרום,False,,,,,absent_from_cbs_reference
+K17,2005,1419,ניצן ב',False,,,,,absent_from_cbs_reference
+K17,2005,3744,ברוכין,False,,,,,absent_from_cbs_reference
+K17,2005,3822,רחלים,False,,,,,absent_from_cbs_reference
+K17,2005,3824,עמיחי,False,,,,,absent_from_cbs_reference
+K17,2005,1343,מכחול,True,מכחול,..,,מקום      ,cbs_place_without_population
+K17,2005,1346,תרבין א-צאנע (יישוב)*,True,תרבין א-צאנע (יישוב)*,..,,מקום      ,cbs_place_without_population
+K17,2005,1348,ביר הדאג',True,ביר הדאג',..,,מקום      ,cbs_place_without_population
+K17,2005,483,בענה,False,,,,,covered_historical_composite
+K17,2005,490,דייר אל-אסד,False,,,,,covered_historical_composite
+K17,2005,494,דאלית אל-כרמל,True,עיר כרמל,24002,,26,covered_historical_composite
+K17,2005,516,מג'ד אל-כרום,True,שגור*,28476,,26,covered_historical_composite
+K17,2005,534,עספיא,False,,,,,covered_historical_composite
+K17,2005,6000,באקה אל-גרביה,True,באקה-ג'ת*,30997,,26,covered_historical_composite
+K17,2005,628,ג'ת,False,,,,,covered_historical_composite
+K17,2005,1044,יעף,True,יעף,128,1968,35,covered_joined_register
+K17,2005,1134,יד השמונה,True,יד השמונה,88,1978,32,covered_joined_register
+K17,2005,1143,נס עמים,True,נס עמים,71,,45,covered_joined_register
+K17,2005,1153,כישור,True,כישור,..,,מקום      ,covered_joined_register
+K17,2005,1185,פלך,True,פלך,..,,מקום      ,covered_joined_register
+K17,2005,1198,כרמים,True,כרמים,78,1980,33,covered_joined_register
+K17,2005,1211,קדרים,True,קדרים,121,1980,33,covered_joined_register
+K17,2005,1213,צבעון,True,צבעון,89,1980,33,covered_joined_register
+K17,2005,1239,חולית,True,חולית,102,1980,33,covered_joined_register
+K17,2005,1248,אליפז,True,אליפז,56,1982,33,covered_joined_register
+K17,2005,1251,עין תמר,True,עין תמר,153,1982,31,covered_joined_register
+K17,2005,1257,חנתון,True,חנתון,84,1984,33,covered_joined_register
+K17,2005,1260,רתמים,True,רתמים,192,1983,33,covered_joined_register
+K17,2005,1261,הר עמשא,True,הר עמשא,..,,מקום      ,covered_joined_register
+K17,2005,1262,צוקים,True,צוקים,..,,מקום      ,covered_joined_register
+K17,2005,1265,שומרייה,True,שומרייה,84,1984,33,covered_joined_register
+K17,2005,1266,שחרות,True,שחרות,108,1985,37,covered_joined_register
+K17,2005,1280,ניצני סיני,True,ניצני סיני,217,1986,31,covered_joined_register
+K17,2005,1291,כמהין,True,כמהין,182,1988,31,covered_joined_register
+K17,2005,1316,אל -עריאן,True,אל -עריאן,283,,45,covered_joined_register
+K17,2005,1320,עין חוד,True,עין חוד,58,,45,covered_joined_register
+K17,2005,1324,ארסוף,True,ארסוף,128,1995,35,covered_joined_register
+K17,2005,1340,מרחב עם,True,מרחב עם,144,2002,37,covered_joined_register
+K17,2005,1344,גבעות בר,True,גבעות בר,88,2004,37,covered_joined_register
+K17,2005,21,באר אורה,True,באר אורה,..,,מקום      ,covered_joined_register
+K17,2005,212,בית צבי,True,בית צבי,506,1953,34,covered_joined_register
+K17,2005,353,בית זיד,True,בית זיד#,217,1943,35,covered_joined_register
+K17,2005,3646,חמדת,True,חמדת,140,1980,37,covered_joined_register
+K17,2005,3724,נגוהות,True,נגוהות,150,1999,37,covered_joined_register
+K17,2005,3782,רותם,True,רותם,..,,מקום      ,covered_joined_register
+K17,2005,3785,משכיות,True,משכיות,..,,מקום      ,covered_joined_register
+K17,2005,3823,גני מודיעין,False,,,,,covered_joined_register
+K17,2005,4014,נטור,True,נטור,48,1980,33,covered_joined_register
+K17,2005,4019,מיצר,True,מיצר,52,1981,33,covered_joined_register
+K17,2005,4024,קלע,True,קלע,71,1984,37,covered_joined_register
+K17,2005,4502,עין קנייא,True,עין קנייא,1846,,45,covered_joined_register
+K17,2005,833,נורית,True,נורית,..,,מקום      ,covered_joined_register
+K18,2008,1336,אירוס,False,,,,,absent_from_cbs_reference
+K18,2008,1338,כדיתה,False,,,,,absent_from_cbs_reference
+K18,2008,1363,בני נצרים,False,,,,,absent_from_cbs_reference
+K18,2008,1364,שלומית,False,,,,,absent_from_cbs_reference
+K18,2008,1365,אליאב,False,,,,,absent_from_cbs_reference
+K18,2008,1366,נווה,False,,,,,absent_from_cbs_reference
+K18,2008,1368,בני דקלים,False,,,,,absent_from_cbs_reference
+K18,2008,1369,נטע,False,,,,,absent_from_cbs_reference
+K18,2008,1370,מצפה אילן,False,,,,,absent_from_cbs_reference
+K18,2008,1371,גני טל,False,,,,,absent_from_cbs_reference
+K18,2008,1372,נצר חזני,False,,,,,absent_from_cbs_reference
+K18,2008,1374,כרמי קטיף,False,,,,,absent_from_cbs_reference
+K18,2008,1375,אבו תלול,False,,,,,absent_from_cbs_reference
+K18,2008,1376,באר גנים,False,,,,,absent_from_cbs_reference
+K18,2008,1377,שבי דרום,False,,,,,absent_from_cbs_reference
+K18,2008,3744,ברוכין,False,,,,,absent_from_cbs_reference
+K18,2008,3777,סנסנה,False,,,,,absent_from_cbs_reference
+K18,2008,3822,רחלים,False,,,,,absent_from_cbs_reference
+K18,2008,3824,עמיחי,False,,,,,absent_from_cbs_reference
+K18,2008,1343,מכחול,True,מכחול,,,510,cbs_record_without_population
+K18,2008,1367,כחלה,True,כחלה,,,510,cbs_record_without_population
+K18,2008,483,בענה,False,,,,,covered_historical_composite
+K18,2008,490,דייר אל-אסד,False,,,,,covered_historical_composite
+K18,2008,494,דאלית אל-כרמל,True,עיר כרמל,25575.0,,260,covered_historical_composite
+K18,2008,516,מג'ד אל-כרום,True,שגור*,30232.0,,260,covered_historical_composite
+K18,2008,534,עספיא,False,,,,,covered_historical_composite
+K18,2008,6000,באקה אל-גרביה,True,באקה-ג'ת*,33654.0,,260,covered_historical_composite
+K18,2008,628,ג'ת,False,,,,,covered_historical_composite
+K18,2008,1044,יעף,True,יעף,119.0,1968,350,covered_joined_register
+K18,2008,1057,נווה זוהר,True,נווה זוהר,93.0,1972,350,covered_joined_register
+K18,2008,1134,יד השמונה,True,יד השמונה,92.0,1978,320,covered_joined_register
+K18,2008,1143,נס עמים,True,נס עמים,96.0,,450,covered_joined_register
+K18,2008,1153,כישור,True,כישור,146.0,1976,330,covered_joined_register
+K18,2008,1185,פלך,True,פלך,,,510,covered_joined_register
+K18,2008,1195,ניצנה (קהילת חינוך),True,ניצנה (קהילת חינוך),124.0,1980,340,covered_joined_register
+K18,2008,1198,כרמים,True,כרמים,136.0,1980,330,covered_joined_register
+K18,2008,1211,קדרים,True,קדרים,142.0,1980,330,covered_joined_register
+K18,2008,1213,צבעון,True,צבעון,76.0,1980,330,covered_joined_register
+K18,2008,1248,אליפז,True,אליפז,97.0,1982,330,covered_joined_register
+K18,2008,1260,רתמים,True,רתמים,71.0,1983,330,covered_joined_register
+K18,2008,1261,הר עמשא,True,הר עמשא,,,510,covered_joined_register
+K18,2008,1262,צוקים,True,צוקים,88.0,1983,370,covered_joined_register
+K18,2008,1266,שחרות,True,שחרות,107.0,1985,370,covered_joined_register
+K18,2008,1278,באר מילכה,True,באר מילכה,,,510,covered_joined_register
+K18,2008,1291,כמהין,True,כמהין,126.0,1988,310,covered_joined_register
+K18,2008,1316,אל -עריאן,True,אל -עריאן,176.0,,450,covered_joined_register
+K18,2008,1324,ארסוף,True,ארסוף,127.0,1995,350,covered_joined_register
+K18,2008,1340,מרחב עם,True,מרחב עם,144.0,2002,370,covered_joined_register
+K18,2008,21,באר אורה,True,באר אורה,97.0,1950,370,covered_joined_register
+K18,2008,212,בית צבי,True,בית צבי,261.0,1953,340,covered_joined_register
+K18,2008,353,בית זיד,True,בית זיד,236.0,1943,350,covered_joined_register
+K18,2008,3646,חמדת,True,חמדת,178.0,1980,370,covered_joined_register
+K18,2008,3724,נגוהות,True,נגוהות,189.0,1999,370,covered_joined_register
+K18,2008,3782,רותם,True,רותם,,,510,covered_joined_register
+K18,2008,3785,משכיות,True,משכיות,,,510,covered_joined_register
+K18,2008,3823,גני מודיעין,False,,,,,covered_joined_register
+K18,2008,4014,נטור,True,נטור,170.0,1980,330,covered_joined_register
+K18,2008,4019,מיצר,True,מיצר,120.0,1981,330,covered_joined_register
+K18,2008,4502,עין קנייא,True,עין קנייא,1693.0,,450,covered_joined_register
+K18,2008,833,נורית,True,נורית,,,510,covered_joined_register
+K18,2008,1346,תרבין א-צאנע (יישוב)*,True,תרבין א-צאנע (יישוב)*,,,510,reviewed_hidden
+K18,2008,1360,סעוה,True,מולדה*,,,510,reviewed_hidden
+K19,2012,1336,אירוס,False,,,,,absent_from_cbs_reference
+K19,2012,1365,אליאב,False,,,,,absent_from_cbs_reference
+K19,2012,1374,כרמי קטיף,False,,,,,absent_from_cbs_reference
+K19,2012,1377,שבי דרום,False,,,,,absent_from_cbs_reference
+K19,2012,3777,סנסנה,False,,,,,absent_from_cbs_reference
+K19,2012,3822,רחלים,False,,,,,absent_from_cbs_reference
+K19,2012,3824,עמיחי,False,,,,,absent_from_cbs_reference
+K19,2012,1134,יד השמונה,True,יד השמונה,112.0,1978,320,covered_joined_register
+K19,2012,1143,נס עמים,True,נס עמים,,,510,covered_joined_register
+K19,2012,1185,פלך,True,פלך,88.0,1980,330,covered_joined_register
+K19,2012,1195,ניצנה (קהילת חינוך),True,ניצנה (קהילת חינוך),74.0,1980,340,covered_joined_register
+K19,2012,1213,צבעון,True,צבעון,109.0,1980,330,covered_joined_register
+K19,2012,1248,אליפז,True,אליפז,96.0,1982,330,covered_joined_register
+K19,2012,1266,שחרות,True,שחרות,113.0,1985,370,covered_joined_register
+K19,2012,1278,באר מילכה,True,באר מילכה,97.0,2006,370,covered_joined_register
+K19,2012,1324,ארסוף,True,ארסוף,136.0,1995,350,covered_joined_register
+K19,2012,1340,מרחב עם,True,מרחב עם,215.0,2002,370,covered_joined_register
+K19,2012,1364,שלומית,True,שלומית,96.0,2011,370,covered_joined_register
+K19,2012,1368,בני דקלים,True,בני דקלים,,,510,covered_joined_register
+K19,2012,1369,נטע,True,נטע,157.0,2012,370,covered_joined_register
+K19,2012,1371,גני טל,True,גני טל,171.0,2010,370,covered_joined_register
+K19,2012,1372,נצר חזני,True,נצר חזני,,,510,covered_joined_register
+K19,2012,1376,באר גנים,True,באר גנים,,,510,covered_joined_register
+K19,2012,212,בית צבי,True,בית צבי,198.0,1953,340,covered_joined_register
+K19,2012,3646,חמדת,True,חמדת,186.0,1980,370,covered_joined_register
+K19,2012,3724,נגוהות,True,נגוהות,258.0,1999,370,covered_joined_register
+K19,2012,3782,רותם,True,רותם,110.0,1983,370,covered_joined_register
+K19,2012,3785,משכיות,True,משכיות,135.0,1986,370,covered_joined_register
+K19,2012,3823,גני מודיעין,False,,,,,covered_joined_register
+K19,2012,4019,מיצר,True,מיצר,111.0,1981,330,covered_joined_register
+K19,2012,4502,עין קנייא,True,עין קנייא,1871.0,,450,covered_joined_register
+K19,2012,833,נורית,True,נורית,,,510,covered_joined_register
+K19,2012,926,נווה אבות,True,נווה אבות,289.0,1948,340,covered_joined_register
+K19,2012,1360,סעוה,True,מולדה*,226.0,,450,reviewed_hidden
+K19,2012,1367,כחלה,True,כחלה,78.0,,450,reviewed_hidden
+K19,2012,1375,אבו תלול,True,אבו תלול,,,510,reviewed_hidden
+K20,2014,1374,כרמי קטיף,False,,,,,absent_from_cbs_reference
+K20,2014,1377,שבי דרום,False,,,,,absent_from_cbs_reference
+K20,2014,3824,עמיחי,False,,,,,absent_from_cbs_reference
+K20,2014,1134,יד השמונה,True,יד השמונה,114.0,1978,320,covered_joined_register
+K20,2014,1143,נס עמים,True,נס עמים,,,510,covered_joined_register
+K20,2014,1185,פלך,True,פלך,100.0,1980,330,covered_joined_register
+K20,2014,1213,צבעון,True,צבעון,112.0,1980,330,covered_joined_register
+K20,2014,1248,אליפז,True,אליפז,121.0,1982,330,covered_joined_register
+K20,2014,1266,שחרות,True,שחרות,121.0,1985,370,covered_joined_register
+K20,2014,1278,באר מילכה,True,באר מילכה,134.0,2006,370,covered_joined_register
+K20,2014,1324,ארסוף,True,ארסוף,160.0,1995,350,covered_joined_register
+K20,2014,1336,אירוס,True,אירוס,102.0,2013,370,covered_joined_register
+K20,2014,1364,שלומית,True,שלומית,179.0,2011,370,covered_joined_register
+K20,2014,1365,אליאב,True,אליאב,202.0,2013,370,covered_joined_register
+K20,2014,212,בית צבי,True,בית צבי,189.0,1953,340,covered_joined_register
+K20,2014,3646,חמדת,True,חמדת,209.0,1980,370,covered_joined_register
+K20,2014,3782,רותם,True,רותם,157.0,1983,370,covered_joined_register
+K20,2014,3785,משכיות,True,משכיות,192.0,1986,370,covered_joined_register
+K20,2014,3823,גני מודיעין,False,,,,,covered_joined_register
+K20,2014,4019,מיצר,True,מיצר,198.0,1981,330,covered_joined_register
+K20,2014,4502,עין קנייא,True,עין קנייא,1920.0,,450,covered_joined_register
+K20,2014,833,נורית,True,נורית,,,510,covered_joined_register
+K20,2014,890,כפר הנוער הדתי,True,כפר הנוער הדתי,256.0,1937,340,covered_joined_register
+K20,2014,926,נווה אבות,True,נווה אבות,161.0,1948,340,covered_joined_register
+K20,2014,1367,כחלה,True,כחלה,134.0,,450,reviewed_hidden
+K20,2014,1375,אבו תלול,True,אבו תלול,,,510,reviewed_hidden
+K21,2018,1377,שבי דרום,True,שבי דרום,131.0,2017,310,cbs_locality_with_population
+K21,2018,1185,פלך,True,פלך,139.0,1980,330,covered_joined_register
+K21,2018,1278,באר מילכה,True,באר מילכה,189.0,2006,310,covered_joined_register
+K21,2018,3782,רותם,True,רותם,212.0,1983,370,covered_joined_register
+K21,2018,3785,משכיות,True,משכיות,286.0,1986,370,covered_joined_register
+K21,2018,890,כפר הנוער הדתי,True,כפר הנוער הדתי,223.0,1937,340,covered_joined_register
+K21,2018,926,נווה אבות,True,נווה אבות,335.0,1948,340,covered_joined_register
+K22,2019,1377,שבי דרום,True,שבי דרום,171.0,2017,310,cbs_locality_with_population
+K22,2019,1185,פלך,True,פלך,142.0,1980,330,covered_joined_register
+K22,2019,1278,באר מילכה,True,באר מילכה,188.0,2006,310,covered_joined_register
+K22,2019,3620,נערן,True,נערן,101.0,1977,330,covered_joined_register
+K22,2019,3782,רותם,True,רותם,228.0,1983,370,covered_joined_register
+K22,2019,890,כפר הנוער הדתי,True,כפר הנוער הדתי,222.0,1937,340,covered_joined_register
+K22,2019,926,נווה אבות,True,נווה אבות,254.0,1948,340,covered_joined_register
+K23,2019,1377,שבי דרום,True,שבי דרום,171.0,2017,310,cbs_locality_with_population
+K23,2019,1185,פלך,True,פלך,142.0,1980,330,covered_joined_register
+K23,2019,1278,באר מילכה,True,באר מילכה,188.0,2006,310,covered_joined_register
+K23,2019,3620,נערן,True,נערן,101.0,1977,330,covered_joined_register
+K23,2019,3782,רותם,True,רותם,228.0,1983,370,covered_joined_register
+K23,2019,890,כפר הנוער הדתי,True,כפר הנוער הדתי,222.0,1937,340,covered_joined_register
+K23,2019,926,נווה אבות,True,נווה אבות,254.0,1948,340,covered_joined_register
+K24,2020,1377,שבי דרום,True,שבי דרום,253.0,2017,310,cbs_locality_with_population
+K24,2020,3824,עמיחי,True,עמיחי,208.0,2018,370,cbs_locality_with_population
+K24,2020,3620,נערן,True,נערן,105.0,1977,330,covered_joined_register
+K24,2020,890,כפר הנוער הדתי,True,כפר הנוער הדתי,376.0,1937,340,covered_joined_register
+K24,2020,926,נווה אבות,True,נווה אבות,50.0,1948,340,covered_joined_register
+K25,2022,890,כפר הנוער הדתי,True,כפר הנוער הדתי,371.0,1937,340,cbs_locality_with_population
+K25,2022,926,נווה אבות,True,נווה אבות,45.0,1948,340,cbs_locality_with_population
+K25,2022,3720,שערי תקווה,False,,,,,covered_historical_composite
+K25,2022,3778,עץ אפרים,False,,,,,covered_historical_composite
+K25,2022,3620,נערן,True,נערן,109.0,1977,330,covered_joined_register

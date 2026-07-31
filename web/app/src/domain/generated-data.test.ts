@@ -2,7 +2,11 @@ import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { AppCatalogSchema, ElectionResultsSchema } from './schemas'
+import {
+  AppCatalogSchema,
+  ElectionResultsSchema,
+  NationalResultsSchema,
+} from './schemas'
 
 const dataRoot = resolve(import.meta.dirname, '..', '..', 'public', 'data', 'v2')
 
@@ -20,6 +24,285 @@ describe('generated web data', () => {
 
     expect(catalog.elections).toHaveLength(9)
     expect(catalog.buildId).toHaveLength(16)
+  })
+
+  it('publishes complete national results with thresholds and exactly 120 mandates', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const expectedPartyCounts: Record<string, number> = {
+      K17: 31,
+      K18: 33,
+      K19: 32,
+      K20: 25,
+      K21: 40,
+      K22: 29,
+      K23: 29,
+      K24: 38,
+      K25: 40,
+    }
+
+    for (const election of catalog.elections) {
+      const payload = NationalResultsSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls.national)),
+      )
+      const expectedThreshold = election.number >= 20 ? 0.0325 : 0.02
+
+      expect(payload.electionId).toBe(election.id)
+      expect(payload.threshold.share, election.id).toBe(expectedThreshold)
+      expect(payload.threshold.votes, election.id).toBe(
+        Math.ceil(payload.totals.validVotes * expectedThreshold),
+      )
+      expect(payload.parties, election.id).toHaveLength(payload.totals.contestingParties)
+      expect(payload.parties, election.id).toHaveLength(expectedPartyCounts[election.id])
+      expect(payload.parties.every((party) => party.votes > 0), election.id).toBe(true)
+      expect(
+        payload.parties.reduce((total, party) => total + party.votes, 0),
+        election.id,
+      ).toBe(payload.totals.validVotes)
+      expect(
+        payload.parties.reduce((total, party) => total + party.mandates, 0),
+        election.id,
+      ).toBe(120)
+      expect(payload.totals.mandates, election.id).toBe(120)
+      expect(
+        payload.parties.filter((party) => party.passedThreshold),
+        election.id,
+      ).toHaveLength(payload.totals.representedParties)
+      expect(
+        payload.parties.every(
+          (party) => party.passedThreshold === (party.mandates > 0),
+        ),
+        election.id,
+      ).toBe(true)
+      expect(
+        payload.parties.map((party) => party.votes),
+        election.id,
+      ).toEqual(payload.parties.map((party) => party.votes).toSorted((a, b) => b - a))
+      expect(catalog.assets.some((asset) => asset.path === election.resultUrls.national)).toBe(true)
+    }
+  })
+
+  it('keeps reviewed Wikipedia links across repeated party appearances', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const payloads = new Map(
+      await Promise.all(
+        catalog.elections.map(async (election) => [
+          election.id,
+          NationalResultsSchema.parse(
+            await readJson(resolve(dataRoot, election.resultUrls.national)),
+          ),
+        ] as const),
+      ),
+    )
+    const byName = new Map<
+      string,
+      Array<{
+        electionId: string
+        wikipedia: { he: string | null; en: string | null }
+      }>
+    >()
+
+    for (const [electionId, payload] of payloads) {
+      for (const party of payload.parties) {
+        const appearances = byName.get(party.names.he) ?? []
+        appearances.push({ electionId, wikipedia: party.wikipedia })
+        byName.set(party.names.he, appearances)
+      }
+    }
+
+    const reviewedLinkPresenceExceptions = new Set(['כח להשפיע/he'])
+    for (const [name, appearances] of byName) {
+      if (appearances.length < 2) {
+        continue
+      }
+      for (const language of ['he', 'en'] as const) {
+        if (reviewedLinkPresenceExceptions.has(`${name}/${language}`)) {
+          continue
+        }
+        const linked = appearances.filter((appearance) => appearance.wikipedia[language])
+        expect(
+          linked.length === 0 || linked.length === appearances.length,
+          `${name}/${language}: ${linked.map((appearance) => appearance.electionId).join(', ')}`,
+        ).toBe(true)
+      }
+    }
+
+    const party = (electionId: string, ballotLetter: string) =>
+      payloads.get(electionId)?.parties.find(
+        (candidate) => candidate.ballotLetter === ballotLetter,
+      )
+    const shasUrls = {
+      he: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A9%22%D7%A1',
+      en: 'https://en.wikipedia.org/wiki/Shas',
+    }
+    const unitedTorahJudaismUrls = {
+      he: 'https://he.wikipedia.org/wiki/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94',
+      en: 'https://en.wikipedia.org/wiki/United_Torah_Judaism',
+    }
+
+    for (const electionId of catalog.elections.map((election) => election.id)) {
+      expect(party(electionId, 'שס')?.wikipedia, `${electionId}/שס`).toEqual(shasUrls)
+      expect(party(electionId, 'ג')?.wikipedia, `${electionId}/ג`).toEqual(
+        unitedTorahJudaismUrls,
+      )
+    }
+    for (const electionId of ['K17', 'K18', 'K19']) {
+      expect(party(electionId, 'עם')?.wikipedia.en, `${electionId}/עם`).toBe(
+        'https://en.wikipedia.org/wiki/United_Arab_List',
+      )
+    }
+
+    expect(party('K17', 'אמת')?.wikipedia.en).toBe(
+      'https://en.wikipedia.org/wiki/Israeli_Labor_Party',
+    )
+    expect(party('K17', 'טב')?.wikipedia.en).toBe(
+      'https://en.wikipedia.org/wiki/National_Union_(Israel)',
+    )
+    expect(party('K18', 'ט')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%94%D7%90%D7%99%D7%97%D7%95%D7%93_%D7%94%D7%9C%D7%90%D7%95%D7%9E%D7%99',
+      en: 'https://en.wikipedia.org/wiki/National_Union_(Israel)',
+    })
+    expect(party('K21', 'דעם')?.wikipedia.en).toBe(
+      'https://en.wikipedia.org/wiki/United_Arab_List',
+    )
+    expect(party('K21', 'ין')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%99%D7%97%D7%95%D7%93_%D7%91%D7%A0%D7%99_%D7%94%D7%91%D7%A8%D7%99%D7%AA',
+      en: 'https://en.wikipedia.org/wiki/Ihud_Bnei_HaBrit',
+    })
+    const otzmaYehuditUrls = {
+      he: 'https://he.wikipedia.org/wiki/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA',
+      en: 'https://en.wikipedia.org/wiki/Otzma_Yehudit',
+    }
+    for (const [electionId, ballotLetter] of [
+      ['K17', 'כ'],
+      ['K22', 'כף'],
+      ['K23', 'נץ'],
+    ] as const) {
+      expect(
+        party(electionId, ballotLetter)?.wikipedia,
+        `${electionId}/${ballotLetter}`,
+      ).toEqual(otzmaYehuditUrls)
+    }
+    expect(party('K19', 'נץ')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%9C%D7%99%D7%A9%D7%A8%D7%90%D7%9C',
+      en: 'https://en.wikipedia.org/wiki/Otzma_Yehudit',
+    })
+    const religiousZionistPartyUrls = {
+      he: 'https://he.wikipedia.org/wiki/%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_(%D7%A1%D7%99%D7%A2%D7%94)',
+      en: 'https://en.wikipedia.org/wiki/Religious_Zionist_Party',
+    }
+    for (const electionId of ['K24', 'K25']) {
+      expect(party(electionId, 'ט')?.wikipedia, `${electionId}/ט`).toEqual(
+        religiousZionistPartyUrls,
+      )
+    }
+    expect(party('K17', 'פ')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%A2%D7%95%D7%96%D7%99_%D7%93%D7%99%D7%99%D7%9F',
+      en: 'https://en.wikipedia.org/wiki/Tafnit',
+    })
+    expect(party('K17', 'זה')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%91%D7%A8%D7%94%D7%9D_%D7%A0%D7%92%D7%95%D7%A1%D7%94',
+      en: 'https://en.wikipedia.org/wiki/Atid_Ehad',
+    })
+    expect(party('K18', 'חי')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%A4%D7%A8%D7%99%D7%9D_%D7%A1%D7%A0%D7%94#%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%97%D7%96%D7%A7%D7%94',
+      en: 'https://en.wikipedia.org/wiki/Efraim_Sneh',
+    })
+    expect(party('K18', 'צי')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%91%D7%95%D7%A2%D7%96_%D7%98%D7%95%D7%A4%D7%95%D7%A8%D7%95%D7%91%D7%A1%D7%A7%D7%99',
+      en: 'https://en.wikipedia.org/wiki/Boaz_Toporovsky',
+    })
+    for (const [electionId, ballotLetter] of [
+      ['K18', 'ים'],
+      ['K19', 'יק'],
+      ['K24', 'ז'],
+    ] as const) {
+      expect(party(electionId, ballotLetter)?.wikipedia.he).toBe(
+        'https://he.wikipedia.org/wiki/%D7%92%D7%93%D7%A2%D7%95%D7%9F_%D7%93%D7%95%D7%A8%D7%95%D7%9F',
+      )
+    }
+    expect(party('K18', 'נפ')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%99%D7%A2%D7%A7%D7%91_%D7%97%D7%A1%D7%93%D7%90%D7%99',
+    )
+    for (const [electionId, ballotLetter] of [
+      ['K18', 'אר'],
+      ['K19', 'ני'],
+      ['K20', 'ני'],
+    ] as const) {
+      expect(party(electionId, ballotLetter)?.wikipedia.he).toBe(
+        'https://he.wikipedia.org/wiki/%D7%99%D7%A8%D7%95%D7%9F_%D7%99%D7%93%D7%A2%D7%9F',
+      )
+    }
+    expect(party('K17', 'ז')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%98%D7%95%D7%95%D7%99%D7%98%D7%95',
+    )
+    expect(party('K19', 'ץ')?.wikipedia.en).toBe(
+      'https://en.wikipedia.org/wiki/Haim_Amsalem',
+    )
+    expect(party('K19', 'ז')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%90%D7%9C%D7%93%D7%93_%D7%99%D7%A0%D7%99%D7%91',
+    )
+    expect(party('K19', 'זך')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%92%D7%99%D7%9C_-_%D7%92%D7%9E%D7%9C%D7%90%D7%99_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%9C%D7%9B%D7%A0%D7%A1%D7%AA',
+      en: 'https://en.wikipedia.org/wiki/Dor_(political_party)',
+    })
+    expect(party('K20', 'נז')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%A8%D7%95%D7%AA_%D7%A7%D7%95%D7%9C%D7%99%D7%90%D7%9F',
+    )
+    expect(party('K20', 'יז')?.wikipedia).toEqual(party('K19', 'הי')?.wikipedia)
+    expect(party('K21', 'ן')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%A1%D7%9E%D7%99%D7%95%D7%9F_%D7%92%D7%A8%D7%A4%D7%9E%D7%9F#%D7%A4%D7%A2%D7%99%D7%9C%D7%95%D7%AA_%D7%A4%D7%95%D7%9C%D7%99%D7%98%D7%99%D7%AA',
+    )
+    expect(party('K21', 'נץ')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%92%D7%9C_%D7%94%D7%99%D7%A8%D7%A9',
+      en: 'https://en.wikipedia.org/wiki/Gal_Hirsch',
+    })
+    expect(party('K21', 'י')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%A2%D7%A8%D7%9F_%D7%A2%D7%A6%D7%99%D7%95%D7%9F',
+    )
+    expect(party('K21', 'קף')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%9C%D7%9C%D7%99_%D7%90%D7%93%D7%9E%D7%A1%D7%95',
+      en: 'https://en.wikipedia.org/wiki/Alali_Adamso',
+    })
+    expect(party('K21', 'יץ')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%97%D7%99%D7%99%D7%9D_%D7%93%D7%99%D7%99%D7%9F',
+      en: 'https://en.wikipedia.org/wiki/Haim_Dayan',
+    })
+    expect(party('K22', 'רק')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%A8%D7%95%D7%9F_%D7%A7%D7%95%D7%91%D7%99',
+      en: 'https://en.wikipedia.org/wiki/Ron_Cobi',
+    })
+    const ihudBneiHaBritUrls = {
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%99%D7%97%D7%95%D7%93_%D7%91%D7%A0%D7%99_%D7%94%D7%91%D7%A8%D7%99%D7%AA',
+      en: 'https://en.wikipedia.org/wiki/Ihud_Bnei_HaBrit',
+    }
+    for (const [electionId, ballotLetter] of [
+      ['K21', 'ין'],
+      ['K22', 'ינ'],
+      ['K23', 'ינ'],
+      ['K24', 'ינ'],
+      ['K25', 'ינ'],
+    ] as const) {
+      expect(party(electionId, ballotLetter)?.wikipedia).toEqual(ihudBneiHaBritUrls)
+    }
+    for (const electionId of ['K24', 'K25']) {
+      expect(party(electionId, 'יז')?.wikipedia).toEqual({
+        he: 'https://he.wikipedia.org/wiki/%D7%99%D7%A8%D7%95%D7%9F_%D7%96%D7%9C%D7%99%D7%9B%D7%94',
+        en: 'https://en.wikipedia.org/wiki/Yaron_Zelekha',
+      })
+    }
+    expect(party('K24', 'ר')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%90%D7%A8%D7%99%D7%94_%D7%90%D7%91%D7%A0%D7%99',
+    )
+    expect(party('K25', 'אצ')?.wikipedia).toEqual({
+      he: 'https://he.wikipedia.org/wiki/%D7%90%D7%91%D7%99%D7%A8_%D7%A7%D7%90%D7%A8%D7%94',
+      en: 'https://en.wikipedia.org/wiki/Abir_Kara',
+    })
+    expect(party('K25', 'נק')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%A2%D7%9E%D7%95%D7%A1_%D7%93%D7%91_%D7%A1%D7%99%D7%9C%D7%91%D7%A8',
+    )
+    expect(party('K25', 'זנ')?.wikipedia.he).toBe(
+      'https://he.wikipedia.org/wiki/%D7%91%D7%A0%D7%99_%D7%90%D7%9C%D7%91%D7%96',
+    )
   })
 
   it('joins every result record to a stable feature ID', async () => {
@@ -102,12 +385,16 @@ describe('generated web data', () => {
 
       expect(fallbackRecords, election.id).toHaveLength(expectedFallbackCounts[election.id])
       for (const record of fallbackRecords) {
-        expect(record.notice?.en, `${election.id}/${record.id}`).toContain('No ballots')
+        expect(record.notice?.en, `${election.id}/${record.id}`).toContain(
+          'No ballot-to-statistical-area assignments',
+        )
         const feature = featuresById.get(record.id)
         expect(feature?.properties?.geographyType, `${election.id}/${record.id}`).toBe(
           'municipality-fallback',
         )
-        const localityRecord = localityRecordsById.get(record.localityId ?? '')
+        const localityRecord =
+          localityRecordsById.get(record.localityId ?? '') ??
+          localityPayload.records.find((candidate) => candidate.code === record.code)
         expect(localityRecord, `${election.id}/${record.localityId}`).toBeDefined()
         expect(record.totals, `${election.id}/${record.id}`).toEqual(localityRecord?.totals)
         expect(record.partyVotes, `${election.id}/${record.id}`).toEqual(localityRecord?.partyVotes)
@@ -177,19 +464,20 @@ describe('generated web data', () => {
     }
   })
 
-  it('ships one lightweight land backdrop for statistical-area maps', async () => {
+  it('ships one shared lightweight land backdrop for both map modes', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const backdropUrls = new Set(
-      catalog.elections.map(
-        (election) => election.geographiesByMode['statistical-area'].backdropGeometryUrl,
-      ),
+      catalog.elections.flatMap((election) => [
+        election.geographiesByMode['statistical-area'].backdropGeometryUrl,
+        election.geographiesByMode.locality.backdropGeometryUrl,
+      ]),
     )
 
     expect(backdropUrls.size).toBe(1)
     const backdropUrl = [...backdropUrls][0]
     expect(backdropUrl).toBe('geographies/statistical-area-backdrop.geojson')
     if (!backdropUrl) {
-      throw new Error('Missing statistical-area backdrop URL')
+      throw new Error('Missing shared map backdrop URL')
     }
     expect(catalog.assets.some((asset) => asset.path === backdropUrl)).toBe(true)
 
@@ -392,8 +680,8 @@ describe('generated web data', () => {
     expect(markerIds.has('stat1995:9400008')).toBe(false)
     expect(markerIds.has('stat1995:1062001')).toBe(true)
     expect(payload.hiddenGeographyIds).toContain('stat1995:1062001')
-    expect(result?.names.he).toBe('יהוד · אזור סטטיסטי 8')
-    expect(result?.names.en).toBe('Yehud · Statistical area 8')
+    expect(result?.names.he).toBe('יהוד · 8')
+    expect(result?.names.en).toBe('Yehud · 8')
   })
 
   it('applies reviewed election-specific locality display rules', async () => {
@@ -458,7 +746,13 @@ describe('generated web data', () => {
     }
 
     const k21 = payloads.get('K21')
-    expect(k21?.records.some((record) => record.id.startsWith('composite:joined-'))).toBe(false)
+    expect(k21?.records.find((record) => record.id === 'composite:joined-k21-1172')).toMatchObject({
+      names: { en: 'TUVAL' },
+      includedNames: { en: ['PELEKH'] },
+      code: '1172',
+    })
+    expect(k21?.hiddenGeographyIds).toContain('loc:1172')
+    expect(k21?.hiddenGeographyIds).toContain('loc:1185')
     expect(k21?.records.some((record) => record.id === 'loc:567')).toBe(true)
   })
 
@@ -511,24 +805,268 @@ describe('generated web data', () => {
 
     expect(party('K17', 'טב')).toMatchObject({ color: '#F4A261', colorStatus: 'reviewed' })
     expect(party('K17', 'זך')).toMatchObject({ color: '#8BC34A', colorStatus: 'reviewed' })
-    expect(party('K17', 'עם')).toMatchObject({ color: '#20A4A8', colorStatus: 'reviewed' })
+    expect(party('K17', 'עם')).toMatchObject({ color: '#0B5D3B', colorStatus: 'reviewed' })
     expect(party('K17', 'קנ')).toMatchObject({ color: '#00A651', colorStatus: 'reviewed' })
     expect(party('K17', 'רק')).toMatchObject({ color: '#00A651', colorStatus: 'reviewed' })
     expect(party('K17', 'פ')).toMatchObject({ color: '#2455A4', colorStatus: 'reviewed' })
     expect(party('K17', 'חץ')).toMatchObject({ color: '#7B2CBF', colorStatus: 'reviewed' })
     expect(party('K17', 'ק')).toMatchObject({ color: '#8B1E1E', colorStatus: 'reviewed' })
     expect(party('K17', 'קז')).toMatchObject({ color: '#202020', colorStatus: 'reviewed' })
-    expect(party('K17', 'נץ')).toMatchObject({ color: '#F2C94C', colorStatus: 'reviewed' })
+    expect(party('K17', 'נץ')).toMatchObject({ color: '#F5B800', colorStatus: 'reviewed' })
     expect(party('K17', 'ה')).toMatchObject({ color: '#4B5563', colorStatus: 'reviewed' })
     expect(party('K19', 'ו')).toMatchObject({ color: '#8B1E1E', colorStatus: 'reviewed' })
-    expect(party('K23', 'נץ')).toMatchObject({ color: '#F2C94C', colorStatus: 'reviewed' })
+    expect(party('K23', 'נץ')).toMatchObject({ color: '#F5B800', colorStatus: 'reviewed' })
     expect(party('K25', 'ל')).toMatchObject({ color: '#5DADE2', colorStatus: 'reviewed' })
     expect(party('K25', 'ד')).toMatchObject({ color: '#E67E22', colorStatus: 'reviewed' })
     expect(party('K25', 'ת')).toMatchObject({ color: '#00A651', colorStatus: 'reviewed' })
 
-    expect(party('K22', 'רק')?.colorStatus).toBe('provisional')
-    expect(party('K25', 'זך')?.colorStatus).toBe('provisional')
-    expect(party('K25', 'קנ')?.colorStatus).toBe('provisional')
+    const newlyReviewedColors = [
+      ['K17', 'ז', '#8B1E1E'],
+      ['K17', 'כץ', '#7B2CBF'],
+      ['K17', 'פכ', '#8B1E1E'],
+      ['K17', 'פץ', '#8B1E1E'],
+      ['K17', 'ף', '#5DADE2'],
+      ['K17', 'קפ', '#0B5D3B'],
+      ['K18', 'ב', '#B08D00'],
+      ['K18', 'אר', '#4B5563'],
+      ['K18', 'ה', '#00A651'],
+      ['K18', 'חי', '#4B5563'],
+      ['K18', 'ים', '#4B5563'],
+      ['K18', 'ינ', '#4B5563'],
+      ['K18', 'יק', '#00A651'],
+      ['K18', 'עם', '#0B5D3B'],
+      ['K18', 'נ', '#5DADE2'],
+      ['K18', 'נפ', '#4B5563'],
+      ['K18', 'נץ', '#4B5563'],
+      ['K18', 'נר', '#8B1E1E'],
+      ['K18', 'פ', '#4B5563'],
+      ['K18', 'פי', '#4B5563'],
+      ['K18', 'פק', '#202020'],
+      ['K18', 'צי', '#C65D16'],
+      ['K18', 'ק', '#8B1E1E'],
+      ['K18', 'קפ', '#8B1E1E'],
+      ['K18', 'קץ', '#5DADE2'],
+      ['K18', 'ץ', '#7B2CBF'],
+      ['K19', 'טב', '#B08D00'],
+      ['K19', 'הי', '#4B5563'],
+      ['K19', 'הפ', '#4B5563'],
+      ['K19', 'הק', '#20A4A8'],
+      ['K19', 'ז', '#C62828'],
+      ['K19', 'זך', '#8BC34A'],
+      ['K19', 'יק', '#4B5563'],
+      ['K19', 'נ', '#4B5563'],
+      ['K19', 'ני', '#4B5563'],
+      ['K19', 'נק', '#5DADE2'],
+      ['K19', 'נץ', '#F5B800'],
+      ['K19', 'עם', '#0B5D3B'],
+      ['K19', 'פ', '#202020'],
+      ['K19', 'פה', '#C65D16'],
+      ['K19', 'פז', '#4B5563'],
+      ['K19', 'פי', '#F4D96B'],
+      ['K19', 'פנ', '#4B5563'],
+      ['K19', 'פץ', '#202020'],
+      ['K19', 'ץ', '#202020'],
+      ['K19', 'צפ', '#D94888'],
+      ['K19', 'צק', '#8B1E1E'],
+      ['K19', 'ק', '#8B1E1E'],
+      ['K20', 'ודעם', '#20A4A8'],
+      ['K20', 'ז', '#F4D96B'],
+      ['K20', 'זך', '#4B5563'],
+      ['K20', 'זץ', '#4B5563'],
+      ['K20', 'טב', '#B08D00'],
+      ['K20', 'י', '#4B5563'],
+      ['K20', 'יז', '#4B5563'],
+      ['K20', 'יץ', '#20A4A8'],
+      ['K20', 'נז', '#202020'],
+      ['K20', 'ני', '#4B5563'],
+      ['K20', 'נץ', '#4B5563'],
+      ['K20', 'כ', '#7B2CBF'],
+      ['K20', 'ע', '#0B5D3B'],
+      ['K20', 'פה', '#C65D16'],
+      ['K20', 'ף', '#202020'],
+      ['K20', 'ףץ', '#202020'],
+      ['K20', 'קץ', '#202020'],
+      ['K21', 'דעם', '#0B5D3B'],
+      ['K21', 'ום', '#8B1E1E'],
+      ['K21', 'ז', '#F5B800'],
+      ['K21', 'זי', '#8BC34A'],
+      ['K21', 'זך', '#4B5563'],
+      ['K21', 'זץ', '#7B2CBF'],
+      ['K21', 'טב', '#F5B800'],
+      ['K21', 'כ', '#7B2CBF'],
+      ['K21', 'נ', '#B08D00'],
+      ['K21', 'נץ', '#2455A4'],
+      ['K21', 'נר', '#7B2CBF'],
+      ['K21', 'ןנ', '#4B5563'],
+      ['K21', 'פה', '#7B2CBF'],
+      ['K21', 'ףז', '#202020'],
+      ['K21', 'ףץ', '#202020'],
+      ['K21', 'צק', '#8B1E1E'],
+      ['K21', 'ץ', '#8B1E1E'],
+      ['K21', 'קי', '#F5B800'],
+      ['K21', 'ר', '#0B5D3B'],
+      ['K22', 'ודעם', '#20A4A8'],
+      ['K22', 'ז', '#F4D96B'],
+      ['K22', 'זכ', '#4B5563'],
+      ['K22', 'זץ', '#7B2CBF'],
+      ['K22', 'טב', '#B08D00'],
+      ['K22', 'יז', '#C62828'],
+      ['K22', 'י', '#4B5563'],
+      ['K22', 'כף', '#F5B800'],
+      ['K22', 'כי', '#8B1E1E'],
+      ['K22', 'נ', '#5DADE2'],
+      ['K22', 'פה', '#7B2CBF'],
+      ['K22', 'ףז', '#202020'],
+      ['K22', 'ץ', '#8B1E1E'],
+      ['K22', 'רק', '#2455A4'],
+      ['K23', 'ודעם', '#20A4A8'],
+      ['K23', 'ז', '#F4D96B'],
+      ['K23', 'טב', '#B08D00'],
+      ['K23', 'יז', '#C62828'],
+      ['K23', 'יר', '#4B5563'],
+      ['K23', 'נ', '#D94888'],
+      ['K23', 'נז', '#4B5563'],
+      ['K23', 'נץ', '#F5B800'],
+      ['K23', 'נק', '#5DADE2'],
+      ['K23', 'פה', '#7B2CBF'],
+      ['K23', 'ףז', '#202020'],
+      ['K23', 'ץ', '#8B1E1E'],
+      ['K23', 'קץ', '#F5B800'],
+      ['K24', 'ב', '#B08D00'],
+      ['K24', 'ודעם', '#20A4A8'],
+      ['K24', 'ז', '#4B5563'],
+      ['K24', 'זץ', '#7B2CBF'],
+      ['K24', 'ט', '#F5B800'],
+      ['K24', 'י', '#8BC34A'],
+      ['K24', 'יז', '#F4D96B'],
+      ['K24', 'יר', '#4B5563'],
+      ['K24', 'כן', '#7B2CBF'],
+      ['K24', 'עם', '#0B5D3B'],
+      ['K24', 'פה', '#C65D16'],
+      ['K24', 'ףז', '#202020'],
+      ['K24', 'צי', '#F4D96B'],
+      ['K24', 'צכ', '#0B5D3B'],
+      ['K24', 'צף', '#7B2CBF'],
+      ['K24', 'ץ', '#8B1E1E'],
+      ['K24', 'קץ', '#F5B800'],
+      ['K24', 'ר', '#202020'],
+      ['K24', 'רף', '#202020'],
+      ['K24', 'ת', '#173F7A'],
+      ['K25', 'אצ', '#F4D96B'],
+      ['K25', 'ב', '#B08D00'],
+      ['K25', 'ום', '#8B1E1E'],
+      ['K25', 'זנ', '#4B5563'],
+      ['K25', 'זץ', '#7B2CBF'],
+      ['K25', 'ט', '#F5B800'],
+      ['K25', 'יז', '#F4D96B'],
+      ['K25', 'כן', '#7B2CBF'],
+      ['K25', 'עם', '#0B5D3B'],
+      ['K25', 'פה', '#C65D16'],
+      ['K25', 'ף', '#202020'],
+      ['K25', 'ק', '#00A651'],
+      ['K25', 'נק', '#00A651'],
+      ['K25', 'נץ', '#F4D96B'],
+      ['K25', 'רז', '#7B2CBF'],
+      ['K25', 'ץ', '#4B5563'],
+    ] as const
+    for (const [electionId, ballotLetter, color] of newlyReviewedColors) {
+      expect(party(electionId, ballotLetter)).toMatchObject({
+        color,
+        colorStatus: 'reviewed',
+      })
+    }
+
+    const grayIdsByElection = {
+      K21: ['ן', 'ק', 'י', 'נז', 'קף', 'ףי', 'קן', 'ךק', 'ףך', 'יץ', 'ןך', 'ףנ', 'ןנ', 'ץי', 'יז', 'ין', 'זך'],
+      K22: ['צ', 'נך', 'ק', 'קץ', 'קך', 'זכ', 'צן', 'ינ', 'יף', 'יק', 'י'],
+      K23: ['ק', 'כן', 'ינ', 'קך', 'נז', 'כ', 'קי', 'יק', 'ני', 'י', 'יר', 'יף', 'זך'],
+      K24: ['כך', 'רנ', 'קך', 'נ', 'ק', 'כ', 'יק', 'ני', 'ינ', 'ז', 'קי', 'יר', 'נר', 'יף'],
+      K25: ['קץ', 'צ', 'ני', 'קנ', 'י', 'קך', 'ץ', 'ך', 'ז', 'קי', 'יק', 'נז', 'נר', 'יץ', 'נף', 'ינ', 'זך', 'זנ'],
+    } as const
+    for (const [electionId, ballotLetters] of Object.entries(grayIdsByElection)) {
+      for (const ballotLetter of ballotLetters) {
+        expect(party(electionId, ballotLetter), `${electionId}/${ballotLetter}`).toMatchObject({
+          color: '#4B5563',
+          colorStatus: 'reviewed',
+        })
+      }
+    }
+
+    for (const [electionId, payload] of payloads) {
+      expect(
+        payload.parties.every((candidate) => candidate.colorStatus === 'reviewed'),
+        electionId,
+      ).toBe(true)
+    }
+
+    const k17DarkGrayNames = new Set(
+      payloads
+        .get('K17')
+        ?.parties.filter((candidate) => candidate.color === '#4B5563')
+        .map((candidate) => candidate.names.he),
+    )
+    expect([...k17DarkGrayNames].toSorted()).toEqual(
+      [
+        'ברית עולם',
+        'הציונות החדשה',
+        'לב',
+      ].toSorted(),
+    )
+    for (const [electionId, payload] of payloads) {
+      if (electionId === 'K17') {
+        continue
+      }
+      for (const candidate of payload.parties.filter((entry) =>
+        k17DarkGrayNames.has(entry.names.he),
+      )) {
+        expect(candidate, `${electionId}/${candidate.names.he}`).toMatchObject({
+          color: '#4B5563',
+          colorStatus: 'reviewed',
+        })
+      }
+    }
+
+    expect(
+      payloads.get('K18')?.parties.every((candidate) => candidate.colorStatus === 'reviewed'),
+    ).toBe(true)
+    expect(
+      payloads.get('K19')?.parties.every((candidate) => candidate.colorStatus === 'reviewed'),
+    ).toBe(true)
+    expect(
+      payloads.get('K20')?.parties.every((candidate) => candidate.colorStatus === 'reviewed'),
+    ).toBe(true)
+    const k18DarkGrayNames = new Set(
+      payloads
+        .get('K18')
+        ?.parties.filter((candidate) => candidate.color === '#4B5563')
+        .map((candidate) => candidate.names.he),
+    )
+    expect([...k18DarkGrayNames].toSorted()).toEqual(
+      [
+        'אור בראשון',
+        'אחריות',
+        'ברית עולם',
+        'הישראלים',
+        'ישראל חזקה',
+        'כח להשפיע',
+        'לב',
+        'לזוז',
+      ].toSorted(),
+    )
+    for (const [electionId, payload] of payloads) {
+      if (Number(electionId.slice(1)) <= 18) {
+        continue
+      }
+      for (const candidate of payload.parties.filter((entry) =>
+        k18DarkGrayNames.has(entry.names.he),
+      )) {
+        expect(candidate, `${electionId}/${candidate.names.he}`).toMatchObject({
+          color: '#4B5563',
+          colorStatus: 'reviewed',
+        })
+      }
+    }
+
   })
 
   it('applies the reviewed K17-K25 Hebrew display names', async () => {
@@ -585,17 +1123,18 @@ describe('generated web data', () => {
       K21: {
         אמת: 'העבודה', ז: 'זהות', זץ: 'צומת', י: 'ישר', יז: 'הגוש התנ"כי', ין: 'איחוד בני הברית',
         יץ: 'אחריות למייסדים', נץ: 'מגן', נר: 'גשר', ן: 'בט"ח', ןנ: 'מנהיגות חברתית',
-        פה: 'כחול לבן', ףז: 'הפיראטים', צק: 'צדק חברתי', ץ: 'דע"ם', ץי: 'אני ואתה',
+        פה: 'כחול לבן', ףז: 'הפיראטים', צק: 'צדק חברתי', ץ: 'כלכלה ירוקה', ץי: 'אני ואתה',
         ק: 'צדק לכל', ר: 'הרשימה הערבית', שס: 'ש"ס',
       },
       K22: {
         ז: 'עוצמה כלכלית', זכ: 'דמוקראטורה', זץ: 'צומת', י: 'מנהיגות חברתית', יז: 'אדום לבן',
+        ינ: 'התנועה הליברלית הנוצרית',
         יק: 'הגוש התנ"כי', כי: 'האחדות העממית - אלוחדה אלשעביה', כף: 'עוצמה יהודית',
         נ: 'מתקדמת', פה: 'כחול לבן', ףז: 'הפיראטים', צ: 'צדק', ץ: 'דע"ם', קך: 'סדר חדש',
         קץ: 'קמ"ה', רק: 'הימין החילוני', שס: 'ש"ס',
       },
       K23: {
-        ז: 'עוצמה ליברלית', י: 'החזון', יז: 'אדום לבן', יף: 'כבוד האדם', יק: 'הגוש התנ"כי',
+        ז: 'עוצמה ליברלית', י: 'החזון', יז: 'אדום לבן', ינ: 'איחוד הברית והשותפות', יף: 'כבוד האדם', יק: 'הגוש התנ"כי',
         יר: 'מנהיגות חברתית', כ: 'הלב היהודי', כן: 'אני ואתה', נז: 'הכח להשפיע', ני: 'קמ"ה',
         נץ: 'עוצמה יהודית', נק: 'מתקדמת', פה: 'כחול לבן', ףז: 'הפיראטים', ץ: 'דע"ם',
         ק: 'ישראליסט', קי: 'שמע', קך: 'סדר חדש', קץ: 'משפט צדק', שס: 'ש"ס',
@@ -700,6 +1239,173 @@ describe('generated web data', () => {
     ).toBe(true)
     expect(k17.envelope?.totals.turnout).toBeNull()
     expect(k18.records.some((record) => record.totals.turnout !== null)).toBe(true)
+  })
+
+  it('publishes nationwide polling-group placement only where evidence qualifies', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const expectedRepresentativeCounts: Record<string, number> = {
+      K21: 159,
+      K22: 344,
+      K23: 352,
+      K24: 518,
+      K25: 589,
+    }
+    const expectedExactClosedCounts: Record<string, number> = {
+      K21: 8,
+      K24: 152,
+      K25: 95,
+    }
+    const expectedFallbackCounts: Record<string, number> = {
+      K24: 6,
+      K25: 3,
+    }
+
+    for (const election of catalog.elections) {
+      const payload = ElectionResultsSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])),
+      )
+      const pollingGroupRecords = payload.records.filter((record) =>
+        record.id.startsWith('display:polling-group:'),
+      )
+      const exactClosedRecords = payload.records.filter((record) =>
+        record.id.startsWith('display:polling-exact:'),
+      )
+      const fallbackRecords = payload.records.filter((record) =>
+        record.id.startsWith('display:polling-network-fallback:'),
+      )
+      expect(pollingGroupRecords, election.id).toHaveLength(
+        expectedRepresentativeCounts[election.id] ?? 0,
+      )
+      expect(exactClosedRecords, election.id).toHaveLength(
+        expectedExactClosedCounts[election.id] ?? 0,
+      )
+      expect(fallbackRecords, election.id).toHaveLength(
+        expectedFallbackCounts[election.id] ?? 0,
+      )
+      for (const record of pollingGroupRecords) {
+        expect(record.geographyType, record.id).toBe('custom')
+        expect(record.notice?.en, record.id).toContain(
+          'Votes cannot be assigned to this area precisely.',
+        )
+        expect(record.names.en, record.id).toMatch(/ · \d/)
+        expect(record.names.en, record.id).not.toContain('Polling group')
+      }
+      for (const record of exactClosedRecords) {
+        expect(record.geographyType, record.id).toBe('custom')
+        expect(record.notice, record.id).toBeUndefined()
+        expect(record.names.en, record.id).toMatch(/ · \d/)
+        expect(record.names.en, record.id).not.toContain('Polling group')
+      }
+      for (const record of fallbackRecords) {
+        expect(record.geographyType, record.id).toBe('custom')
+        expect(record.notice?.en, record.id).toContain('exact sum')
+        expect(record.names.en, record.id).toMatch(/ · \d/)
+        expect(record.names.en, record.id).not.toContain('Statistical areas')
+      }
+    }
+
+    const k24Catalog = catalog.elections.find((election) => election.id === 'K24')
+    if (!k24Catalog) {
+      throw new Error('Missing K24 catalog entry')
+    }
+    const k24Payload = ElectionResultsSchema.parse(
+      await readJson(resolve(dataRoot, k24Catalog.resultUrls['statistical-area'])),
+    )
+    expect(
+      k24Payload.records.find(
+        (record) => record.id === 'display:polling-group:K24:3000:122',
+      )?.notice?.en,
+    ).toContain(
+      'Votes from these areas may be displayed in areas 864, 1311, 1313, 1322. This result may also include votes from areas 864, 1314.',
+    )
+    expect(
+      k24Payload.records.find(
+        (record) => record.id === 'display:polling-group:K24:3000:172',
+      )?.notice?.en,
+    ).toContain('This result may include votes from areas 864.')
+
+    const area1024Displays = {
+      K21: {
+        id: 'display:polling-group:K21:3000:133',
+        totals: { eligibleVoters: 2_421, actualVoters: 1_528, validVotes: 1_524 },
+        geometryType: 'Polygon',
+        geometryPartCount: 1,
+      },
+      K22: {
+        id: 'display:polling-group:continuity:K22:3000:183:228',
+        totals: { eligibleVoters: 3_845, actualVoters: 2_217, validVotes: 2_214 },
+        geometryType: 'MultiPolygon',
+        geometryPartCount: 2,
+      },
+      K23: {
+        id: 'display:polling-group:continuity:K23:3000:184:228',
+        totals: { eligibleVoters: 3_916, actualVoters: 2_247, validVotes: 2_244 },
+        geometryType: 'MultiPolygon',
+        geometryPartCount: 2,
+      },
+      K24: {
+        id: 'display:polling-group:K24:3000:172',
+        totals: { eligibleVoters: 2_544, actualVoters: 1_473, validVotes: 1_469 },
+        geometryType: 'Polygon',
+        geometryPartCount: 1,
+      },
+      K25: {
+        id: 'display:polling-group:K25:3000:187',
+        totals: { eligibleVoters: 2_591, actualVoters: 1_466, validVotes: 1_462 },
+        geometryType: 'Polygon',
+        geometryPartCount: 1,
+      },
+    }
+
+    for (const [electionId, expected] of Object.entries(area1024Displays)) {
+      const election = catalog.elections.find((candidate) => candidate.id === electionId)
+      if (!election) {
+        throw new Error(`Missing ${electionId} catalog entry`)
+      }
+      const payload = ElectionResultsSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])),
+      )
+      const displayRecord = payload.records.find((record) => record.id === expected.id)
+      expect(displayRecord, expected.id).toMatchObject({
+        totals: expected.totals,
+        notice: {
+          en: expect.stringContaining('Votes cannot be assigned to this area precisely.'),
+        },
+      })
+      expect(payload.hiddenGeographyIds, electionId).toContain('stat2011:30001024')
+      expect(
+        payload.records.some((record) => record.id === 'stat2011:30001024'),
+        electionId,
+      ).toBe(false)
+
+      const geography = (await readJson(
+        resolve(dataRoot, election.geographiesByMode['statistical-area'].geometryUrl),
+      )) as {
+        features: Array<{
+          id?: string
+          geometry?: { type?: string; coordinates?: unknown[] }
+        }>
+      }
+      const displayFeature = geography.features.find((feature) => feature.id === expected.id)
+      expect(displayFeature?.geometry?.type, expected.id).toBe(expected.geometryType)
+      const geometryPartCount =
+        displayFeature?.geometry?.type === 'Polygon'
+          ? 1
+          : displayFeature?.geometry?.coordinates?.length
+      expect(geometryPartCount, expected.id).toBe(expected.geometryPartCount)
+    }
+
+    for (const electionId of ['K19', 'K20']) {
+      const election = catalog.elections.find((candidate) => candidate.id === electionId)
+      if (!election) {
+        throw new Error(`Missing ${electionId} catalog entry`)
+      }
+      const payload = ElectionResultsSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])),
+      )
+      expect(payload.hiddenGeographyIds).not.toContain('stat2011:30001024')
+      expect(payload.records.some((record) => record.id === 'stat2011:30001024')).toBe(true)
+    }
   })
 })
 

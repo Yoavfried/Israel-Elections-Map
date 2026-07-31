@@ -8,25 +8,31 @@ import type {
 } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {
+  buildBackgroundPolygonVisibilityFilter,
   buildMarkerVisibilityFilter,
-  buildPolygonVisibilityFilter,
+  buildResultPolygonVisibilityFilter,
   mayHaveDisplayMarker,
 } from '../domain/mapPresentation'
-import type { Language, Party, ResultRecord } from '../domain/schemas'
+import type { GeographyMode, Language, Party, ResultRecord } from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
 const SOURCE_ID = 'election-geographies'
 const MARKER_SOURCE_ID = 'election-geography-markers'
 const BACKDROP_SOURCE_ID = 'election-geography-backdrop'
+const BACKGROUND_FILL_LAYER_ID = 'election-background-fill'
+const BACKGROUND_LINE_LAYER_ID = 'election-background-line'
 const FILL_LAYER_ID = 'election-fill'
 const LINE_LAYER_ID = 'election-line'
 const MARKER_LAYER_ID = 'election-markers'
 const BACKDROP_FILL_LAYER_ID = 'election-backdrop-fill'
 const MAP_BACKGROUND_COLOR = '#f3f0e8'
 const UNMAPPED_GEOGRAPHY_COLOR = '#aeb5b0'
+const GEOGRAPHY_BORDER_COLOR = '#626a65'
+const UNMAPPED_AREA_FILL_OPACITY = 0.58
 
 interface MapCanvasProps {
   language: Language
+  geographyMode: GeographyMode
   geometryUrl: string
   markerGeometryUrl: string
   backdropGeometryUrl: string | null
@@ -52,6 +58,7 @@ const baseStyle = {
 
 export default function MapCanvas({
   language,
+  geographyMode,
   geometryUrl,
   markerGeometryUrl,
   backdropGeometryUrl,
@@ -124,6 +131,12 @@ export default function MapCanvas({
     if (map.getLayer(FILL_LAYER_ID)) {
       map.removeLayer(FILL_LAYER_ID)
     }
+    if (map.getLayer(BACKGROUND_LINE_LAYER_ID)) {
+      map.removeLayer(BACKGROUND_LINE_LAYER_ID)
+    }
+    if (map.getLayer(BACKGROUND_FILL_LAYER_ID)) {
+      map.removeLayer(BACKGROUND_FILL_LAYER_ID)
+    }
     if (map.getLayer(BACKDROP_FILL_LAYER_ID)) {
       map.removeLayer(BACKDROP_FILL_LAYER_ID)
     }
@@ -146,7 +159,7 @@ export default function MapCanvas({
         id: BACKDROP_FILL_LAYER_ID,
         source: BACKDROP_SOURCE_ID,
         type: 'fill',
-        filter: buildPolygonVisibilityFilter([]),
+        filter: buildBackgroundPolygonVisibilityFilter([], []),
         paint: {
           'fill-color': UNMAPPED_GEOGRAPHY_COLOR,
           'fill-opacity': 0.28,
@@ -165,28 +178,63 @@ export default function MapCanvas({
       promoteId: 'id',
     })
 
-    const polygonVisibilityFilter = buildPolygonVisibilityFilter(
+    const resultPolygonVisibilityFilter = buildResultPolygonVisibilityFilter(
+      hiddenGeographyIds,
+      [...recordsByIdRef.current.values()],
+    )
+    const backgroundPolygonVisibilityFilter = buildBackgroundPolygonVisibilityFilter(
       hiddenGeographyIds,
       [...recordsByIdRef.current.values()],
     )
 
+    const backgroundFillLayer: FillLayerSpecification = {
+      id: BACKGROUND_FILL_LAYER_ID,
+      source: SOURCE_ID,
+      type: 'fill',
+      filter: backgroundPolygonVisibilityFilter,
+      paint: {
+        'fill-color': UNMAPPED_GEOGRAPHY_COLOR,
+        'fill-opacity':
+          geographyMode === 'statistical-area' ? UNMAPPED_AREA_FILL_OPACITY : 0,
+      },
+    }
+    const backgroundLineLayer: LineLayerSpecification = {
+      id: BACKGROUND_LINE_LAYER_ID,
+      source: SOURCE_ID,
+      type: 'line',
+      filter: backgroundPolygonVisibilityFilter,
+      paint: {
+        'line-color': GEOGRAPHY_BORDER_COLOR,
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          5.4,
+          0.15,
+          7,
+          0.25,
+          9,
+          0.5,
+          11,
+          0.75,
+          13,
+          1,
+        ],
+        'line-opacity': geographyMode === 'statistical-area' ? 1 : 0,
+      },
+    }
     const fillLayer: FillLayerSpecification = {
       id: FILL_LAYER_ID,
       source: SOURCE_ID,
       type: 'fill',
-      filter: polygonVisibilityFilter,
+      filter: resultPolygonVisibilityFilter,
       paint: {
-        'fill-color': [
-          'case',
-          ['boolean', ['feature-state', 'hasData'], false],
-          ['to-color', ['coalesce', ['feature-state', 'color'], '#69736d']],
-          UNMAPPED_GEOGRAPHY_COLOR,
-        ],
+        'fill-color': ['to-color', ['coalesce', ['feature-state', 'color'], '#69736d']],
         'fill-opacity': [
           'case',
-          ['boolean', ['feature-state', 'hasData'], false],
-          ['case', ['boolean', ['feature-state', 'selected'], false], 0.9, 0.7],
-          0.28,
+          ['boolean', ['feature-state', 'selected'], false],
+          0.9,
+          0.7,
         ],
       },
     }
@@ -194,26 +242,30 @@ export default function MapCanvas({
       id: LINE_LAYER_ID,
       source: SOURCE_ID,
       type: 'line',
-      filter: polygonVisibilityFilter,
+      filter: resultPolygonVisibilityFilter,
       paint: {
         'line-color': [
           'case',
           ['boolean', ['feature-state', 'selected'], false],
           '#151815',
-          '#5d655f',
+          GEOGRAPHY_BORDER_COLOR,
         ],
         'line-width': [
-          'case',
-          ['boolean', ['feature-state', 'selected'], false],
-          2.5,
-          0.55,
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          5.4,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1, 0.15],
+          7,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1.2, 0.25],
+          9,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1.5, 0.5],
+          11,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 2, 0.75],
+          13,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 2.5, 1],
         ],
-        'line-opacity': [
-          'case',
-          ['boolean', ['feature-state', 'hasData'], false],
-          0.62,
-          0.3,
-        ],
+        'line-opacity': 1,
       },
     }
     const markerLayer: CircleLayerSpecification = {
@@ -257,6 +309,8 @@ export default function MapCanvas({
         ],
       },
     }
+    map.addLayer(backgroundFillLayer)
+    map.addLayer(backgroundLineLayer)
     map.addLayer(fillLayer)
     map.addLayer(lineLayer)
     map.addLayer(markerLayer)
@@ -290,7 +344,15 @@ export default function MapCanvas({
       map.off('mouseleave', FILL_LAYER_ID, hidePointer)
       map.off('mouseleave', MARKER_LAYER_ID, hidePointer)
     }
-  }, [backdropGeometryUrl, bounds, geometryUrl, hiddenGeographyIds, mapReady, markerGeometryUrl])
+  }, [
+    backdropGeometryUrl,
+    bounds,
+    geographyMode,
+    geometryUrl,
+    hiddenGeographyIds,
+    mapReady,
+    markerGeometryUrl,
+  ])
 
   useEffect(() => {
     const map = mapRef.current
@@ -301,17 +363,25 @@ export default function MapCanvas({
       !map.getSource(MARKER_SOURCE_ID) ||
       !map.getLayer(FILL_LAYER_ID) ||
       !map.getLayer(LINE_LAYER_ID) ||
+      !map.getLayer(BACKGROUND_FILL_LAYER_ID) ||
+      !map.getLayer(BACKGROUND_LINE_LAYER_ID) ||
       !map.getLayer(MARKER_LAYER_ID)
     ) {
       return
     }
 
-    const polygonVisibilityFilter = buildPolygonVisibilityFilter(
+    const resultPolygonVisibilityFilter = buildResultPolygonVisibilityFilter(
       hiddenGeographyIds,
       records,
     )
-    map.setFilter(FILL_LAYER_ID, polygonVisibilityFilter)
-    map.setFilter(LINE_LAYER_ID, polygonVisibilityFilter)
+    const backgroundPolygonVisibilityFilter = buildBackgroundPolygonVisibilityFilter(
+      hiddenGeographyIds,
+      records,
+    )
+    map.setFilter(FILL_LAYER_ID, resultPolygonVisibilityFilter)
+    map.setFilter(LINE_LAYER_ID, resultPolygonVisibilityFilter)
+    map.setFilter(BACKGROUND_FILL_LAYER_ID, backgroundPolygonVisibilityFilter)
+    map.setFilter(BACKGROUND_LINE_LAYER_ID, backgroundPolygonVisibilityFilter)
     map.setFilter(MARKER_LAYER_ID, buildMarkerVisibilityFilter(records, hiddenGeographyIds))
 
     const applyFeatureStates = () => {

@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-07-19
+Last updated: 2026-07-31
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -11,15 +11,16 @@ but open/complete workstream declarations belong here.
 | Workstream | Status | Current boundary |
 |---|---|---|
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
-| Locality-mode aggregation | Implemented; audit open | Every geographic-scope result row is mapped. Of 80 localities present in only some elections, Ganei Modi'in now has a supported explanation for every missing election and 79 still need election-by-election historical review. |
-| Historical statistical-area mode | Implemented; reviewed pass complete | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty high-confidence polling-register continuity links are approved and labeled synthetic; lower-confidence and mixed-register candidates remain unresolved. Entirely unassigned localities use a documented display-only map fallback. |
+| Locality-mode aggregation | Implemented; audit complete | Every geographic-scope result row is mapped. The 80 partial-presence localities create 227 election-specific gaps: 215 have supported explanations and 12 cells across 8 localities remain explicitly neutral because no source supports a host. |
+| Historical statistical-area mode | Implemented; reviewed pass ongoing | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty high-confidence row-level continuity links are approved and labeled synthetic. The K21-K25 polling-group policy now publishes 255 exact closed units without notices, 1,962 representative units with notices, and nine broad fallbacks across 4,075 polygon-election memberships. Entirely unassigned localities use a separate display-only map fallback. K17-K20 lack qualifying polling-group evidence, and further host-code anomaly review remains open. |
 | Party/list names | Complete | All published K17-K25 lists have reviewed display names. English labels may fall back to Hebrew where no separate translation is maintained. |
-| Party colors | In progress | Stable-letter defaults and election-specific overrides work; the editorial color table is incomplete. |
-| Wikipedia links | In progress | Hebrew and English candidates exist for many lists, but links and intentional blanks are not fully audited. |
+| Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
+| Wikipedia links | In progress | The repeated-party continuity pass is complete for shared identities. Explicit same-label/different-identity exceptions remain election-specific, such as `כח להשפיע`; remaining missing links and intentional blanks are not fully audited. |
 | UX and accessibility | Continuous | Responsive bilingual UX, mobile behavior, keyboard support, and accessibility remain ongoing product requirements. |
-| Product features | Planned; search next | Search, national results, single-party mode, two-party comparison, and the equal-priority satellite/OSM/3D suite are recorded in `FEATURE_PLAN.md`. |
+| National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
+| Product features | Planned; search next | Search, single-party mode, two-party comparison, and the equal-priority satellite/OSM/3D suite are recorded in `FEATURE_PLAN.md`. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 102 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Future versioning policy remains open. |
-| Public repository hardening | In progress | MIT licensing, third-party notices, and public-facing repository hygiene are in place; fresh-clone source bootstrap, CI, and performance checks are unfinished. |
+| Public repository hardening | In progress | Split licensing now keeps the reusable data release and reviewed data tables under MIT while reserving rights in the website and other project materials; third-party notices and public-facing repository hygiene are in place. Fresh-clone source bootstrap, CI, and performance checks are unfinished. |
 
 ## Public Data Release
 
@@ -94,6 +95,18 @@ info notice. These displays represent 5,380 unresolved ballot rows and
 2,028,085 actual voters. They do not write area IDs, alter the downloadable
 ballot assignments, or increase the 94.09% coverage figure.
 
+A second display-only rule covers 4,075 polygon-election memberships across
+K21-K25. It publishes 2,217 polling-group units: 255 exact closed units and
+1,962 representative units. The exact units cover 677 polygon memberships and
+397 final polling groups; 94 combine multiple polling groups, and none carries
+an uncertainty notice. Direct official pre-election evidence supports K21,
+K24, and K25; K22 and K23 require exact site/base continuity in at least two
+direct-evidence elections. Nine K24/K25 networks remain broad aggregates with
+notices. Seventeen representative components require disclosed disconnected
+placement after the solver proves no connected solution covers every group.
+Public ballot assignments, per-area tables, and coverage remain unchanged. No
+vote is divided or estimated.
+
 The source audit found exactly one public CBS direct crosswalk for each K17-K25
 election and one stable-ballot workbook for each transition ending K19-K25. The
 CBS product catalog also identifies a polling-district boundary layer named
@@ -143,20 +156,24 @@ unallocated-register candidates remain withheld.
 
 ## Remaining Work
 
-1. Finish the election-by-election audit of the remaining 79 partial-presence
-   locality features. Ganei Modi'in is now fully explained, and the 36
-   never-standalone features already have reviewed explanations.
-2. Preserve the K17 Maghar source omission as an explicit result-source gap:
+1. Preserve the 12 open partial-presence cells as neutral unless a new source
+   identifies the missing result host. Do not infer a merge from proximity or
+   a coincidental eligible-voter delta.
+2. Continue auditing open election-specific empty polygons. Keep exact areas
+   separate when complete results exist; use a display union only when official
+   register evidence closes the collective result and cannot support an
+   internal split.
+3. Preserve the K17 Maghar source omission as an explicit result-source gap:
    the planned list has stations 17-20, but the official digital result table
    has stations 1-16 only. Do not synthesize missing result rows.
-3. Decide whether acceptable detailed display boundaries exist for Rotem,
+4. Decide whether acceptable detailed display boundaries exist for Rotem,
    Maskiyot, Avnat, and Mavo'ot Yeriho. This is a geometry-quality issue, not an
    assignment gap.
-4. Complete the Wikipedia-link and party-color audits. Party/list names are
-   complete.
-5. Continue UX work and implement the feature order in `FEATURE_PLAN.md`.
-6. Add reproducible fresh-clone source bootstrap and CI checks.
-7. Treat the supplied Kaplan layers as exhausted locality/neighborhood
+5. Complete the Wikipedia-link audit. Party/list names and colors are complete.
+6. Continue UX work and implement the remaining feature order in
+   `FEATURE_PLAN.md`; the national-results baseline is complete.
+7. Add reproducible fresh-clone source bootstrap and CI checks.
+8. Treat the supplied Kaplan layers as exhausted locality/neighborhood
    aggregates. Reopen recurring crosswalk omissions only if the internal CBS
    `kalpi_artzi` layer, another detailed official crosswalk, or independently
    reconcilable ballot-register evidence becomes available.

@@ -39,6 +39,17 @@ Contributions should preserve source provenance and avoid inventing geographic p
 - User-facing map changes should be checked in Hebrew and English and at desktop and mobile widths.
 - Update `docs/PROJECT_STATUS.md` only when a workstream's actual completion state changes.
 
-By contributing, you agree that your contribution may be distributed under the
-repository's MIT License. Official and third-party data remain subject to the
-source terms described in `THIRD_PARTY_NOTICES.md`.
+## Contribution Licensing
+
+- Contributions to `public-data/` or `data/manual/` are submitted under the
+  MIT Data License in `LICENSE-DATA`.
+- Contributions elsewhere are submitted for inclusion in the protected
+  project. By submitting such a contribution, you grant Yoav Fried a
+  perpetual, worldwide, royalty-free right to use, reproduce, modify,
+  distribute, sublicense, and publish that contribution as part of this
+  project under `LICENSE-WEBSITE`. You retain copyright in your contribution.
+- Official and third-party data remain subject to the source terms described
+  in `THIRD_PARTY_NOTICES.md`.
+
+Do not submit material that you do not have the right to contribute under the
+applicable terms.

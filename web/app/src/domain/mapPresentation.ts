@@ -1,4 +1,4 @@
-import type { FilterSpecification } from 'maplibre-gl'
+import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 import type { ResultRecord } from './schemas'
 
 const WEST_BANK_LOCALITY_CODE_MIN = 3500
@@ -43,6 +43,13 @@ export function buildPolygonVisibilityFilter(
   hiddenGeographyIds: string[],
   records: ResultRecord[] = [],
 ): FilterSpecification {
+  return ['all', ...buildPolygonVisibilityConditions(hiddenGeographyIds, records)]
+}
+
+function buildPolygonVisibilityConditions(
+  hiddenGeographyIds: string[],
+  records: ResultRecord[],
+): ExpressionSpecification[] {
   const excludedIds = [...new Set(hiddenGeographyIds)].toSorted()
   const conditionalPolygonIdsWithData = records
     .filter(
@@ -53,7 +60,6 @@ export function buildPolygonVisibilityFilter(
     .toSorted()
 
   return [
-    'all',
     ['!=', ['get', 'displayMode'], 'marker'],
     ['!=', ['get', 'localityCode'], '9920'],
     ['!', ['in', ['get', 'id'], ['literal', excludedIds]]],
@@ -65,6 +71,39 @@ export function buildPolygonVisibilityFilter(
         ['!=', ['get', 'geographyType'], 'municipality-fallback'],
       ],
       ['in', ['get', 'id'], ['literal', conditionalPolygonIdsWithData]],
+    ],
+  ] as ExpressionSpecification[]
+}
+
+export function buildResultPolygonVisibilityFilter(
+  hiddenGeographyIds: string[],
+  records: ResultRecord[],
+): FilterSpecification {
+  return [
+    'all',
+    ...buildPolygonVisibilityConditions(hiddenGeographyIds, records),
+    [
+      'in',
+      ['get', 'id'],
+      ['literal', records.map((record) => record.id).toSorted()],
+    ],
+  ]
+}
+
+export function buildBackgroundPolygonVisibilityFilter(
+  hiddenGeographyIds: string[],
+  records: ResultRecord[],
+): FilterSpecification {
+  return [
+    'all',
+    ...buildPolygonVisibilityConditions(hiddenGeographyIds, records),
+    [
+      '!',
+      [
+        'in',
+        ['get', 'id'],
+        ['literal', records.map((record) => record.id).toSorted()],
+      ],
     ],
   ]
 }

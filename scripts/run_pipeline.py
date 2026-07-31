@@ -22,6 +22,10 @@ STAGES = [
     ["scripts/build_final_geography_assignments.py"],
     ["scripts/audit_historical_assignment_gaps.py"],
     ["scripts/build_public_outputs.py"],
+    ["scripts/audit_statistical_area_polling_group_evidence.py"],
+    ["scripts/build_statistical_area_polling_group_policy.py"],
+    ["scripts/build_statistical_area_result_aggregates.py"],
+    ["scripts/build_statistical_area_polling_group_displays.py"],
     ["scripts/build_public_data_release.py"],
 ]
 
@@ -44,6 +48,11 @@ GEOGRAPHY_OUTPUTS = [
     PROCESSED_DIR / "geographies" / "statistical_areas_1995.aliases.csv",
     PROCESSED_DIR / "geographies" / "statistical_areas_2008.aliases.csv",
     PROCESSED_DIR / "geographies" / "statistical_areas_2011.aliases.csv",
+    PROCESSED_DIR / "geographies" / "statistical_area_result_aggregates.geojson",
+    PROCESSED_DIR / "geographies" / "statistical_area_result_aggregates.metadata.csv",
+    PROCESSED_DIR / "geographies" / "statistical_area_polling_group_displays.geojson",
+    PROCESSED_DIR / "geographies" / "statistical_area_polling_group_displays.metadata.csv",
+    PROCESSED_DIR / "public" / "statistical_area_polling_group_displays.csv",
 ]
 
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AppCatalogSchema, ElectionResultsSchema } from './schemas'
+import { AppCatalogSchema, ElectionResultsSchema, NationalResultsSchema } from './schemas'
 
 const coverage = {
   totalRows: 100,
@@ -16,7 +16,7 @@ const coverage = {
 describe('web data contracts', () => {
   it('accepts a versioned catalog', () => {
     const catalog = AppCatalogSchema.parse({
-      schemaVersion: 3,
+      schemaVersion: 4,
       buildId: '12345678abcdef00',
       generatedAt: '2026-07-14T10:00:00.000Z',
       source: {
@@ -65,6 +65,7 @@ describe('web data contracts', () => {
           resultUrls: {
             'statistical-area': 'results/k25/statistical-areas.json',
             locality: 'results/k25/localities.json',
+            national: 'results/k25/national.json',
           },
           geographiesByMode: {
             'statistical-area': {
@@ -147,5 +148,43 @@ describe('web data contracts', () => {
     })
 
     expect(parsed.records[0].geographyType).toBe('municipality-fallback')
+  })
+
+  it('accepts a complete national result payload', () => {
+    const parsed = NationalResultsSchema.parse({
+      schemaVersion: 1,
+      electionId: 'K25',
+      threshold: { share: 0.0325, votes: 154_855 },
+      totals: {
+        validVotes: 4_764_742,
+        representedVotes: 4_347_342,
+        representedVoteShare: 0.9124,
+        mandates: 120,
+        contestingParties: 40,
+        representedParties: 10,
+      },
+      sources: {
+        officialResultsUrl: 'https://example.com/results',
+        thresholdSourceUrl: 'https://example.com/threshold',
+      },
+      parties: [
+        {
+          id: 'party',
+          ballotLetter: 'א',
+          names: { en: 'Party', he: 'מפלגה' },
+          listNameHe: 'מפלגה',
+          wikipedia: { he: null, en: null },
+          color: '#123456',
+          colorStatus: 'reviewed',
+          votes: 1_000_000,
+          voteShare: 0.21,
+          mandates: 30,
+          passedThreshold: true,
+        },
+      ],
+    })
+
+    expect(parsed.threshold.share).toBe(0.0325)
+    expect(parsed.parties[0].mandates).toBe(30)
   })
 })

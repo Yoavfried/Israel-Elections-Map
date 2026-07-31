@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildBackgroundPolygonVisibilityFilter,
   buildMarkerVisibilityFilter,
   buildPolygonVisibilityFilter,
+  buildResultPolygonVisibilityFilter,
   mayHaveDisplayMarker,
 } from './mapPresentation'
 import type { ResultRecord } from './schemas'
@@ -86,6 +88,35 @@ describe('map presentation rules', () => {
           ],
         ],
       ],
+    ])
+  })
+
+  it('separates result polygons from non-interactive background polygons', () => {
+    const records = [
+      record('stat2011:38230001', 'statistical-area', 'loc:3823', '38230001'),
+      record(
+        'municipality-fallback:2011:loc:3400',
+        'municipality-fallback',
+        'loc:3400',
+        '3400',
+      ),
+    ]
+    const baseFilter = buildPolygonVisibilityFilter([], records)
+    const baseConditions = Array.isArray(baseFilter) ? baseFilter.slice(1) : []
+    const resultIds = [
+      'municipality-fallback:2011:loc:3400',
+      'stat2011:38230001',
+    ]
+
+    expect(buildResultPolygonVisibilityFilter([], records)).toEqual([
+      'all',
+      ...baseConditions,
+      ['in', ['get', 'id'], ['literal', resultIds]],
+    ])
+    expect(buildBackgroundPolygonVisibilityFilter([], records)).toEqual([
+      'all',
+      ...baseConditions,
+      ['!', ['in', ['get', 'id'], ['literal', resultIds]]],
     ])
   })
 })

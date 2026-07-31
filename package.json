@@ -2,6 +2,7 @@
   "name": "israel-election-map",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "Local-first web map for exploring Israeli Knesset election results by geography.",
   "scripts": {

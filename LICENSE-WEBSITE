@@ -1,0 +1,22 @@
+Website and Project Materials Notice
+
+Copyright (c) 2026 Yoav Fried. All rights reserved.
+
+This notice applies to all project-authored material not expressly covered by
+LICENSE-DATA. It includes, without limitation:
+
+- website and data-pipeline source code;
+- tests, build scripts, configuration, and architecture;
+- user-interface and interaction design;
+- visual styling, map presentation, and party-color configuration;
+- project-authored text, documentation, graphics, and other site content.
+
+The material is published for viewing and reference. No permission is granted
+to use, copy, modify, merge, publish, distribute, sublicense, sell, deploy,
+host, or create derivative works from it without prior written permission from
+the copyright holder, except for rights required by the GitHub Terms of
+Service or applicable law.
+
+Third-party dependencies and externally supplied material remain under their
+respective terms. This notice does not limit use of the separately licensed
+data identified in LICENSE-DATA.

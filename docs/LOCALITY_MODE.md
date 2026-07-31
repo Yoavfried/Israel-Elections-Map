@@ -1,14 +1,15 @@
 # Locality Mode
 
-Last updated: 2026-07-15
+Last updated: 2026-07-24
 
 ## Coverage And Scope
 
 Locality result-row assignment and aggregation are complete for the current
 K17-K25 geographic scope. The 36 features with no standalone K17-K25 result
 have evidence-level explanations. Source-backed host/component unions are
-implemented for K17-K20 and five K25 cases; the remaining partial-presence
-elections and most other visibility decisions are not yet reviewed.
+implemented in every election. The 80 partial-presence localities produce 227
+election-specific gaps: 215 are explained, and 12 remain deliberately neutral
+because no source supports a result host.
 
 Current display geometry replaces 115 tiny West Bank proxies with audited
 ArcGIS footprints. Rotem, Maskiyot, Avnat, and Mavo'ot Yeriho remain
@@ -76,18 +77,23 @@ When an election source establishes that one or more 2022 localities were counte
 
 | Election | Combined host features | Attached 2022 polygons | Evidence |
 |---|---:|---:|---|
-| K17 | 1 | 1 | Official historical municipal membership |
-| K18 | 1 | 1 | Official historical municipal membership |
+| K17 | 34 | 37 | Official polling rows, cross-election register continuity, or historical membership |
+| K18 | 28 | 32 | Official polling rows, register continuity, or historical membership |
 | K19 | 47 | 54 | Exact polling-register arithmetic or official historical membership |
 | K20 | 46 | 51 | Official ballot-register rows or historical membership |
-| K25 | 5 | 6 | Reviewed under-100 host-delta inference |
+| K21 | 5 | 6 | Combined-register continuity |
+| K22 | 6 | 6 | Combined-register continuity |
+| K23 | 6 | 6 | Combined-register continuity |
+| K24 | 3 | 3 | Combined-register continuity |
+| K25 | 6 | 7 | Exact arithmetic, register continuity, or reviewed under-100 host-delta inference |
 
 The reviewed source of truth is `data/manual/joined_locality_composites.csv`.
 Ganei Modi'in is joined to Modi'in Illit in K17-K20 because it remained part of
-that municipality until 2016. K21-K24 currently have no joined-polygon rules
-because the available sources do not establish a host strongly enough.
-Historical attached registers that have no 2022 polygon remain part of the
-evidence and arithmetic but cannot add geometry or a name component.
+that municipality until 2016. K17 and K18 use explicit scanned polling-list
+attachments where available; K21-K24 use only combined-register transitions
+supported by surrounding elections. Historical attached registers that have
+no 2022 polygon remain part of the evidence and arithmetic but cannot add
+geometry or a name component.
 
 Canonical `data/processed/public/locality_results/*.csv` rows remain under the published host locality. During the web build, the compiler aliases that one host result to the combined display feature and hides all of its component geometries for that election. It rejects a union if an attached component has its own standalone result or if two unions claim the same host, preventing duplicated votes.
 
@@ -106,9 +112,18 @@ Statistical-area presentation has a separate reviewed table,
 Ganei Modi'in display proxy in K19 and K20, when its geometry and result belong
 with Modi'in Illit, without changing or deleting the canonical source feature.
 
-The reproducible result-presence audit is `docs/LOCALITY_RESULT_PRESENCE_AUDIT.md`, with the complete 116-row exception inventory in `docs/LOCALITY_RESULT_PRESENCE_AUDIT.csv`. Of 1,227 meaningful locality/institution features, 1,111 have standalone results in all nine elections, 80 in some elections, and 36 in none. A separate 160 source features are structural facility, regional-council, or no-jurisdiction display footprints rather than candidate election localities.
+The reproducible result-presence audit is
+`docs/LOCALITY_RESULT_PRESENCE_AUDIT.md`, with the 116-row feature inventory in
+`docs/LOCALITY_RESULT_PRESENCE_AUDIT.csv` and the 227 election-specific gap
+classifications in `docs/LOCALITY_PARTIAL_GAP_AUDIT.csv`. Of 1,227 meaningful
+locality/institution features, 1,111 have standalone results in all nine
+elections, 80 in some elections, and 36 in none. A separate 160 source features
+are structural facility, regional-council, or no-jurisdiction display
+footprints rather than candidate election localities.
 
-The 36 no-standalone-result features are now reviewed at the evidence level: 28 are exact joined-register matches, two explicitly locate the attached register at its host, three are strong under-100 host inferences, and three have no ordinary polling-list row in the available K17-K25 sources. Across elections, 33 of those 36 participate in at least one supported host union. Joined-register display rules also cover at least one missing election for 29 of the 80 partial-presence polygons, using K19/K20 source evidence or Ganei Modi'in's historical municipal membership. Fifty-one have no joined election yet, and 79 still have at least one unresolved election gap. `נירן`/`נערן`, `אבנת`, `מבואות יריחו`, the historical composite municipalities, and the supported joined-register unions record the display decisions reviewed so far. A row without a display rule remains visible or neutral by default; that is not a final visibility decision.
+The 36 no-standalone-result features are reviewed at the evidence level: 28 are exact joined-register matches, two explicitly locate the attached register at its host, three are strong under-100 host inferences, and three have no ordinary polling-list row in the available K17-K25 sources. Across elections, 33 of those 36 participate in at least one supported host union.
+
+The 80 partial-presence localities create 227 election-specific gaps. Source-backed joins cover 138 cells, election-time composite municipalities cover 16, reviewed hidden component footprints cover 7, and 54 refer to localities absent from the matching election-year CBS locality register. Twelve cells across eight localities remain open. The complete classification and the reason no further host was accepted are in `docs/LOCALITY_RESULT_PRESENCE_AUDIT.md`.
 
 ## Envelope Results
 
@@ -120,7 +135,7 @@ The web app shows that aggregate as a selectable national result beside the map.
 
 Locality and statistical-area assignment are independent products:
 
-- Locality mode uses the reviewed locality identity directly and has complete result-row coverage; the partial-presence history and final visibility audit remain open.
+- Locality mode uses the reviewed locality identity directly and has complete result-row coverage; the partial-presence audit is complete with 12 explicitly documented open cells that remain neutral.
 - Statistical-area mode uses the election-specific CBS ballot crosswalk plus
   explicitly labeled reviewed reconstruction where available.
 - A historical composite or joined-register result can therefore be complete

@@ -53,6 +53,7 @@ const ElectionCatalogSchema = z.object({
   resultUrls: z.object({
     'statistical-area': z.string().min(1),
     locality: z.string().min(1),
+    national: z.string().min(1),
   }),
   geographiesByMode: z.object({
     'statistical-area': GeographyAssetSchema,
@@ -61,7 +62,7 @@ const ElectionCatalogSchema = z.object({
 })
 
 export const AppCatalogSchema = z.object({
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
   buildId: z.string().min(8),
   generatedAt: z.string().datetime(),
   source: z.object({
@@ -90,7 +91,7 @@ export const AppCatalogSchema = z.object({
   assets: z.array(AssetSchema),
 })
 
-const PartySchema = z.object({
+export const PartySchema = z.object({
   id: z.string().min(1),
   ballotLetter: z.string().min(1),
   names: LocalizedTextSchema,
@@ -152,6 +153,35 @@ export const ElectionResultsSchema = z.object({
   hiddenGeographyIds: z.array(z.string().min(1)),
 })
 
+const NationalPartySchema = PartySchema.extend({
+  votes: z.number().int().nonnegative(),
+  voteShare: z.number().min(0).max(1),
+  mandates: z.number().int().nonnegative(),
+  passedThreshold: z.boolean(),
+})
+
+export const NationalResultsSchema = z.object({
+  schemaVersion: z.literal(1),
+  electionId: z.string().regex(/^K\d+$/),
+  threshold: z.object({
+    share: z.number().gt(0).lt(1),
+    votes: z.number().int().positive(),
+  }),
+  totals: z.object({
+    validVotes: z.number().int().positive(),
+    representedVotes: z.number().int().positive(),
+    representedVoteShare: z.number().min(0).max(1),
+    mandates: z.number().int().positive(),
+    contestingParties: z.number().int().positive(),
+    representedParties: z.number().int().positive(),
+  }),
+  sources: z.object({
+    officialResultsUrl: z.url(),
+    thresholdSourceUrl: z.url(),
+  }),
+  parties: z.array(NationalPartySchema).min(1),
+})
+
 export type Language = z.infer<typeof LanguageSchema>
 export type GeographyMode = z.infer<typeof GeographyModeSchema>
 export type Coverage = z.infer<typeof CoverageSchema>
@@ -161,3 +191,5 @@ export type GeographyModeCatalog = AppCatalog['geographyModes'][number]
 export type ElectionResults = z.infer<typeof ElectionResultsSchema>
 export type ResultRecord = ElectionResults['records'][number]
 export type Party = ElectionResults['parties'][number]
+export type NationalResults = z.infer<typeof NationalResultsSchema>
+export type NationalParty = NationalResults['parties'][number]

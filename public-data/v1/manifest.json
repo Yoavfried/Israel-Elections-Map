@@ -606,9 +606,9 @@
       "election": "",
       "stat_area_vintage": "reviewed",
       "format": "csv",
-      "rows_or_features": 104,
-      "bytes": 40869,
-      "sha256": "f06340e6cc73472007cbb8ca78e1a1e6fd576dfd2a52686885fe1b9e8bb0b5fe",
+      "rows_or_features": 185,
+      "bytes": 73356,
+      "sha256": "21d2d306c9db9089dc01ce49d6de42172cbf26159479587b56dd378a4bcf0698",
       "description": "Feature metadata and join IDs for composite_localities."
     },
     {
@@ -617,9 +617,9 @@
       "election": "",
       "stat_area_vintage": "reviewed",
       "format": "zip",
-      "rows_or_features": 104,
-      "bytes": 1313547,
-      "sha256": "ea9eeea6be9b94701b6d37cbfaf0a30cf477cb5ca51209de9a92a1394222e7f2",
+      "rows_or_features": 185,
+      "bytes": 2061267,
+      "sha256": "d28e4fd30cbc622d00ec105190a3c1de019990f157a527aa8f4d360ddedac73f",
       "description": "Full-resolution GeoJSON and metadata for composite_localities."
     },
     {
@@ -1112,9 +1112,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 14156,
-      "bytes": 3372842,
-      "sha256": "f85222568ceae0db6257ff1a4b87372c1b71c331f61083cf8e62e26865444848",
+      "rows_or_features": 14237,
+      "bytes": 3407435,
+      "sha256": "a90bb3ead232c72bab8c0553de5c0914fda4d72da93c89c28cd62d701886b6f6",
       "description": "Combined lookup for every published geography ID and package."
     },
     {
@@ -1124,8 +1124,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 309,
-      "bytes": 144901,
-      "sha256": "59e641886cc1bc59210c979bffb10f0eeed9d17491aea8d7ba6ab645e05271a1",
+      "bytes": 151867,
+      "sha256": "289ea41e0e5d343a139eaebe03f90cfbba43fe64a6d0fcf58ca4bb93c7e9f0be",
       "description": "Election-specific party/list lookup keyed by election and source_column; no map colors."
     }
   ]

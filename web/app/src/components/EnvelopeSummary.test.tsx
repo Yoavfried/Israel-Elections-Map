@@ -50,8 +50,9 @@ describe('EnvelopeSummary', () => {
       />,
     )
 
-    expect(html).toContain('Envelope votes')
-    expect(html).toContain('National result, not mapped')
+    expect(html).toContain('Double envelopes')
+    expect(html).toContain('envelope-summary__chevron')
+    expect(html).not.toContain('National result')
     expect(html).toContain('100')
     expect(html).toContain('aria-pressed="true"')
   })

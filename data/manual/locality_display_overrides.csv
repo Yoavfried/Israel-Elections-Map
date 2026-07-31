@@ -2,3 +2,7 @@ locality_id,elections,visibility,name_he,name_en,note
 loc:3620,K17|K18|K19|K20|K21,default,נירן,NIRAN,Historical election name for the 2022 locality named נערן.
 loc:3786,K17|K18|K19|K20|K21|K22|K23|K24|K25,hidden,,,No standalone K17-K25 result; reviewed as non-independent before 2025 and hidden without deleting its 2022 geometry.
 loc:3825,K17|K18|K19|K20|K21|K22|K23|K24|K25,hidden,,,"No standalone K17-K25 result; independent only from September 2019 and reviewed as included with ייט""ב where applicable."
+loc:1360,K18|K19,hidden,,,The official K18 and K19 polling lists attach the Molada/Sa'wa register to the Al-Atrash tribe; its result is represented in the combined tribal custom geography.
+loc:1367,K19|K20,hidden,,,The official K19 and K20 polling lists attach the Khaleh register to the Abu Rubeia tribe; its result is represented in the combined tribal custom geography.
+loc:1346,K18,hidden,,,The official K18 polling list attaches the Tarabin al-Sana locality register to the Tarabin al-Sana tribe; its result is represented in the combined tribal custom geography.
+loc:1375,K19|K20,hidden,,,The official K19 and K20 polling lists attach the Abu Tulul register to the A'azam tribe; its result is represented in the combined tribal custom geography.

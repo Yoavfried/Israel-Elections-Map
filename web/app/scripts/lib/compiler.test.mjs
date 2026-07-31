@@ -6,6 +6,7 @@ import {
   buildDisplayMarkers,
   buildHiddenLocalityIds,
   buildMunicipalityFallbackDisplay,
+  buildNationalResultsPayload,
   buildPartyRegistryIndex,
   buildResultPayload,
   isPointLikeGeometry,
@@ -47,6 +48,110 @@ function registryFor(electionId, parties) {
 describe('web data compiler', () => {
   it('parses UTF-8 BOM CSV headers', () => {
     expect(parseCsv('\ufeffid,name\n1,שלום\n')).toEqual([{ id: '1', name: 'שלום' }])
+  })
+
+  it('builds and validates a complete national result', () => {
+    const partyRegistry = registryFor('K25', [
+      { sourceColumn: 'a', ballotLetter: 'א', totalVotes: 60, nameHe: 'רשימה א' },
+      { sourceColumn: 'b', ballotLetter: 'ב', totalVotes: 30, nameHe: 'רשימה ב' },
+      { sourceColumn: 'c', ballotLetter: 'ג', totalVotes: 9, nameHe: 'רשימה ג' },
+    ])
+    const payload = buildNationalResultsPayload({
+      electionId: 'K25',
+      electionRule: {
+        electoral_threshold_share: '0.1',
+        total_mandates: '5',
+        official_results_url: 'https://example.com/results',
+        threshold_source_url: 'https://example.com/threshold',
+      },
+      mandateRows: [
+        { source_column: 'a', mandates: '3' },
+        { source_column: 'b', mandates: '2' },
+      ],
+      partyRegistry,
+      partyColorsByBallotLetter: { א: '#123456' },
+    })
+
+    expect(payload).toMatchObject({
+      schemaVersion: 1,
+      electionId: 'K25',
+      threshold: { share: 0.1, votes: 10 },
+      totals: {
+        validVotes: 99,
+        representedVotes: 90,
+        mandates: 5,
+        contestingParties: 3,
+        representedParties: 2,
+      },
+    })
+    expect(payload.parties.map((party) => [party.id, party.mandates])).toEqual([
+      ['a', 3],
+      ['b', 2],
+      ['c', 0],
+    ])
+    expect(payload.parties[0]).toMatchObject({
+      color: '#123456',
+      colorStatus: 'reviewed',
+      passedThreshold: true,
+    })
+    expect(payload.parties[2].passedThreshold).toBe(false)
+  })
+
+  it('publishes only documented positive-vote parties in national results', () => {
+    const partyRegistry = registryFor('K25', [
+      { sourceColumn: 'a', totalVotes: 60, nameHe: 'רשימה א' },
+      { sourceColumn: 'b', totalVotes: 40, nameHe: 'רשימה ב' },
+      { sourceColumn: 'withdrawn', totalVotes: 0, nameHe: 'רשימה שפרשה' },
+    ])
+    const args = {
+      electionId: 'K25',
+      electionRule: {
+        electoral_threshold_share: '0.1',
+        total_mandates: '5',
+        official_results_url: 'https://example.com/results',
+        threshold_source_url: 'https://example.com/threshold',
+      },
+      mandateRows: [
+        { source_column: 'a', mandates: '3' },
+        { source_column: 'b', mandates: '2' },
+      ],
+      partyRegistry,
+    }
+
+    expect(() => buildNationalResultsPayload(args)).toThrow(
+      /zero-vote parties must be declared as result-column exclusions: withdrawn/,
+    )
+
+    const payload = buildNationalResultsPayload({
+      ...args,
+      excludedPartyColumns: ['withdrawn'],
+    })
+    expect(payload.totals).toMatchObject({
+      validVotes: 100,
+      contestingParties: 2,
+    })
+    expect(payload.parties.map((party) => party.id)).toEqual(['a', 'b'])
+  })
+
+  it('rejects national mandate allocations that do not fill the Knesset', () => {
+    const partyRegistry = registryFor('K25', [
+      { sourceColumn: 'a', totalVotes: 60, nameHe: 'רשימה א' },
+      { sourceColumn: 'b', totalVotes: 40, nameHe: 'רשימה ב' },
+    ])
+
+    expect(() =>
+      buildNationalResultsPayload({
+        electionId: 'K25',
+        electionRule: {
+          electoral_threshold_share: '0.1',
+          total_mandates: '5',
+          official_results_url: 'https://example.com/results',
+          threshold_source_url: 'https://example.com/threshold',
+        },
+        mandateRows: [{ source_column: 'a', mandates: '4' }],
+        partyRegistry,
+      }),
+    ).toThrow(/sums to 4, expected 5/)
   })
 
   it('collapses non-exclusive statistical components only when every total matches', () => {
@@ -128,6 +233,67 @@ describe('web data compiler', () => {
         groups,
       }),
     ).toThrow(/does not equal its components: actual_voters=90\/91/)
+  })
+
+  it('builds a reviewed presentation aggregate by summing component result rows', () => {
+    const resultRow = (id, eligible, actual, valid, invalid, partyA, partyB) => ({
+      election: 'K24',
+      stat_area_id: id,
+      contributing_rows: '1',
+      contributing_kalpis: '1',
+      eligible_voters: String(eligible),
+      actual_voters: String(actual),
+      valid_votes: String(valid),
+      invalid_votes: String(invalid),
+      winning_ballot_letter: 'a',
+      winning_votes: String(partyA),
+      runner_up_votes: String(partyB),
+      margin_votes: String(partyA - partyB),
+      winning_vote_share: String(partyA / valid),
+      a: String(partyA),
+      b: String(partyB),
+    })
+    const primaryRows = [
+      resultRow('stat2011:1', 100, 40, 39, 1, 30, 9),
+      resultRow('stat2011:2', 120, 50, 49, 1, 29, 20),
+      resultRow('stat2011:ordinary', 80, 30, 30, 0, 20, 10),
+    ]
+
+    const grouped = applyStatisticalDisplayGroups({
+      electionId: 'K24',
+      primaryRows,
+      customRows: [],
+      groups: [
+        {
+          displayGeographyId: 'display:aggregate',
+          componentIds: ['stat2011:1', 'stat2011:2', 'stat2011:zero-result'],
+          aggregationMethod: 'sum-components',
+        },
+      ],
+    })
+
+    expect(grouped.primaryRows.map((row) => row.stat_area_id)).toEqual([
+      'stat2011:ordinary',
+    ])
+    expect(grouped.displayRows).toEqual([
+      expect.objectContaining({
+        custom_geography_id: 'display:aggregate',
+        geography_mode: 'statistical-area',
+        contributing_rows: 2,
+        contributing_kalpis: 2,
+        eligible_voters: 220,
+        actual_voters: 90,
+        valid_votes: 88,
+        invalid_votes: 2,
+        a: 59,
+        b: 29,
+      }),
+    ])
+    expect(grouped.hiddenGeographyIds).toEqual([
+      'stat2011:1',
+      'stat2011:2',
+      'stat2011:zero-result',
+    ])
   })
 
   it('adds stable feature IDs and custom geometries', () => {
@@ -300,7 +466,10 @@ describe('web data compiler', () => {
     expect(display.metadataById.get('municipality-fallback:2011:loc:10')).toMatchObject({
       geographyType: 'municipality-fallback',
       localityId: 'loc:10',
-      notice: { en: expect.stringContaining('No ballots'), he: expect.stringContaining('אין שיוך') },
+      notice: {
+        en: expect.stringContaining('No ballot-to-statistical-area'),
+        he: expect.stringContaining('אין נתוני שיוך'),
+      },
     })
     expect(display.metadataById.get('municipality-fallback:2011:composite:test')).toMatchObject({
       includedNames: { he: ['מרכיב'], en: ['Component'] },
@@ -574,6 +743,10 @@ describe('web data compiler', () => {
       colorStatus: 'reviewed',
     })
     expect(payload.envelope?.geographyType).toBe('envelope')
+    expect(payload.envelope?.names).toEqual({
+      en: 'Double envelopes',
+      he: 'מעטפות כפולות',
+    })
     expect(payload.envelope?.totals.turnout).toBeNull()
   })
 

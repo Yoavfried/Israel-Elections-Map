@@ -55,9 +55,12 @@ describe('DetailsPanel', () => {
     expect(html).toContain('<span class="party-votes">0</span>')
     expect(html).toContain('<h3>Vote breakdown</h3>')
     expect(html).toContain('1 Polling stations')
+    expect(html).toContain('<strong>List 1</strong><span>20.0%</span>')
+    expect(html).not.toContain('vote share')
     expect(html).toContain('<span class="party-share">20.0%</span>')
     expect(html).toContain('<span class="party-share">0.0%</span>')
     expect(html).not.toContain('<dt>Lead</dt>')
+    expect(html).not.toContain('Geography code')
   })
 
   it('shows attached locality names through a bilingual info tooltip', () => {
@@ -81,7 +84,7 @@ describe('DetailsPanel', () => {
     expect(hebrew).toContain('aria-label="כולל: דייר ראפאת, גבעת שמש"')
   })
 
-  it('explains a display-only municipality fallback through the info tooltip', () => {
+  it('shows the complete display-only municipality explanation inline', () => {
     const fallbackRecord: ResultRecord = {
       ...record,
       id: 'municipality-fallback:2011:loc:10',
@@ -96,10 +99,11 @@ describe('DetailsPanel', () => {
       <DetailsPanel language="en" record={fallbackRecord} parties={parties} />,
     )
 
+    expect(html).toContain('class="details-notice"')
     expect(html).toContain(
-      'aria-label="No ballots have a supported statistical-area assignment in this election."',
+      'No ballots have a supported statistical-area assignment in this election.',
     )
-    expect(html).toContain('class="included-localities-info"')
+    expect(html).not.toContain('class="included-localities-info"')
   })
 
   it('shows unavailable turnout instead of a false zero', () => {
@@ -134,5 +138,6 @@ describe('DetailsPanel', () => {
     expect(html).not.toContain('Invalid votes')
     expect(html).not.toContain('Turnout')
     expect(html).not.toContain('3,094')
+    expect(html).not.toContain('National non-geographic result')
   })
 })

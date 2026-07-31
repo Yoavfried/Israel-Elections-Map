@@ -53,8 +53,8 @@ ballots/k22.csv,ballot-results,K22,2011,csv,10901,4966730,9acc4ede920ecaf4b237c4
 ballots/k23.csv,ballot-results,K23,2011,csv,11179,5039792,ba65be74d4ed9e23136d3772ff9fdd0a62e9aadb5f7385979bac7bd5d5c61f10,Complete ballot-row vote table with statistical and locality join IDs.
 ballots/k24.csv,ballot-results,K24,2011,csv,12926,6258610,a62c48c2bcffd812de4a701dbf928d0e2c8daa0cec83792728cbf884ef081476,Complete ballot-row vote table with statistical and locality join IDs.
 ballots/k25.csv,ballot-results,K25,2011,csv,12545,6049894,49c6b0edc4bb6a3f9a5952872a72ef8b18a4ba7f20b46fcd587b7f42a03643cc,Complete ballot-row vote table with statistical and locality join IDs.
-geographies/composite_localities.csv,geography-metadata,,reviewed,csv,104,40869,f06340e6cc73472007cbb8ca78e1a1e6fd576dfd2a52686885fe1b9e8bb0b5fe,Feature metadata and join IDs for composite_localities.
-geographies/composite_localities.zip,geography-package,,reviewed,zip,104,1313547,ea9eeea6be9b94701b6d37cbfaf0a30cf477cb5ca51209de9a92a1394222e7f2,Full-resolution GeoJSON and metadata for composite_localities.
+geographies/composite_localities.csv,geography-metadata,,reviewed,csv,185,73356,21d2d306c9db9089dc01ce49d6de42172cbf26159479587b56dd378a4bcf0698,Feature metadata and join IDs for composite_localities.
+geographies/composite_localities.zip,geography-package,,reviewed,zip,185,2061267,d28e4fd30cbc622d00ec105190a3c1de019990f157a527aa8f4d360ddedac73f,Full-resolution GeoJSON and metadata for composite_localities.
 geographies/custom_geographies.csv,geography-metadata,,reviewed,csv,2,783,9b0669f1b886dfd1d91e7c75efc929b04a3397345f5e782490a6a40c761aa2db,Feature metadata and join IDs for custom_geographies.
 geographies/custom_geographies.zip,geography-package,,reviewed,zip,2,4924,63f08b6f9e5f60824245c276b9db2ca9994f297a3d33a5c2e84a9c402cbcf679,Full-resolution GeoJSON and metadata for custom_geographies.
 geographies/localities_2022.csv,geography-metadata,,2022,csv,1387,275427,168d328f55eba6079b3d02e3cc5f68becb158d7ae36b88b34c9097efeecde7da,Feature metadata and join IDs for localities_2022.
@@ -99,5 +99,5 @@ metadata/assignment-provenance/stable_ballot_assignment_summary.json,assignment-
 metadata/assignment-provenance/stable_ballot_transition_audit.csv,assignment-provenance,,,csv,7822,1007241,77c67a54f99ddf5f3bf6addc858f8b3be2c07be2cad96ef1e2993b9409c4d775,K18-to-K19 stability checks against the official 2008/2011 transition keys.
 metadata/coverage.csv,metadata,,,csv,9,2404,86a6e8364456a7950743c825bcb018c19e8aed750a199a6948a8a137acc95d9a,Per-election statistical and locality mapping coverage.
 metadata/elections.csv,metadata,,,csv,9,1511,50a458587a5de8941d14a899b58ce2cabc4bbcc974366c2296c39ade0588624a,"Election years, active statistical-area vintages, and principal download paths."
-metadata/geographies.csv,metadata,,,csv,14156,3372842,f85222568ceae0db6257ff1a4b87372c1b71c331f61083cf8e62e26865444848,Combined lookup for every published geography ID and package.
-metadata/parties.csv,metadata,,,csv,309,144901,59e641886cc1bc59210c979bffb10f0eeed9d17491aea8d7ba6ab645e05271a1,Election-specific party/list lookup keyed by election and source_column; no map colors.
+metadata/geographies.csv,metadata,,,csv,14237,3407435,a90bb3ead232c72bab8c0553de5c0914fda4d72da93c89c28cd62d701886b6f6,Combined lookup for every published geography ID and package.
+metadata/parties.csv,metadata,,,csv,309,151867,289ea41e0e5d343a139eaebe03f90cfbba43fe64a6d0fcf58ca4bb93c7e9f0be,Election-specific party/list lookup keyed by election and source_column; no map colors.

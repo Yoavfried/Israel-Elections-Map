@@ -1,7 +1,8 @@
 # Israel Election Map
 
-Bilingual web map and reproducible data pipeline for exploring K17-K25 Knesset
-election results by locality and election-appropriate statistical area.
+Bilingual web application and reproducible data pipeline for exploring K17-K25
+Knesset election results nationally, by locality, and by
+election-appropriate statistical area.
 
 The repository contains a Python data pipeline, a React/TypeScript/MapLibre
 client, and a committed public-data release. Statistical results use direct CBS
@@ -101,7 +102,8 @@ npm run dev
 ```
 
 Vite serves the app at `http://localhost:4173`. The frontend compiler reads
-`data/processed/` and writes validated assets under `web/app/public/data/v2/`.
+promoted `data/processed/` outputs and reviewed election/presentation metadata,
+then writes validated assets under `web/app/public/data/v2/`.
 
 ## Documentation
 
@@ -130,11 +132,24 @@ Vite serves the app at `http://localhost:4173`. The frontend compiler reads
   aggregation, and public-release generation.
 - `web/app/` - Vite, React, TypeScript, and MapLibre client.
 
-## License
+## Licensing
 
-Original project software and documentation are licensed under the
-[MIT License](LICENSE). Official and third-party source data remain subject to
-their source terms; see [Third-Party Data Notices](THIRD_PARTY_NOTICES.md).
+This is a source-visible, split-license repository. It is not licensed as a
+whole under MIT.
+
+- The project-authored portions of `public-data/` and `data/manual/` are
+  available under the [MIT Data License](LICENSE-DATA), so the reusable tables,
+  metadata, provenance, and polygon packages can be used freely.
+- The website, pipeline and build source, tests, visual design, map
+  presentation, party-color configuration, copy, and project documentation are
+  protected under the [Website and Project Materials Notice](LICENSE-WEBSITE).
+  They may be inspected in this public repository but are not licensed for
+  reuse, redistribution, modification, deployment, or derivative works.
+- Official and third-party source material remains subject to its source terms;
+  see [Third-Party Data Notices](THIRD_PARTY_NOTICES.md).
+
+The complete path-level boundary and the treatment of versions previously
+published under MIT are recorded in the root [license notice](LICENSE).
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing reviewed data or a
 generated release. Do not commit credentials, machine-specific paths,

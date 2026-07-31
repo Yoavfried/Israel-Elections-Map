@@ -1,11 +1,21 @@
-import { AppCatalogSchema, ElectionResultsSchema } from '../domain/schemas'
-import type { AppCatalog, ElectionResults, GeographyMode } from '../domain/schemas'
+import {
+  AppCatalogSchema,
+  ElectionResultsSchema,
+  NationalResultsSchema,
+} from '../domain/schemas'
+import type {
+  AppCatalog,
+  ElectionResults,
+  GeographyMode,
+  NationalResults,
+} from '../domain/schemas'
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/v2/`
 const catalogUrl = `${DATA_ROOT}catalog.json`
 
 let catalogRequest: Promise<AppCatalog> | undefined
 const resultsRequests = new Map<string, Promise<ElectionResults>>()
+const nationalResultsRequests = new Map<string, Promise<NationalResults>>()
 
 export function loadCatalog(): Promise<AppCatalog> {
   catalogRequest ??= fetchJson(catalogUrl).then((value) => AppCatalogSchema.parse(value))
@@ -32,6 +42,27 @@ export function loadElectionResults(
       return results
     })
   resultsRequests.set(cacheKey, request)
+  return request
+}
+
+export function loadNationalResults(
+  electionId: string,
+  relativeUrl: string,
+): Promise<NationalResults> {
+  const existing = nationalResultsRequests.get(relativeUrl)
+  if (existing) {
+    return existing
+  }
+
+  const request = fetchJson(resolveDataUrl(relativeUrl))
+    .then((value) => NationalResultsSchema.parse(value))
+    .then((results) => {
+      if (results.electionId !== electionId) {
+        throw new Error(`National result asset identity does not match ${electionId}`)
+      }
+      return results
+    })
+  nationalResultsRequests.set(relativeUrl, request)
   return request
 }
 

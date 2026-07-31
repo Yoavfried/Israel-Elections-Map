@@ -14,8 +14,8 @@ const DEFAULT_PARTY_LIGHTNESS = 46
 const POINT_PROXY_MAX_VERTICES = 12
 const SPECIAL_POINT_PROXY_LOCALITY_CODES = new Set(['1791', '1792', '1793', '1794', '3488'])
 const MUNICIPALITY_FALLBACK_NOTICE = {
-  he: 'אין שיוך נתמך של קלפיות לאזורים סטטיסטיים בבחירות האלה. מוצג סך היישוב כולו בגבול תצוגה בלבד.',
-  en: 'No ballots have a supported statistical-area assignment in this election. The whole-locality total is shown using a display-only boundary.',
+  he: 'אין נתוני שיוך של קלפיות לאזורים סטטיסטיים ביישוב זה בבחירות האלה. מוצגת תוצאת היישוב כולו כאזור אחד.',
+  en: 'No ballot-to-statistical-area assignments are available for this locality in this election. The whole-locality result is shown as one area.',
 }
 
 export function parseCsv(text, sourceName = 'CSV input') {
@@ -104,6 +104,161 @@ export function buildPartyRegistryIndex(rows) {
   return byElection
 }
 
+export function buildNationalResultsPayload({
+  electionId,
+  electionRule,
+  mandateRows,
+  partyRegistry,
+  partyColorsByBallotLetter = {},
+  partyOverrides = {},
+  excludedPartyColumns = [],
+}) {
+  if (!(partyRegistry instanceof Map) || partyRegistry.size === 0) {
+    throw new Error(`${electionId} is missing its party-registry map`)
+  }
+  const excludedColumns = new Set(excludedPartyColumns)
+  const registryEntries = [...partyRegistry.entries()]
+  const invalidExclusions = registryEntries.filter(
+    ([partyId, party]) => excludedColumns.has(partyId) && party.totalVotes !== 0,
+  )
+  if (invalidExclusions.length > 0) {
+    throw new Error(
+      `${electionId} cannot exclude nonzero parties: ${invalidExclusions
+        .map(([partyId]) => partyId)
+        .join(', ')}`,
+    )
+  }
+  const undeclaredZeroVoteParties = registryEntries.filter(
+    ([partyId, party]) => party.totalVotes === 0 && !excludedColumns.has(partyId),
+  )
+  if (undeclaredZeroVoteParties.length > 0) {
+    throw new Error(
+      `${electionId} zero-vote parties must be declared as result-column exclusions: ${undeclaredZeroVoteParties
+        .map(([partyId]) => partyId)
+        .join(', ')}`,
+    )
+  }
+  const activePartyEntries = registryEntries.filter(
+    ([partyId]) => !excludedColumns.has(partyId),
+  )
+
+  const thresholdShare = numberValue(
+    electionRule?.electoral_threshold_share,
+    `${electionId}.electoral_threshold_share`,
+  )
+  const totalMandates = numberValue(
+    electionRule?.total_mandates,
+    `${electionId}.total_mandates`,
+  )
+  const officialResultsUrl = optionalHttpsUrl(
+    electionRule?.official_results_url,
+    `${electionId}.official_results_url`,
+  )
+  const thresholdSourceUrl = optionalHttpsUrl(
+    electionRule?.threshold_source_url,
+    `${electionId}.threshold_source_url`,
+  )
+
+  if (thresholdShare <= 0 || thresholdShare >= 1) {
+    throw new Error(`${electionId}.electoral_threshold_share must be between zero and one`)
+  }
+  if (!Number.isInteger(totalMandates) || totalMandates <= 0) {
+    throw new Error(`${electionId}.total_mandates must be a positive integer`)
+  }
+
+  const mandatesByParty = new Map()
+  for (const row of mandateRows) {
+    const partyId = String(row.source_column ?? '').trim()
+    const mandates = numberValue(row.mandates, `${electionId}.${partyId}.mandates`)
+    if (!partyRegistry.has(partyId)) {
+      throw new Error(`${electionId} mandate allocation references unknown party ${partyId}`)
+    }
+    if (excludedColumns.has(partyId)) {
+      throw new Error(`${electionId} mandate allocation references excluded party ${partyId}`)
+    }
+    if (!Number.isInteger(mandates) || mandates <= 0) {
+      throw new Error(`${electionId}.${partyId}.mandates must be a positive integer`)
+    }
+    if (mandatesByParty.has(partyId)) {
+      throw new Error(`${electionId} mandate allocation repeats party ${partyId}`)
+    }
+    mandatesByParty.set(partyId, mandates)
+  }
+
+  const allocatedMandates = [...mandatesByParty.values()].reduce(
+    (total, mandates) => total + mandates,
+    0,
+  )
+  if (allocatedMandates !== totalMandates) {
+    throw new Error(
+      `${electionId} mandate allocation sums to ${allocatedMandates}, expected ${totalMandates}`,
+    )
+  }
+
+  const totalValidVotes = activePartyEntries.reduce(
+    (total, [, party]) => total + party.totalVotes,
+    0,
+  )
+  if (!Number.isInteger(totalValidVotes) || totalValidVotes <= 0) {
+    throw new Error(`${electionId} national valid-vote total must be positive`)
+  }
+  const thresholdVotes = Math.ceil(totalValidVotes * thresholdShare)
+
+  const parties = activePartyEntries
+    .map(([partyId, registryEntry]) => {
+      const mandates = mandatesByParty.get(partyId) ?? 0
+      const passedThreshold = registryEntry.totalVotes >= thresholdVotes
+      if ((mandates > 0) !== passedThreshold) {
+        throw new Error(
+          `${electionId}.${partyId} threshold status and mandate allocation disagree`,
+        )
+      }
+      return {
+        ...buildPartyDefinition(
+          partyId,
+          registryEntry,
+          partyOverrides[partyId],
+          partyColorsByBallotLetter,
+        ),
+        votes: registryEntry.totalVotes,
+        voteShare: registryEntry.totalVotes / totalValidVotes,
+        mandates,
+        passedThreshold,
+      }
+    })
+    .toSorted(
+      (left, right) =>
+        right.votes - left.votes ||
+        left.ballotLetter.localeCompare(right.ballotLetter, 'he-IL'),
+    )
+
+  const representedVotes = parties
+    .filter((party) => party.passedThreshold)
+    .reduce((total, party) => total + party.votes, 0)
+
+  return {
+    schemaVersion: 1,
+    electionId,
+    threshold: {
+      share: thresholdShare,
+      votes: thresholdVotes,
+    },
+    totals: {
+      validVotes: totalValidVotes,
+      representedVotes,
+      representedVoteShare: representedVotes / totalValidVotes,
+      mandates: totalMandates,
+      contestingParties: parties.length,
+      representedParties: parties.filter((party) => party.passedThreshold).length,
+    },
+    sources: {
+      officialResultsUrl,
+      thresholdSourceUrl,
+    },
+    parties,
+  }
+}
+
 export function cleanNumericCode(value) {
   return String(value ?? '').trim().replace(/\.0+$/, '')
 }
@@ -157,12 +312,21 @@ export function buildCustomMetadataIndex(featureCollection) {
     if (!id) {
       throw new Error('Custom geography feature is missing custom_id')
     }
+    if (index.has(id)) {
+      throw new Error(`Custom geography contains duplicate ID: ${id}`)
+    }
+    const noticeHe = String(properties.notice_he ?? '').trim()
+    const noticeEn = String(properties.notice_en ?? '').trim()
+    if ((noticeHe && !noticeEn) || (!noticeHe && noticeEn)) {
+      throw new Error(`${id} must provide both Hebrew and English notices`)
+    }
     index.set(id, {
       id,
       customKey: properties.custom_key || id,
       nameHe: properties.name_he || id,
       nameEn: properties.name_en || properties.name_he || id,
       note: properties.note || '',
+      ...(noticeHe && noticeEn ? { notice: { he: noticeHe, en: noticeEn } } : {}),
     })
   }
   return index
@@ -637,8 +801,8 @@ export function buildResultPayload({
         {
           id: envelopeRow.envelope_id || 'envelope:official',
           customKey: 'envelope',
-          nameHe: envelopeRow.envelope_name_he || 'מעטפות חיצוניות',
-          nameEn: envelopeRow.envelope_name_en || 'Envelope votes',
+          nameHe: 'מעטפות כפולות',
+          nameEn: 'Double envelopes',
         },
         partyIds,
       )
@@ -713,8 +877,16 @@ export function applyStatisticalDisplayGroups({
   for (const group of groups) {
     const displayGeographyId = String(group.displayGeographyId ?? '').trim()
     const componentIds = [...new Set(group.componentIds ?? [])]
+    const aggregationMethod = String(
+      group.aggregationMethod ?? 'validated-locality-aggregate',
+    ).trim()
     if (!displayGeographyId || componentIds.length === 0) {
       throw new Error(`${electionId} has an invalid statistical display group`)
+    }
+    if (!['validated-locality-aggregate', 'sum-components'].includes(aggregationMethod)) {
+      throw new Error(
+        `${electionId} display group ${displayGeographyId} has invalid aggregation method ${aggregationMethod}`,
+      )
     }
 
     for (const componentId of componentIds) {
@@ -734,6 +906,23 @@ export function applyStatisticalDisplayGroups({
     })
     if (sourceRows.length === 0) {
       throw new Error(`${electionId} display group ${displayGeographyId} has no source results`)
+    }
+
+    if (aggregationMethod === 'sum-components') {
+      const targetRow = {
+        ...sourceRows[0],
+        custom_geography_id: displayGeographyId,
+        geography_id: displayGeographyId,
+        geography_mode: 'statistical-area',
+      }
+      for (const column of [...ADDITIVE_RESULT_COLUMNS, ...partyColumns]) {
+        targetRow[column] = sourceRows.reduce(
+          (sum, row) => sum + numberValue(row[column], `${row.stat_area_id}.${column}`),
+          0,
+        )
+      }
+      displayRows.push(targetRow)
+      continue
     }
 
     const targetRows = customRows.filter(
@@ -795,8 +984,8 @@ function buildResultRecord(row, id, geographyType, metadata, partyColumns) {
   const names =
     geographyType === 'statistical-area'
       ? {
-          he: `${metadata.nameHe} · אזור סטטיסטי ${statAreaNumber}`,
-          en: `${metadata.nameEn} · Statistical area ${statAreaNumber}`,
+          he: `${metadata.nameHe} · ${statAreaNumber}`,
+          en: `${metadata.nameEn} · ${statAreaNumber}`,
         }
       : { he: metadata.nameHe, en: metadata.nameEn }
   const includedNames = metadata.includedNames

@@ -15,6 +15,7 @@ if LOCAL_AUDIT_PYTHON.exists():
 
 import geopandas as gpd
 import pandas as pd
+from shapely import coverage_is_valid, coverage_simplify
 
 from pipeline_common import (
     MANUAL_DIR,
@@ -702,6 +703,30 @@ def simplify(stats: gpd.GeoDataFrame, tolerance: float) -> gpd.GeoDataFrame:
     return output
 
 
+def simplify_official_coverages(
+    stats: gpd.GeoDataFrame,
+    tolerance: float,
+) -> gpd.GeoDataFrame:
+    """Simplify shared CBS boundaries once per locality without creating seams."""
+    output = simplify(stats, tolerance)
+    for _, locality in stats.groupby("locality_code", sort=False):
+        official = locality.loc[
+            locality["display_geometry_source"].eq("official_cbs")
+            & locality["display_mode"].fillna("").ne("marker")
+        ]
+        if len(official) < 2:
+            continue
+        geometries = official.geometry.to_numpy()
+        if not coverage_is_valid(geometries):
+            continue
+        output.loc[official.index, "geometry"] = gpd.GeoSeries(
+            coverage_simplify(geometries, tolerance),
+            index=official.index,
+            crs=stats.crs,
+        )
+    return output
+
+
 def validate_no_material_display_overlaps(
     stats: gpd.GeoDataFrame, vintage: int, minimum_area_m2: float = 1.0
 ) -> None:
@@ -728,6 +753,42 @@ def validate_no_material_display_overlaps(
     if failures:
         raise ValueError(
             f"{vintage} display geometry has material polygon overlaps: {failures[:10]}"
+        )
+
+
+def validate_official_locality_coverages(
+    stats: gpd.GeoDataFrame,
+    vintage: int,
+    minimum_area_m2: float = 2.0,
+) -> None:
+    """Reject simplification seams inside an official locality coverage."""
+    polygons = stats.loc[
+        stats["display_mode"].fillna("").ne("marker")
+        & stats["display_geometry_source"].eq("official_cbs")
+    ].to_crs("EPSG:2039").reset_index(drop=True)
+    failures: list[tuple[str, str, float]] = []
+    for left_position, right_position in zip(
+        *polygons.sindex.query(polygons.geometry, predicate="intersects")
+    ):
+        if left_position >= right_position:
+            continue
+        left = polygons.iloc[left_position]
+        right = polygons.iloc[right_position]
+        if left["locality_code"] != right["locality_code"]:
+            continue
+        overlap_area = left.geometry.intersection(right.geometry).area
+        if overlap_area > minimum_area_m2:
+            failures.append(
+                (
+                    str(left["stat_area_id"]),
+                    str(right["stat_area_id"]),
+                    round(overlap_area, 3),
+                )
+            )
+    if failures:
+        raise ValueError(
+            f"{vintage} official locality coverage has simplification overlaps: "
+            f"{failures[:10]}"
         )
 
 
@@ -893,10 +954,19 @@ def main() -> None:
         display_output = (
             display_public
             if vintage in UNSIMPLIFIED_DISPLAY_VINTAGES
-            else simplify(display_public, args.simplify_tolerance)
+            else (
+                simplify_official_coverages(
+                    display_public,
+                    args.simplify_tolerance,
+                )
+                if vintage == 2011
+                else simplify(display_public, args.simplify_tolerance)
+            )
         )
         if vintage in UNSIMPLIFIED_DISPLAY_VINTAGES:
             validate_no_material_display_overlaps(display_output, vintage)
+        if vintage == 2011:
+            validate_official_locality_coverages(display_output, vintage)
         write_geojson(
             display_output,
             OUT_DIR / f"statistical_areas_{vintage}.display.simplified.geojson",

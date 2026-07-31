@@ -1,8 +1,9 @@
 # Locality Result-Presence Audit
 
 Reviewed snapshot backed by `docs/LOCALITY_RESULT_PRESENCE_AUDIT.csv`,
+`docs/LOCALITY_PARTIAL_GAP_AUDIT.csv`,
 `data/manual/locality_result_presence_reviews.csv`, the published locality
-aggregates, and the 2022 locality metadata.
+aggregates, and the official historical locality workbooks.
 
 ## Scope and Method
 
@@ -12,9 +13,45 @@ The 1700-1799 special-purpose facilities, 5500-5599 regional-council footprints,
 
 The structural exclusion was checked against the official 2022 CBS locality workbook. All 56 special-purpose records have a blank 2022 population; the other 104 features are regional-council or no-jurisdiction footprints rather than locality records. No additional never-result polygon with an expected locality electorate sits outside the 36-row review set.
 
+Partial-presence gaps are checked against the closest official pre-election
+CBS locality register: 2005 for K17, 2008 for K18, 2012 for K19, 2014 for K20,
+2018 for K21, 2019 for K22-K23, 2020 for K24, and 2022 for K25.
+
 ## Review Status
 
-The 36 features with no standalone K17-K25 result now have evidence-level explanations. Of the 80 partial-presence features, Ganei Modi'in now has a supported explanation for every missing election and the other 79 still require historical and election-specific review. A `none` value in the reviewed-display column means that no explicit visibility decision has been recorded; it does not mean the explanation audit is missing.
+The 36 features with no standalone K17-K25 result have evidence-level
+explanations. The 80 partial-presence features create 227 election-specific
+missing-result cells. Of those cells, 215 now have a supported historical,
+joined-register, or reviewed-display explanation. Seventy-two of the 80
+locality histories are fully explained; 12 cells across 8 localities remain
+open.
+
+| Gap classification | Election-specific cells | Treatment |
+|---|---:|---|
+| source-backed joined register | 138 | host and attached polygons are shown as one election-specific feature |
+| locality absent from the election-year CBS locality register | 54 | no independent locality result is expected; no host is invented |
+| election-time composite municipality | 16 | the historical municipality's component polygons are unioned |
+| reviewed hidden tribal/component footprint | 7 | represented by the reviewed aggregate geography instead |
+| CBS locality with population, but no supported result host | 7 | open; polygon remains neutral |
+| CBS place record without independent population | 3 | open; no electorate or host is asserted |
+| CBS record without a population value | 2 | open; no electorate or host is asserted |
+| **Total** | **227** | |
+
+The 12 open cells are:
+
+- K17: מכחול (`1343`), תרבין א-צאנע (`1346`), and ביר הדאג' (`1348`);
+- K18: מכחול (`1343`) and כחלה (`1367`);
+- K21-K24: שבי דרום (`1377`);
+- K24: עמיחי (`3824`);
+- K25: כפר הנוער הדתי (`890`) and נווה אבות (`926`).
+
+The K17 records are classified as places without an independent population in
+the official 2005 locality workbook. The two K18 records have no usable
+population value. Shavei Darom has no separate polling row before K25, and
+Amihai is absent from both the K24 result and polling-place rows. The K25
+polling report lists 45 registered voters for Kfar HaNoar HaDati and 18 for
+Neve Avot, but the result file contains neither locality. Exact arithmetic
+produces multiple unrelated coincidental host deltas, so no host is accepted.
 
 A joined polling area cannot be split back into locality-specific party totals. The published host row contains one secret-ballot aggregate for the host and every attached register, so moving the whole result to an attached locality would be incorrect.
 
@@ -30,15 +67,22 @@ The locality map substitutes reviewed host-plus-attached polygon unions only in 
 
 | Election | Combined polygons | Attached 2022 polygons | Evidence |
 |---|---|---|---|
-| K17 | 1 | 1 | official historical municipal membership |
-| K18 | 1 | 1 | official historical municipal membership |
+| K17 | 34 | 37 | official polling rows, cross-election register continuity, or historical membership |
+| K18 | 28 | 32 | official polling rows, register continuity, or historical membership |
 | K19 | 47 | 54 | exact host-level arithmetic or historical membership |
 | K20 | 46 | 51 | official polling rows or historical membership |
-| K25 | 5 | 6 | reviewed under-100 host-delta inference |
+| K21 | 5 | 6 | combined-register continuity |
+| K22 | 6 | 6 | combined-register continuity |
+| K23 | 6 | 6 | combined-register continuity |
+| K24 | 3 | 3 | combined-register continuity |
+| K25 | 6 | 7 | exact arithmetic, register continuity, or reviewed under-100 host-delta inference |
 
-Across elections, 33 of the 36 never-present meaningful polygons participate in at least one supported host union; the other 3 are the institution/place cases with no ordinary polling-list row. The unions also include 29 of the 80 partial-presence polygons where the source identifies their host, including Ganei Modi'in with Modi'in Illit in K17-K20.
+Across elections, 33 of the 36 never-present meaningful polygons participate in at least one supported host union; the other 3 are the institution/place cases with no ordinary polling-list row. The unions also include 51 of the 80 partial-presence polygons where the source identifies their host, including Ganei Modi'in with Modi'in Illit in K17-K20.
 
-K21-K24 currently have no joined-polygon display rules because the available source rows do not establish the host relationship. Fifty-one partial-presence polygons have no joined election yet. Seventy-nine partial histories still contain at least one missing election without a supported host rule; Ganei Modi'in is now explained for every election in which it lacks a standalone result.
+The election-year CBS locality registers explain later-established localities
+without guessing a host, while source polling rows and cross-election register
+continuity support the explicit unions. Only the 12 cells listed above remain
+without a supported explanation or host.
 
 ## Counts
 
@@ -91,7 +135,7 @@ These are the 2022 localities in the West Bank code range that lack a standalone
 | 3785 | משכיות | K22-K25 | K17-K21 | none |
 | 3786 | אבנת | none | K17-K25 | K17-K25: hidden |
 | 3822 | רחלים | K20-K25 | K17-K19 | none |
-| 3823 | גני מודיעין | K21-K25 | K17-K20 | none |
+| 3823 | גני מודיעין | K21-K25 | K17-K20 | K17-K20: joined to מודיעין עילית (`3797`) |
 | 3824 | עמיחי | K21-K23, K25 | K17-K20, K24 | none |
 | 3825 | מבואות יריחו | none | K17-K25 | K17-K25: hidden |
 
@@ -218,4 +262,6 @@ Detailed arithmetic, source-name discrepancies, and display decisions are retain
 | 4502 | עין קנייא | K21-K25 | K17-K20 |
 | 6000 | באקה אל-גרביה | K19-K25 | K17-K18 |
 
-The complete machine-readable exception inventory is `docs/LOCALITY_RESULT_PRESENCE_AUDIT.csv`.
+The feature-level exception inventory is
+`docs/LOCALITY_RESULT_PRESENCE_AUDIT.csv`. The 227-row election-specific
+classification is `docs/LOCALITY_PARTIAL_GAP_AUDIT.csv`.

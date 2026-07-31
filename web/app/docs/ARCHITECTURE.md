@@ -9,6 +9,8 @@ ingestion, assignment, or aggregation.
 The web app supports:
 
 - K17–K25 election selection.
+- A primary national-results view with every positive-vote list, final votes, threshold,
+  mandates, colors, and Wikipedia controls.
 - Election-specific historical statistical-area mode and dissolved-2022-locality mode.
 - English and Hebrew, including document-level LTR/RTL switching.
 - Desktop and mobile layouts.
@@ -25,6 +27,7 @@ The web app supports:
 
 ```text
 data/processed CSV + GeoJSON
+reviewed data/manual election + party metadata
             |
             v
 scripts/build-data.mjs
@@ -37,6 +40,7 @@ scripts/build-data.mjs
   - applies reviewed historical locality names and no-result visibility
   - substitutes documented whole-locality fallbacks for entirely unassigned localities
   - attaches envelope aggregates
+  - validates national votes, election thresholds, and final mandate totals
   - emits mode-specific coverage and provenance
             |
             v
@@ -58,14 +62,16 @@ Locality geometry retains CBS no-jurisdiction and regional-council display footp
 
 ## Versioned Contracts
 
-`catalog.json` schema version 3 is the discovery and provenance document. Result payloads remain schema version 2. The catalog contains:
+`catalog.json` schema version 4 is the discovery and provenance document. Map
+result payloads remain schema version 2; national result payloads use schema
+version 1. The catalog contains:
 
 - `schemaVersion` and content-derived `buildId`.
-- Election labels, result URLs, `statisticalAreaVintage`, and mode-specific geography assets.
+- Election labels, map and national result URLs, `statisticalAreaVintage`, and mode-specific geography assets.
 - Geography labels, feature counts, geometry URLs, and Israel bounds.
 - Per-election, per-mode mapped, pending, and unmapped vote coverage.
 - SHA-256 and byte length for generated assets.
-- A visible status for the provisional party-color policy.
+- Party-color review status, including support for future provisional entries.
 
 Each result asset contains:
 
@@ -76,7 +82,14 @@ Each result asset contains:
 - One optional envelope record combining official envelope rows and reviewed `special:envelope_votes` rows; it uses the same validated party-vote contract but has no map feature.
 - `hiddenGeographyIds`, used both to replace component localities with an active composite and to suppress reviewed no-result 2022 features in the relevant election. For a joined polling register, the compiler aliases the one published host result to the union before hiding its components.
 
-The compiler recomputes winner/share fields from party totals and requires their sum to equal `valid_votes`. Documented exclusions remove all 12 zero-filled columns for lists that did not run between K18 and K24. The trailing K18 `ת. עדכון` source-metadata field is also excluded, separately from the party registry. All exclusions are surfaced in `catalog.json`; undeclared mismatches fail the build.
+Each national result asset contains every published list in vote order, its
+official votes and share, threshold status, final mandate count, color status,
+and Hebrew/English Wikipedia candidates. Election-level fields include valid
+votes, the legal threshold share and minimum vote count, represented-list and
+candidate-list counts, and official source URLs. The compiler requires every
+election's mandates to sum to 120 and rejects threshold/mandate contradictions.
+
+The compiler recomputes winner/share fields from party totals and requires their sum to equal `valid_votes`. Documented exclusions remove all 12 zero-filled columns for lists that did not run between K18 and K24 from both map and national-result payloads. The rows remain in the source registry for auditability, and an undeclared zero-vote registry row fails the build. The trailing K18 `ת. עדכון` source-metadata field is also excluded, separately from the party registry. All exclusions are surfaced in `catalog.json`; undeclared mismatches fail the build.
 
 Stable feature IDs are the join boundary:
 
@@ -88,19 +101,20 @@ Stable feature IDs are the join boundary:
   whole-locality result in statistical mode.
 - `envelope:official` for the separate national envelope result; this ID intentionally has no geometry.
 
-The browser validates every catalog/result payload before rendering it.
+The browser validates every catalog, map-result, and national-result payload
+before rendering it.
 
 ## Party registry
 
 Ballot letters are not stable party identities across elections. `data/manual/party_registry.csv` therefore keys all 309 source columns by election plus source result column and stores the official ballot code, full Hebrew list name, concise display names, national vote total, source provenance, and Hebrew/English Wikipedia URL candidates separately. Published payloads contain 297 actual lists after the 12 documented K18-K24 non-runner exclusions.
 
-The compiler requires exact registry/result-column coverage except for explicitly declared exclusions. It reconciles every published party's registry national total against locality, custom, and envelope output before publishing. Result payloads expose the full Hebrew list name and optional Wikipedia URLs, but link presentation remains a frontend decision.
+The compiler requires exact registry/result-column coverage except for explicitly declared exclusions. It reconciles every published party's registry national total against locality, custom, and envelope output before publishing. Map payloads expose the full Hebrew list name and optional Wikipedia URLs. The national view presents separate Hebrew and English controls and visibly disables missing candidates.
 
-Registry coverage and metadata review are different completion states. Coverage of all 309 source columns and review of the K17-K25 published display names are complete; English presentation falls back to the reviewed Hebrew name where no separate label is maintained. Wikipedia links remain a working snapshot, and populated-link counts must not be presented as proof that every match or every blank has been editorially resolved.
+Registry coverage and metadata review are different completion states. Coverage of all 309 source columns and review of the K17-K25 published display names are complete; English presentation falls back to the reviewed Hebrew name where no separate label is maintained. Wikipedia links remain a working snapshot, and populated-link counts must not be presented as proof that every match or every blank has been editorially resolved. A generated-data regression check requires link-presence continuity when the same reviewed identity appears in multiple elections. Explicit reviewed exceptions cover identical short labels used by different slates, such as `כח להשפיע`; similarly named but distinct lists are not propagated automatically.
 
-Color precedence is election-specific source-column override, then reviewed official-ballot-letter default, then a deterministic fallback keyed only by official ballot letter. This keeps a letter visually stable across elections while allowing explicit exceptions in `config/party-overrides.json`. All K17 lists now have reviewed colors. Later-election reviewed defaults and exceptions cover the previously assigned major parties and selected lists, but that table is not yet complete.
+Color precedence is election-specific source-column override, then reviewed official-ballot-letter default, then a deterministic fallback keyed only by official ballot letter. This keeps a letter visually stable across elections while allowing explicit exceptions in `config/party-overrides.json`. All 297 published K17-K25 lists now have reviewed colors, and recurring identities retain their reviewed color through later elections even when their ballot letters change.
 
-The color mechanism is implemented, but the reviewed color table is not complete. Every other ballot letter currently receives a deterministic placeholder, which is stable UI behavior rather than a final editorial color choice.
+The deterministic placeholder mechanism remains available for future unreviewed additions, but no current K17-K25 published list uses it.
 
 Cross-election lineage is intentionally not inferred. A shared ballot-letter color is a display convention and must not silently force one identity onto distinct lists that reused a letter.
 
@@ -121,6 +135,8 @@ Move to tiles before public launch if any of these remain true after compression
 - CSS uses logical properties so the layout mirrors under RTL.
 - The header and controls remain reachable above the map.
 - Desktop uses floating side panels; mobile uses a full-width stacked control and result rail over the map.
+- The national comparison table reflows into labeled two-column party rows on
+  narrow screens rather than requiring horizontal scrolling.
 - Language, election, and geography preferences are stored in one versioned, minimal local-storage record.
 - Number and percent formatting use `he-IL` or `en-IL`.
 
@@ -132,7 +148,9 @@ Move to tiles before public launch if any of these remain true after compression
   `municipality-fallback` record. The details-panel info icon states that the
   whole-locality result and boundary are display-only; coverage and ballot
   assignments remain unchanged.
-- Mapped coverage is shown for every election and is prominent while it remains partial.
+- Mapped coverage remains available in generated map metadata. The removed
+  map-wide coverage bubble is not treated as assignment evidence; uncertainty
+  is disclosed on affected geographic results.
 - Coverage is mode-specific: locality result-row coverage is complete;
   historical statistical coverage ranges from 93.06% to 95.47% by election.
   The partial-presence locality audit remains open.

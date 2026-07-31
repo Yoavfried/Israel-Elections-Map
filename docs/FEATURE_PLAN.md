@@ -1,6 +1,6 @@
 # Product Feature Plan
 
-Last updated: 2026-07-17
+Last updated: 2026-07-31
 
 This document records the intended design and delivery order for future map
 features. It is not a completion tracker. Actual complete/in-progress state is
@@ -8,20 +8,24 @@ maintained only in `docs/PROJECT_STATUS.md`.
 
 ## Delivery Order
 
-Search may proceed before the remaining data, party-color, and Wikipedia-link
-audits are closed. It uses the published geography catalog and must clearly
-handle areas with no mapped result. Statistical assignment work continues in
-parallel; closing a source gap never means forcing a ballot onto a polygon.
+Search may proceed before the remaining data and Wikipedia-link audits are
+closed. It uses the published geography catalog and must clearly handle areas
+with no mapped result. Statistical assignment work continues in parallel;
+closing a source gap never means forcing a ballot onto a polygon.
 
 Current priority:
 
 1. locality and statistical-area search;
-2. complete the map's party-color assignments;
-3. complete the Wikipedia-link audit;
-4. national results;
-5. single-party map mode;
-6. two-party comparison mode;
-7. satellite, OSM vector, and 3D-building basemaps at the same priority.
+2. complete the Wikipedia-link audit;
+3. single-party map mode;
+4. two-party comparison mode;
+5. satellite, OSM vector, and 3D-building basemaps at the same priority.
+
+The national-results baseline is implemented as a primary top-bar view. It is
+the working audit surface for the remaining Wikipedia-link review and a
+reference for the completed color table. Future analysis modes should use the
+same primary navigation rather than being added to the geographic-level
+selector.
 
 Responsive bilingual UX, accessibility, and regression QA are requirements for
 every item, not a separate planned feature.
@@ -44,11 +48,11 @@ Expected behavior:
 - selecting a result fits its bounds, highlights it, and opens its result panel;
 - no network dependency for locality or statistical-area lookup.
 
-### 2. National Results
+### 2. National Results (Delivered Baseline)
 
-Add an election-level national view alongside the geographic map modes.
+The election-level national view is available alongside the map.
 
-Expected behavior:
+Implemented behavior:
 
 - nationwide votes and valid-vote share for every list;
 - the election's legally applicable electoral threshold and a clear indication
@@ -137,12 +141,11 @@ hosting must remain replaceable configuration.
 
 1. Build and test the local geography search index and accessible combobox.
 2. Complete the color and Wikipedia metadata audits.
-3. Add national result data and the national results view.
-4. Add single-party polygon and circle presentation modes.
-5. Add the two-party comparison mode.
-6. Add a replaceable basemap/source abstraction without changing result IDs.
-7. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
-8. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
+3. Add single-party polygon and circle presentation modes.
+4. Add the two-party comparison mode.
+5. Add a replaceable basemap/source abstraction without changing result IDs.
+6. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
+7. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
    result-click regression tests for every stage.
 
 ## Reference Policies And Capabilities

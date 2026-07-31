@@ -38,34 +38,24 @@ export function DetailsPanel({ language, record, parties }: DetailsPanelProps) {
   const includedNames = record.includedNames?.[language] ?? []
   const includedLabel = `${translate(language, 'includesLocalities')}: ${includedNames.join(', ')}`
   const notice = record.notice?.[language]
-  const informationLabel = [notice, includedNames.length > 0 ? includedLabel : null]
-    .filter(Boolean)
-    .join(' ')
 
   return (
     <aside className="details-panel">
       <div className="details-heading">
-        <div>
-          <p className="eyebrow">
-            {isEnvelope
-              ? translate(language, 'nonGeographicResult')
-              : `${translate(language, 'geographyCode')} ${record.code}`}
-          </p>
-          <div className="details-title-row">
-            <h2>{record.names[language]}</h2>
-            {informationLabel ? (
-              <span
-                className="included-localities-info"
-                tabIndex={0}
-                aria-label={informationLabel}
-              >
-                <Info size={16} strokeWidth={2} aria-hidden="true" />
-                <span className="included-localities-tooltip" role="tooltip">
-                  {informationLabel}
-                </span>
+        <div className="details-title-row">
+          <h2>{isEnvelope ? translate(language, 'envelopeVotes') : record.names[language]}</h2>
+          {includedNames.length > 0 ? (
+            <span
+              className="included-localities-info"
+              tabIndex={0}
+              aria-label={includedLabel}
+            >
+              <Info size={16} strokeWidth={2} aria-hidden="true" />
+              <span className="included-localities-tooltip" role="tooltip">
+                {includedLabel}
               </span>
-            ) : null}
-          </div>
+            </span>
+          ) : null}
         </div>
         <span
           className="party-swatch party-swatch--large"
@@ -74,12 +64,17 @@ export function DetailsPanel({ language, record, parties }: DetailsPanelProps) {
         />
       </div>
 
+      {notice ? (
+        <div className="details-notice" role="note">
+          <Info size={17} strokeWidth={2} aria-hidden="true" />
+          <span>{notice}</span>
+        </div>
+      ) : null}
+
       <div className="winner-card">
         <span>{translate(language, 'winner')}</span>
         <strong>{winner?.names[language] ?? record.winner.partyId}</strong>
-        <span>
-          {formatPercent(record.winner.voteShare, language)} {translate(language, 'voteShare')}
-        </span>
+        <span>{formatPercent(record.winner.voteShare, language)}</span>
       </div>
 
       <dl className={`metric-grid${isEnvelope ? ' metric-grid--envelope' : ''}`}>
