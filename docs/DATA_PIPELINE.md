@@ -266,9 +266,10 @@ npm run check
 npm run dev
 ```
 
-The compiler writes schema-v3 frontend assets under `web/app/public/data/v2/`.
-That browser schema is separate from the public download release's schema-v2
-ballot tables.
+The compiler writes a schema-v5 catalog, schema-v2 map results, and schema-v1
+national-result and election-aware geography-search assets under
+`web/app/public/data/v2/`. Those browser contracts are separate from the public
+download release's schema-v2 ballot tables.
 
 `build_public_outputs.py` also emits a display-only locality aggregate when an
 election/locality has zero supported area assignments. The frontend substitutes

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { ControlPanel } from './components/ControlPanel'
 import { DetailsPanel } from './components/DetailsPanel'
 import { EnvelopeSummary } from './components/EnvelopeSummary'
+import { GeographySearch } from './components/GeographySearch'
 import { LoadingState } from './components/LoadingState'
 import { NationalResultsScreen } from './components/NationalResultsScreen'
 import { PrimaryTabs } from './components/PrimaryTabs'
@@ -9,6 +10,7 @@ import type { AppView } from './components/PrimaryTabs'
 import {
   loadCatalog,
   loadElectionResults,
+  loadGeographySearchIndex,
   loadNationalResults,
   resolveDataUrl,
 } from './data/client'
@@ -16,6 +18,8 @@ import type {
   AppCatalog,
   ElectionResults,
   GeographyMode,
+  GeographySearchIndex,
+  GeographySearchItem,
   Language,
   NationalResults,
 } from './domain/schemas'
@@ -40,8 +44,18 @@ export default function App() {
   const [nationalResultsState, setNationalResultsState] = useState<Loadable<NationalResults>>({
     status: 'loading',
   })
+  const [searchState, setSearchState] = useState<Loadable<GeographySearchIndex>>({
+    status: 'loading',
+  })
   const [activeView, setActiveView] = useState<AppView>('map')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedSearchItem, setSelectedSearchItem] =
+    useState<GeographySearchItem | null>(null)
+  const [focusRequest, setFocusRequest] = useState<{
+    id: string
+    bounds: GeographySearchItem['bounds']
+    requestId: number
+  } | null>(null)
   const { language, electionId, geographyMode } = preferences
 
   useEffect(() => {
@@ -128,6 +142,28 @@ export default function App() {
   }, [activeView, selectedElection])
 
   useEffect(() => {
+    if (!selectedElection || activeView !== 'map') {
+      return
+    }
+    let active = true
+    setSearchState({ status: 'loading' })
+    loadGeographySearchIndex(selectedElection.id, selectedElection.resultUrls.search)
+      .then((searchIndex) => {
+        if (active) {
+          setSearchState({ status: 'ready', data: searchIndex })
+        }
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setSearchState({ status: 'error', message: errorMessage(error) })
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [activeView, selectedElection])
+
+  useEffect(() => {
     document.documentElement.lang = language
     document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr'
     document.title = translate(language, 'appTitle')
@@ -149,6 +185,10 @@ export default function App() {
     [results],
   )
   const selectedRecord = selectedId ? resultsById.get(selectedId) ?? null : null
+  const searchIndex =
+    searchState.status === 'ready' && searchState.data.electionId === electionId
+      ? searchState.data
+      : null
   const nationalResults =
     nationalResultsState.status === 'ready' &&
     nationalResultsState.data.electionId === electionId
@@ -161,10 +201,14 @@ export default function App() {
   }
   const handleElectionChange = (nextElectionId: string) => {
     setSelectedId(null)
+    setSelectedSearchItem(null)
+    setFocusRequest(null)
     updatePreferences({ ...preferences, electionId: nextElectionId })
   }
   const handleGeographyChange = (nextMode: GeographyMode) => {
     setSelectedId(null)
+    setSelectedSearchItem(null)
+    setFocusRequest(null)
     updatePreferences({ ...preferences, geographyMode: nextMode })
   }
   const toggleLanguage = () => {
@@ -173,7 +217,31 @@ export default function App() {
   }
   const handleViewChange = (nextView: AppView) => {
     setSelectedId(null)
+    setSelectedSearchItem(null)
+    setFocusRequest(null)
     setActiveView(nextView)
+  }
+  const clearMapSelection = () => {
+    setSelectedId(null)
+    setSelectedSearchItem(null)
+    setFocusRequest(null)
+  }
+  const handleMapSelect = (id: string | null) => {
+    setSelectedId(id)
+    setSelectedSearchItem(null)
+    setFocusRequest(null)
+  }
+  const handleSearchSelect = (item: GeographySearchItem) => {
+    setSelectedId(item.id)
+    setSelectedSearchItem(item)
+    setFocusRequest((current) => ({
+      id: item.id,
+      bounds: item.bounds,
+      requestId: (current?.requestId ?? 0) + 1,
+    }))
+    if (item.geographyMode !== geographyMode) {
+      updatePreferences({ ...preferences, geographyMode: item.geographyMode })
+    }
   }
 
   if (catalogState.status === 'loading') {
@@ -233,7 +301,8 @@ export default function App() {
                 parties={results.parties}
                 hiddenGeographyIds={results.hiddenGeographyIds}
                 selectedId={selectedId}
-                onSelect={setSelectedId}
+                focusRequest={focusRequest}
+                onSelect={handleMapSelect}
               />
             </Suspense>
           ) : resultsState.status === 'error' ? (
@@ -255,16 +324,32 @@ export default function App() {
               onElectionChange={handleElectionChange}
               onGeographyModeChange={handleGeographyChange}
             />
+            <GeographySearch
+              language={language}
+              electionId={electionId}
+              geographyMode={geographyMode}
+              items={searchIndex?.items ?? []}
+              loading={searchState.status === 'loading'}
+              error={searchState.status === 'error' ? searchState.message : null}
+              selectedItem={selectedSearchItem}
+              onSelect={handleSearchSelect}
+              onClearSelection={clearMapSelection}
+            />
             <EnvelopeSummary
               language={language}
               record={results?.envelope ?? null}
               parties={results?.parties ?? []}
               selected={selectedId === results?.envelope?.id}
-              onSelect={() => setSelectedId(results?.envelope?.id ?? null)}
+              onSelect={() => handleMapSelect(results?.envelope?.id ?? null)}
             />
             <DetailsPanel
               language={language}
               record={selectedRecord}
+              emptySelection={
+                selectedId === selectedSearchItem?.id && !selectedRecord
+                  ? selectedSearchItem
+                  : null
+              }
               parties={results?.parties ?? []}
             />
           </div>

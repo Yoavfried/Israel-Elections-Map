@@ -15,10 +15,10 @@ but open/complete workstream declarations belong here.
 | Historical statistical-area mode | Implemented; reviewed pass ongoing | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty high-confidence row-level continuity links are approved and labeled synthetic. The K21-K25 polling-group policy now publishes 255 exact closed units without notices, 1,962 representative units with notices, and nine broad fallbacks across 4,075 polygon-election memberships. Entirely unassigned localities use a separate display-only map fallback. K17-K20 lack qualifying polling-group evidence, and further host-code anomaly review remains open. |
 | Party/list names | Complete | All published K17-K25 lists have reviewed display names. English labels may fall back to Hebrew where no separate translation is maintained. |
 | Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
-| Wikipedia links | In progress | The repeated-party continuity pass is complete for shared identities. Explicit same-label/different-identity exceptions remain election-specific, such as `כח להשפיע`; remaining missing links and intentional blanks are not fully audited. |
+| Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
 | UX and accessibility | Continuous | Responsive bilingual UX, mobile behavior, keyboard support, and accessibility remain ongoing product requirements. |
 | National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
-| Product features | Planned; search next | Search, single-party mode, two-party comparison, and the equal-priority satellite/OSM/3D suite are recorded in `FEATURE_PLAN.md`. |
+| Product features | Search implemented; single-party next | Election-aware bilingual geography search is implemented. Single-party mode, two-party comparison, and the equal-priority satellite/OSM/3D suite remain in `FEATURE_PLAN.md`. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 102 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Future versioning policy remains open. |
 | Public repository hardening | In progress | Split licensing now keeps the reusable data release and reviewed data tables under MIT while reserving rights in the website and other project materials; third-party notices and public-facing repository hygiene are in place. Fresh-clone source bootstrap, CI, and performance checks are unfinished. |
 
@@ -169,11 +169,10 @@ unallocated-register candidates remain withheld.
 4. Decide whether acceptable detailed display boundaries exist for Rotem,
    Maskiyot, Avnat, and Mavo'ot Yeriho. This is a geometry-quality issue, not an
    assignment gap.
-5. Complete the Wikipedia-link audit. Party/list names and colors are complete.
-6. Continue UX work and implement the remaining feature order in
+5. Continue UX work and implement the remaining feature order in
    `FEATURE_PLAN.md`; the national-results baseline is complete.
-7. Add reproducible fresh-clone source bootstrap and CI checks.
-8. Treat the supplied Kaplan layers as exhausted locality/neighborhood
+6. Add reproducible fresh-clone source bootstrap and CI checks.
+7. Treat the supplied Kaplan layers as exhausted locality/neighborhood
    aggregates. Reopen recurring crosswalk omissions only if the internal CBS
    `kalpi_artzi` layer, another detailed official crosswalk, or independently
    reconcilable ballot-register evidence becomes available.

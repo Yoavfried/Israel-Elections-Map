@@ -848,6 +848,123 @@ export function buildResultPayload({
   }
 }
 
+export function buildGeographySearchIndex({ electionId, modes }) {
+  if (!/^K\d+$/.test(electionId)) {
+    throw new Error(`Invalid search-index election ID: ${electionId}`)
+  }
+  if (!Array.isArray(modes) || modes.length === 0) {
+    throw new Error(`${electionId} search index has no geography modes`)
+  }
+
+  const items = []
+  for (const { geographyMode, geography, results } of modes) {
+    assertFeatureCollection(geography, `${electionId} ${geographyMode} search geography`)
+    if (results?.electionId !== electionId || results?.geographyMode !== geographyMode) {
+      throw new Error(`${electionId} ${geographyMode} search results do not match the index`)
+    }
+
+    const hiddenIds = new Set(results.hiddenGeographyIds)
+    const recordsById = new Map(results.records.map((record) => [record.id, record]))
+    const featuresById = new Map(
+      geography.features.map((feature) => [String(feature.id ?? feature.properties?.id ?? ''), feature]),
+    )
+
+    for (const feature of geography.features) {
+      const properties = feature.properties ?? {}
+      const id = String(feature.id ?? properties.id ?? '').trim()
+      if (!id || hiddenIds.has(id)) {
+        continue
+      }
+      const activeElections = Array.isArray(properties.activeElections)
+        ? properties.activeElections
+        : []
+      if (activeElections.length > 0 && !activeElections.includes(electionId)) {
+        continue
+      }
+
+      const record = recordsById.get(id)
+      const isBaseGeography =
+        (geographyMode === 'locality' && properties.geographyType === 'locality') ||
+        (geographyMode === 'statistical-area' &&
+          properties.geographyType === 'statistical-area')
+      if (!record && !isBaseGeography) {
+        continue
+      }
+
+      const names = record?.names ?? searchNamesForFeature(properties, geographyMode)
+      if (!names.he || !names.en) {
+        throw new Error(`${electionId} search feature ${id} has incomplete names`)
+      }
+      const aliases = { he: new Set(), en: new Set() }
+      addSearchAlias(aliases.he, properties.nameHe, names.he)
+      addSearchAlias(aliases.en, properties.nameEn, names.en)
+      for (const language of ['he', 'en']) {
+        for (const alias of properties.includedNames?.[language] ?? []) {
+          addSearchAlias(aliases[language], alias, names[language])
+        }
+        for (const alias of record?.includedNames?.[language] ?? []) {
+          addSearchAlias(aliases[language], alias, names[language])
+        }
+      }
+      for (const componentId of properties.componentLocalityIds ?? []) {
+        const component = featuresById.get(String(componentId))
+        addSearchAlias(aliases.he, component?.properties?.nameHe, names.he)
+        addSearchAlias(aliases.en, component?.properties?.nameEn, names.en)
+      }
+
+      const rawCode = String(
+        record?.code ??
+          (geographyMode === 'statistical-area'
+            ? id.split(':').at(-1)
+            : properties.localityCode ?? ''),
+      ).trim()
+      items.push({
+        id,
+        geographyMode,
+        names,
+        aliases: {
+          he: [...aliases.he].toSorted(),
+          en: [...aliases.en].toSorted(),
+        },
+        code: rawCode.includes(':') ? '' : rawCode,
+        hasResults: Boolean(record),
+        bounds: geometryBounds(feature.geometry),
+      })
+    }
+  }
+
+  return {
+    schemaVersion: 1,
+    electionId,
+    items: items.toSorted(
+      (left, right) =>
+        left.geographyMode.localeCompare(right.geographyMode) ||
+        left.names.en.localeCompare(right.names.en) ||
+        left.id.localeCompare(right.id),
+    ),
+  }
+}
+
+function searchNamesForFeature(properties, geographyMode) {
+  const nameHe = String(properties.nameHe ?? '').trim()
+  const nameEn = String(properties.nameEn ?? '').trim()
+  if (geographyMode !== 'statistical-area') {
+    return { he: nameHe, en: nameEn || nameHe }
+  }
+  const areaNumber = String(properties.statAreaNumber ?? '').trim()
+  return {
+    he: areaNumber ? `${nameHe} · ${areaNumber}` : nameHe,
+    en: areaNumber ? `${nameEn || nameHe} · ${areaNumber}` : nameEn || nameHe,
+  }
+}
+
+function addSearchAlias(target, value, primaryName) {
+  const alias = String(value ?? '').trim()
+  if (alias && alias !== primaryName) {
+    target.add(alias)
+  }
+}
+
 export function applyStatisticalDisplayGroups({
   electionId,
   primaryRows,
@@ -1158,7 +1275,7 @@ function findDuplicateIds(records) {
   return [...duplicates]
 }
 
-function geometryBoundsCenter(geometry) {
+export function geometryBounds(geometry) {
   const bounds = {
     minX: Number.POSITIVE_INFINITY,
     minY: Number.POSITIVE_INFINITY,
@@ -1186,13 +1303,29 @@ function geometryBoundsCenter(geometry) {
     }
   }
 
-  visit(geometry?.coordinates)
+  if (geometry?.type === 'GeometryCollection') {
+    for (const child of geometry.geometries ?? []) {
+      const [[minX, minY], [maxX, maxY]] = geometryBounds(child)
+      visit([minX, minY])
+      visit([maxX, maxY])
+    }
+  } else {
+    visit(geometry?.coordinates)
+  }
   if (![bounds.minX, bounds.minY, bounds.maxX, bounds.maxY].every(Number.isFinite)) {
-    throw new Error('Display marker geometry has no coordinates')
+    throw new Error('Geometry has no coordinates')
   }
   return [
-    Number(((bounds.minX + bounds.maxX) / 2).toFixed(6)),
-    Number(((bounds.minY + bounds.maxY) / 2).toFixed(6)),
+    [Number(bounds.minX.toFixed(6)), Number(bounds.minY.toFixed(6))],
+    [Number(bounds.maxX.toFixed(6)), Number(bounds.maxY.toFixed(6))],
+  ]
+}
+
+function geometryBoundsCenter(geometry) {
+  const [[minX, minY], [maxX, maxY]] = geometryBounds(geometry)
+  return [
+    Number(((minX + maxX) / 2).toFixed(6)),
+    Number(((minY + maxY) / 2).toFixed(6)),
   ]
 }
 

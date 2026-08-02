@@ -8,44 +8,42 @@ maintained only in `docs/PROJECT_STATUS.md`.
 
 ## Delivery Order
 
-Search may proceed before the remaining data and Wikipedia-link audits are
-closed. It uses the published geography catalog and must clearly handle areas
-with no mapped result. Statistical assignment work continues in parallel;
-closing a source gap never means forcing a ballot onto a polygon.
+Search and the Wikipedia-link audit are complete. Statistical assignment work
+continues in parallel; closing a source gap never means forcing a ballot onto a
+polygon.
 
 Current priority:
 
-1. locality and statistical-area search;
-2. complete the Wikipedia-link audit;
-3. single-party map mode;
-4. two-party comparison mode;
-5. satellite, OSM vector, and 3D-building basemaps at the same priority.
+1. single-party map mode;
+2. two-party comparison mode;
+3. satellite, OSM vector, and 3D-building basemaps at the same priority.
 
-The national-results baseline is implemented as a primary top-bar view. It is
-the working audit surface for the remaining Wikipedia-link review and a
-reference for the completed color table. Future analysis modes should use the
-same primary navigation rather than being added to the geographic-level
-selector.
+The national-results baseline is implemented as a primary top-bar view and
+remains the reference surface for the completed party-name, color, and
+Wikipedia-link tables. Future analysis modes should use the same primary
+navigation rather than being added to the geographic-level selector.
 
 Responsive bilingual UX, accessibility, and regression QA are requirements for
 every item, not a separate planned feature.
 
 ## Planned Features
 
-### 1. Locality And Statistical-Area Search
+### 1. Locality And Statistical-Area Search (Delivered Baseline)
 
-Build an offline, election-aware search index from the map's own geography
-catalog. Index Hebrew and English names, locality/statistical-area codes,
-historical names, and reviewed aliases.
+The compiler now builds an offline, election-aware search index from the map's
+own visible geography. It indexes Hebrew and English names,
+locality/statistical-area codes, historical names, and reviewed aliases.
 
-Expected behavior:
+Implemented behavior:
 
 - accessible combobox with keyboard navigation and autocomplete;
 - exact-code and exact-name results first, then prefix and tolerant normalized
   matches;
-- results restricted or clearly labeled by the selected election and geography
-  mode;
+- results are restricted to the selected election and label their geography
+  mode; choosing a result in the other mode switches the map automatically;
 - selecting a result fits its bounds, highlights it, and opens its result panel;
+- visible polygons without mapped results remain searchable and open an explicit
+  no-result state;
 - no network dependency for locality or statistical-area lookup.
 
 ### 2. National Results (Delivered Baseline)
@@ -139,13 +137,11 @@ hosting must remain replaceable configuration.
 
 ## Technical Sequence
 
-1. Build and test the local geography search index and accessible combobox.
-2. Complete the color and Wikipedia metadata audits.
-3. Add single-party polygon and circle presentation modes.
-4. Add the two-party comparison mode.
-5. Add a replaceable basemap/source abstraction without changing result IDs.
-6. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
-7. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
+1. Add single-party polygon and circle presentation modes.
+2. Add the two-party comparison mode.
+3. Add a replaceable basemap/source abstraction without changing result IDs.
+4. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
+5. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
    result-click regression tests for every stage.
 
 ## Reference Policies And Capabilities

@@ -4,6 +4,7 @@ import {
   aliasJoinedCompositeResults,
   buildCompositeMetadataIndex,
   buildDisplayMarkers,
+  buildGeographySearchIndex,
   buildHiddenLocalityIds,
   buildMunicipalityFallbackDisplay,
   buildNationalResultsPayload,
@@ -753,6 +754,138 @@ describe('web data compiler', () => {
   it('keeps fallback party colors deterministic by ballot letter', () => {
     expect(stablePartyColor('אמת')).toBe(stablePartyColor('אמת'))
     expect(stablePartyColor('אמת')).not.toBe(stablePartyColor('מחל'))
+  })
+
+  it('builds an election-aware search index with aliases and empty visible areas', () => {
+    const square = (offset) => ({
+      type: 'Polygon',
+      coordinates: [
+        [
+          [offset, 0],
+          [offset + 1, 0],
+          [offset + 1, 1],
+          [offset, 1],
+          [offset, 0],
+        ],
+      ],
+    })
+    const geography = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          id: 'loc:1',
+          properties: {
+            id: 'loc:1',
+            geographyType: 'locality',
+            localityCode: '1',
+            nameHe: 'First',
+            nameEn: 'First',
+          },
+          geometry: square(0),
+        },
+        {
+          type: 'Feature',
+          id: 'loc:2',
+          properties: {
+            id: 'loc:2',
+            geographyType: 'locality',
+            localityCode: '2',
+            nameHe: 'Second',
+            nameEn: 'Second',
+          },
+          geometry: square(1),
+        },
+        {
+          type: 'Feature',
+          id: 'loc:3',
+          properties: {
+            id: 'loc:3',
+            geographyType: 'locality',
+            localityCode: '3',
+            nameHe: 'Empty place',
+            nameEn: 'Empty place',
+          },
+          geometry: square(2),
+        },
+        {
+          type: 'Feature',
+          id: 'composite:old',
+          properties: {
+            id: 'composite:old',
+            geographyType: 'locality',
+            isComposite: true,
+            activeElections: ['K17'],
+            componentLocalityIds: ['loc:1', 'loc:2'],
+            nameHe: 'Old municipality',
+            nameEn: 'Old municipality',
+          },
+          geometry: square(3),
+        },
+        {
+          type: 'Feature',
+          id: 'custom:bucket',
+          properties: {
+            id: 'custom:bucket',
+            geographyType: 'custom',
+            nameHe: 'Bucket',
+            nameEn: 'Bucket',
+          },
+          geometry: square(4),
+        },
+        {
+          type: 'Feature',
+          id: 'custom:unused',
+          properties: {
+            id: 'custom:unused',
+            geographyType: 'custom',
+            nameHe: 'Unused',
+            nameEn: 'Unused',
+          },
+          geometry: square(5),
+        },
+      ],
+    }
+    const results = {
+      electionId: 'K17',
+      geographyMode: 'locality',
+      hiddenGeographyIds: ['loc:1', 'loc:2'],
+      records: [
+        {
+          id: 'composite:old',
+          names: { he: 'Old municipality', en: 'Old municipality' },
+          code: 'old',
+        },
+        {
+          id: 'custom:bucket',
+          names: { he: 'Bucket', en: 'Bucket' },
+          code: 'custom:bucket',
+        },
+      ],
+    }
+
+    const index = buildGeographySearchIndex({
+      electionId: 'K17',
+      modes: [{ geographyMode: 'locality', geography, results }],
+    })
+
+    expect(index.items.map((item) => item.id).toSorted()).toEqual([
+      'composite:old',
+      'custom:bucket',
+      'loc:3',
+    ])
+    expect(index.items.find((item) => item.id === 'composite:old')).toMatchObject({
+      aliases: { he: ['First', 'Second'], en: ['First', 'Second'] },
+      hasResults: true,
+      bounds: [
+        [3, 0],
+        [4, 1],
+      ],
+    })
+    expect(index.items.find((item) => item.id === 'loc:3')).toMatchObject({
+      code: '3',
+      hasResults: false,
+    })
   })
 
   it('excludes declared source metadata and recomputes the winner', () => {

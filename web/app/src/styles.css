@@ -66,6 +66,7 @@ select:focus-visible {
     .language-toggle,
     .primary-tabs,
     .field,
+    .geography-search,
     .envelope-summary,
     .details-panel,
     .national-results-screen,
@@ -592,6 +593,7 @@ select:focus-visible {
 }
 
 .control-panel,
+.geography-search,
 .envelope-summary,
 .details-panel {
   border: 1px solid rgba(23, 26, 23, 0.11);
@@ -606,6 +608,145 @@ select:focus-visible {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 12px;
+}
+
+.geography-search {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+}
+
+.geography-search > label {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.geography-search__input-wrap {
+  position: relative;
+}
+
+.geography-search__input-wrap input {
+  inline-size: 100%;
+  block-size: 42px;
+  padding-inline: 38px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.78);
+  outline: none;
+}
+
+.geography-search__input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(28, 100, 87, 0.14);
+}
+
+.geography-search__input-wrap input:disabled {
+  color: var(--muted);
+  cursor: wait;
+}
+
+.geography-search__input-wrap input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.geography-search__icon {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 50%;
+  inset-inline-start: 12px;
+  color: var(--muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.geography-search__clear {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 6px;
+  display: grid;
+  place-items: center;
+  inline-size: 30px;
+  block-size: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.geography-search__clear:hover {
+  color: var(--ink);
+  background: rgba(23, 26, 23, 0.07);
+}
+
+.geography-search__popover {
+  position: absolute;
+  z-index: 30;
+  inset-block-start: calc(100% + 6px);
+  inset-inline: 0;
+  max-block-size: min(360px, 46dvh);
+  overflow-y: auto;
+  border: 1px solid rgba(23, 26, 23, 0.16);
+  border-radius: 8px;
+  background: var(--paper-solid);
+  box-shadow: 0 16px 36px rgba(35, 36, 31, 0.2);
+}
+
+.geography-search__popover ul {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+
+.geography-search__popover li + li {
+  border-block-start: 1px solid var(--line);
+}
+
+.geography-search__popover li > button {
+  display: grid;
+  gap: 4px;
+  inline-size: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.geography-search__popover li > button:hover,
+.geography-search__popover li > button.is-active {
+  background: rgba(28, 100, 87, 0.09);
+}
+
+.geography-search__result-name {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.geography-search__result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+}
+
+.geography-search__no-data {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.geography-search__message {
+  margin: 0;
+  padding: 14px;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .field {
@@ -700,7 +841,7 @@ select:focus-visible {
   flex-direction: column;
   overflow: visible;
   inline-size: 100%;
-  max-block-size: min(580px, max(220px, calc(100dvh - 390px)));
+  max-block-size: min(580px, max(180px, calc(100dvh - 470px)));
   padding: 18px;
 }
 
@@ -1101,6 +1242,11 @@ select:focus-visible {
   }
 
   .control-panel {
+    padding: 9px;
+    border-radius: 15px;
+  }
+
+  .geography-search {
     padding: 9px;
     border-radius: 15px;
   }

@@ -33,6 +33,7 @@ describe('ControlPanel', () => {
               'statistical-area': 'stat.json',
               locality: 'locality.json',
               national: 'national.json',
+              search: 'search.json',
             },
             geographiesByMode: {
               'statistical-area': {

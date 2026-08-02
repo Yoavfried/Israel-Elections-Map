@@ -8,6 +8,11 @@ export const LocalizedTextSchema = z.object({
   he: z.string().min(1),
 })
 
+const GeographyBoundsSchema = z.tuple([
+  z.tuple([z.number(), z.number()]),
+  z.tuple([z.number(), z.number()]),
+])
+
 export const CoverageSchema = z.object({
   totalRows: z.number().nonnegative(),
   totalActualVoters: z.number().nonnegative(),
@@ -54,6 +59,7 @@ const ElectionCatalogSchema = z.object({
     'statistical-area': z.string().min(1),
     locality: z.string().min(1),
     national: z.string().min(1),
+    search: z.string().min(1),
   }),
   geographiesByMode: z.object({
     'statistical-area': GeographyAssetSchema,
@@ -62,7 +68,7 @@ const ElectionCatalogSchema = z.object({
 })
 
 export const AppCatalogSchema = z.object({
-  schemaVersion: z.literal(4),
+  schemaVersion: z.literal(5),
   buildId: z.string().min(8),
   generatedAt: z.string().datetime(),
   source: z.object({
@@ -78,10 +84,7 @@ export const AppCatalogSchema = z.object({
       }),
     ),
   }),
-  bounds: z.tuple([
-    z.tuple([z.number(), z.number()]),
-    z.tuple([z.number(), z.number()]),
-  ]),
+  bounds: GeographyBoundsSchema,
   partyColorPolicy: z.object({
     status: z.string().min(1),
     description: z.string().min(1),
@@ -153,6 +156,25 @@ export const ElectionResultsSchema = z.object({
   hiddenGeographyIds: z.array(z.string().min(1)),
 })
 
+const GeographySearchItemSchema = z.object({
+  id: z.string().min(1),
+  geographyMode: GeographyModeSchema,
+  names: LocalizedTextSchema,
+  aliases: z.object({
+    en: z.array(z.string().min(1)),
+    he: z.array(z.string().min(1)),
+  }),
+  code: z.string(),
+  hasResults: z.boolean(),
+  bounds: GeographyBoundsSchema,
+})
+
+export const GeographySearchIndexSchema = z.object({
+  schemaVersion: z.literal(1),
+  electionId: z.string().regex(/^K\d+$/),
+  items: z.array(GeographySearchItemSchema),
+})
+
 const NationalPartySchema = PartySchema.extend({
   votes: z.number().int().nonnegative(),
   voteShare: z.number().min(0).max(1),
@@ -191,5 +213,8 @@ export type GeographyModeCatalog = AppCatalog['geographyModes'][number]
 export type ElectionResults = z.infer<typeof ElectionResultsSchema>
 export type ResultRecord = ElectionResults['records'][number]
 export type Party = ElectionResults['parties'][number]
+export type GeographyBounds = z.infer<typeof GeographyBoundsSchema>
+export type GeographySearchIndex = z.infer<typeof GeographySearchIndexSchema>
+export type GeographySearchItem = GeographySearchIndex['items'][number]
 export type NationalResults = z.infer<typeof NationalResultsSchema>
 export type NationalParty = NationalResults['parties'][number]

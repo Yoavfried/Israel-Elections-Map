@@ -8,6 +8,7 @@ import {
   buildCompositeMetadataIndex,
   buildCustomMetadataIndex,
   buildDisplayMarkers,
+  buildGeographySearchIndex,
   buildHiddenLocalityIds,
   buildMetadataIndex,
   buildMunicipalityFallbackDisplay,
@@ -469,16 +470,33 @@ async function main() {
         partyOverrides: overrides,
         excludedPartyColumns,
       })
+      const searchPayload = buildGeographySearchIndex({
+        electionId: election.id,
+        modes: [
+          {
+            geographyMode: 'statistical-area',
+            geography: prunedStatisticalAreasByVintage.get(statisticalAreaVintage),
+            results: statisticalPayload,
+          },
+          {
+            geographyMode: 'locality',
+            geography: prunedLocalities,
+            results: localityPayload,
+          },
+        ],
+      })
 
       const resultUrls = {
         'statistical-area': `results/${electionSlug}/statistical-areas.json`,
         locality: `results/${electionSlug}/localities.json`,
         national: `results/${electionSlug}/national.json`,
+        search: `results/${electionSlug}/search.json`,
       }
       await Promise.all([
         writeJsonAsset(resultUrls['statistical-area'], statisticalPayload),
         writeJsonAsset(resultUrls.locality, localityPayload),
         writeJsonAsset(resultUrls.national, nationalPayload),
+        writeJsonAsset(resultUrls.search, searchPayload),
       ])
 
       catalogElections.push({
@@ -503,7 +521,7 @@ async function main() {
       throw new Error('Missing current 2022 statistical-area geography asset')
     }
     const catalog = {
-      schemaVersion: 4,
+      schemaVersion: 5,
       buildId,
       generatedAt: new Date().toISOString(),
       source: {

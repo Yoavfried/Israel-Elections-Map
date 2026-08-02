@@ -4,6 +4,10 @@ Bilingual web application and reproducible data pipeline for exploring K17-K25
 Knesset election results nationally, by locality, and by
 election-appropriate statistical area.
 
+The map includes offline election-aware search across Hebrew and English
+locality names, statistical areas, historical names, reviewed aliases, and
+geography codes.
+
 The repository contains a Python data pipeline, a React/TypeScript/MapLibre
 client, and a committed public-data release. Statistical results use direct CBS
 ballot-to-area evidence where available, additional official AGS and

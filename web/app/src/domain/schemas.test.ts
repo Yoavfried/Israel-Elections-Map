@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { AppCatalogSchema, ElectionResultsSchema, NationalResultsSchema } from './schemas'
+import {
+  AppCatalogSchema,
+  ElectionResultsSchema,
+  GeographySearchIndexSchema,
+  NationalResultsSchema,
+} from './schemas'
 
 const coverage = {
   totalRows: 100,
@@ -16,7 +21,7 @@ const coverage = {
 describe('web data contracts', () => {
   it('accepts a versioned catalog', () => {
     const catalog = AppCatalogSchema.parse({
-      schemaVersion: 4,
+      schemaVersion: 5,
       buildId: '12345678abcdef00',
       generatedAt: '2026-07-14T10:00:00.000Z',
       source: {
@@ -66,6 +71,7 @@ describe('web data contracts', () => {
             'statistical-area': 'results/k25/statistical-areas.json',
             locality: 'results/k25/localities.json',
             national: 'results/k25/national.json',
+            search: 'results/k25/search.json',
           },
           geographiesByMode: {
             'statistical-area': {
@@ -104,6 +110,29 @@ describe('web data contracts', () => {
     })
 
     expect(result.success).toBe(false)
+  })
+
+  it('accepts a bounded bilingual geography search index', () => {
+    const searchIndex = GeographySearchIndexSchema.parse({
+      schemaVersion: 1,
+      electionId: 'K25',
+      items: [
+        {
+          id: 'stat2011:30001024',
+          geographyMode: 'statistical-area',
+          names: { en: 'Jerusalem · 1024', he: 'ירושלים · 1024' },
+          aliases: { en: ['Jerusalem'], he: ['ירושלים'] },
+          code: '1024',
+          hasResults: true,
+          bounds: [
+            [35.2, 31.7],
+            [35.3, 31.8],
+          ],
+        },
+      ],
+    })
+
+    expect(searchIndex.items[0].bounds[1][0]).toBe(35.3)
   })
 
   it('accepts a documented display-only municipality result', () => {

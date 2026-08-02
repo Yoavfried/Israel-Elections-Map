@@ -120,6 +120,34 @@ describe('DetailsPanel', () => {
     expect(html).not.toContain('<dt>Turnout</dt><dd>0.0%</dd>')
   })
 
+  it('explains a searchable polygon that has no mapped result', () => {
+    const html = renderToStaticMarkup(
+      <DetailsPanel
+        language="en"
+        record={null}
+        emptySelection={{
+          id: 'stat2011:30001001',
+          geographyMode: 'statistical-area',
+          names: { en: 'Jerusalem · 1001', he: 'Jerusalem · 1001' },
+          aliases: { en: [], he: [] },
+          code: '1001',
+          hasResults: false,
+          bounds: [
+            [35.2, 31.7],
+            [35.21, 31.71],
+          ],
+        }}
+        parties={parties}
+      />,
+    )
+
+    expect(html).toContain('<h2>Jerusalem · 1001</h2>')
+    expect(html).toContain(
+      'No mapped result is available for this geography in the selected election.',
+    )
+    expect(html).not.toContain('Select an area')
+  })
+
   it('omits invalid votes and turnout from envelope details', () => {
     const envelopeRecord: ResultRecord = {
       ...record,

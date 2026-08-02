@@ -1,11 +1,13 @@
 import {
   AppCatalogSchema,
   ElectionResultsSchema,
+  GeographySearchIndexSchema,
   NationalResultsSchema,
 } from '../domain/schemas'
 import type {
   AppCatalog,
   ElectionResults,
+  GeographySearchIndex,
   GeographyMode,
   NationalResults,
 } from '../domain/schemas'
@@ -16,6 +18,7 @@ const catalogUrl = `${DATA_ROOT}catalog.json`
 let catalogRequest: Promise<AppCatalog> | undefined
 const resultsRequests = new Map<string, Promise<ElectionResults>>()
 const nationalResultsRequests = new Map<string, Promise<NationalResults>>()
+const geographySearchRequests = new Map<string, Promise<GeographySearchIndex>>()
 
 export function loadCatalog(): Promise<AppCatalog> {
   catalogRequest ??= fetchJson(catalogUrl).then((value) => AppCatalogSchema.parse(value))
@@ -63,6 +66,27 @@ export function loadNationalResults(
       return results
     })
   nationalResultsRequests.set(relativeUrl, request)
+  return request
+}
+
+export function loadGeographySearchIndex(
+  electionId: string,
+  relativeUrl: string,
+): Promise<GeographySearchIndex> {
+  const existing = geographySearchRequests.get(relativeUrl)
+  if (existing) {
+    return existing
+  }
+
+  const request = fetchJson(resolveDataUrl(relativeUrl))
+    .then((value) => GeographySearchIndexSchema.parse(value))
+    .then((searchIndex) => {
+      if (searchIndex.electionId !== electionId) {
+        throw new Error(`Search-index identity does not match ${electionId}`)
+      }
+      return searchIndex
+    })
+  geographySearchRequests.set(relativeUrl, request)
   return request
 }
 

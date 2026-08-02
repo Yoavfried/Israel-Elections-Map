@@ -13,7 +13,13 @@ import {
   buildResultPolygonVisibilityFilter,
   mayHaveDisplayMarker,
 } from '../domain/mapPresentation'
-import type { GeographyMode, Language, Party, ResultRecord } from '../domain/schemas'
+import type {
+  GeographyBounds,
+  GeographyMode,
+  Language,
+  Party,
+  ResultRecord,
+} from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
 const SOURCE_ID = 'election-geographies'
@@ -41,6 +47,11 @@ interface MapCanvasProps {
   parties: Party[]
   hiddenGeographyIds: string[]
   selectedId: string | null
+  focusRequest: {
+    id: string
+    bounds: GeographyBounds
+    requestId: number
+  } | null
   onSelect: (id: string | null) => void
 }
 
@@ -67,6 +78,7 @@ export default function MapCanvas({
   parties,
   hiddenGeographyIds,
   selectedId,
+  focusRequest,
   onSelect,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -194,8 +206,12 @@ export default function MapCanvas({
       filter: backgroundPolygonVisibilityFilter,
       paint: {
         'fill-color': UNMAPPED_GEOGRAPHY_COLOR,
-        'fill-opacity':
+        'fill-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'selected'], false],
+          geographyMode === 'statistical-area' ? 0.78 : 0.42,
           geographyMode === 'statistical-area' ? UNMAPPED_AREA_FILL_OPACITY : 0,
+        ],
       },
     }
     const backgroundLineLayer: LineLayerSpecification = {
@@ -204,23 +220,33 @@ export default function MapCanvas({
       type: 'line',
       filter: backgroundPolygonVisibilityFilter,
       paint: {
-        'line-color': GEOGRAPHY_BORDER_COLOR,
+        'line-color': [
+          'case',
+          ['boolean', ['feature-state', 'selected'], false],
+          '#151815',
+          GEOGRAPHY_BORDER_COLOR,
+        ],
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
           5.4,
-          0.15,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1, 0.15],
           7,
-          0.25,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1.2, 0.25],
           9,
-          0.5,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 1.5, 0.5],
           11,
-          0.75,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 2, 0.75],
           13,
-          1,
+          ['case', ['boolean', ['feature-state', 'selected'], false], 2.5, 1],
         ],
-        'line-opacity': geographyMode === 'statistical-area' ? 1 : 0,
+        'line-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'selected'], false],
+          1,
+          geographyMode === 'statistical-area' ? 1 : 0,
+        ],
       },
     }
     const fillLayer: FillLayerSpecification = {
@@ -405,6 +431,12 @@ export default function MapCanvas({
           map.setFeatureState({ source: MARKER_SOURCE_ID, id: record.id }, state)
         }
       }
+      if (selectedId && !recordsById.has(selectedId)) {
+        map.setFeatureState(
+          { source: SOURCE_ID, id: selectedId },
+          { hasData: false, selected: true },
+        )
+      }
     }
     const handleSourceData = (event: maplibregl.MapSourceDataEvent) => {
       if (
@@ -421,6 +453,24 @@ export default function MapCanvas({
       map.off('sourcedata', handleSourceData)
     }
   }, [geometryUrl, hiddenGeographyIds, mapReady, markerGeometryUrl, partyById, records, selectedId])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady || !focusRequest || !map.getSource(SOURCE_ID)) {
+      return
+    }
+
+    const containerWidth = containerRef.current?.clientWidth ?? 0
+    const wideLayout = containerWidth >= 800
+    map.resize()
+    map.fitBounds(focusRequest.bounds, {
+      padding: wideLayout
+        ? { top: 68, right: 56, bottom: 68, left: Math.min(540, containerWidth * 0.42) }
+        : { top: 250, right: 28, bottom: 52, left: 28 },
+      duration: 550,
+      maxZoom: geographyMode === 'statistical-area' ? 13 : 11,
+    })
+  }, [focusRequest, geographyMode, geometryUrl, mapReady])
 
   if (mapError) {
     return (

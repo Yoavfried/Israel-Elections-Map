@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import {
   AppCatalogSchema,
   ElectionResultsSchema,
+  GeographySearchIndexSchema,
   NationalResultsSchema,
 } from './schemas'
 
@@ -24,6 +25,53 @@ describe('generated web data', () => {
 
     expect(catalog.elections).toHaveLength(9)
     expect(catalog.buildId).toHaveLength(16)
+  })
+
+  it('publishes an election-aware search index for every visible geography', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    let emptyVisibleGeographies = 0
+
+    for (const election of catalog.elections) {
+      const searchIndex = GeographySearchIndexSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls.search)),
+      )
+      expect(searchIndex.electionId).toBe(election.id)
+      expect(catalog.assets.some((asset) => asset.path === election.resultUrls.search)).toBe(true)
+      expect(new Set(searchIndex.items.map((item) => `${item.geographyMode}:${item.id}`)).size)
+        .toBe(searchIndex.items.length)
+
+      for (const item of searchIndex.items) {
+        expect(item.bounds[0][0], `${election.id}/${item.id}/west`).toBeLessThanOrEqual(
+          item.bounds[1][0],
+        )
+        expect(item.bounds[0][1], `${election.id}/${item.id}/south`).toBeLessThanOrEqual(
+          item.bounds[1][1],
+        )
+        if (!item.hasResults) {
+          emptyVisibleGeographies += 1
+        }
+      }
+
+      for (const mode of ['statistical-area', 'locality'] as const) {
+        const payload = ElectionResultsSchema.parse(
+          await readJson(resolve(dataRoot, election.resultUrls[mode])),
+        )
+        const searchItems = new Map(
+          searchIndex.items
+            .filter((item) => item.geographyMode === mode)
+            .map((item) => [item.id, item]),
+        )
+        for (const hiddenId of payload.hiddenGeographyIds) {
+          expect(searchItems.has(hiddenId), `${election.id}/${mode}/${hiddenId}`).toBe(false)
+        }
+        for (const record of payload.records) {
+          expect(searchItems.get(record.id)?.hasResults, `${election.id}/${mode}/${record.id}`)
+            .toBe(true)
+        }
+      }
+    }
+
+    expect(emptyVisibleGeographies).toBeGreaterThan(0)
   })
 
   it('publishes complete national results with thresholds and exactly 120 mandates', async () => {

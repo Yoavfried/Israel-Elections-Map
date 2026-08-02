@@ -58,8 +58,13 @@ separately from the downloadable public-data release.
 The national-results view publishes every positive-vote list for the selected election,
 including official votes, vote share, the applicable threshold, final
 mandates, color-review state, and separate Hebrew/English Wikipedia controls.
-Missing article links remain visibly disabled so the screen can be used for the
-ongoing metadata audit.
+Missing article links remain visibly disabled where the completed review found
+no appropriate article.
+
+The map includes an offline, election-aware bilingual search across localities,
+statistical areas, historical names, reviewed aliases, and geography codes.
+Selecting a match changes geography mode when needed, fits and highlights its
+geometry, and opens either its result or an explicit no-result state.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data contract and
 [`../../docs/PROJECT_STATUS.md`](../../docs/PROJECT_STATUS.md) for the sole

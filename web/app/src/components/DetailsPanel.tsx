@@ -1,17 +1,40 @@
 import { useMemo } from 'react'
 import { Info } from 'lucide-react'
 import { formatNumber, formatPercent } from '../domain/format'
-import type { Language, Party, ResultRecord } from '../domain/schemas'
+import type {
+  GeographySearchItem,
+  Language,
+  Party,
+  ResultRecord,
+} from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
 interface DetailsPanelProps {
   language: Language
   record: ResultRecord | null
+  emptySelection?: GeographySearchItem | null
   parties: Party[]
 }
 
-export function DetailsPanel({ language, record, parties }: DetailsPanelProps) {
+export function DetailsPanel({
+  language,
+  record,
+  emptySelection = null,
+  parties,
+}: DetailsPanelProps) {
   const partyById = useMemo(() => new Map(parties.map((party) => [party.id, party])), [parties])
+
+  if (!record && emptySelection) {
+    return (
+      <aside className="details-panel details-panel--empty details-panel--no-result">
+        <span className="selection-marker" aria-hidden="true" />
+        <div>
+          <h2>{emptySelection.names[language]}</h2>
+          <p>{translate(language, 'noMappedResult')}</p>
+        </div>
+      </aside>
+    )
+  }
 
   if (!record) {
     return (
