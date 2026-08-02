@@ -14,6 +14,7 @@ interface DetailsPanelProps {
   record: ResultRecord | null
   emptySelection?: GeographySearchItem | null
   parties: Party[]
+  highlightedPartyIds?: string[]
 }
 
 export function DetailsPanel({
@@ -21,8 +22,13 @@ export function DetailsPanel({
   record,
   emptySelection = null,
   parties,
+  highlightedPartyIds = [],
 }: DetailsPanelProps) {
   const partyById = useMemo(() => new Map(parties.map((party) => [party.id, party])), [parties])
+  const highlightedPartyIdSet = useMemo(
+    () => new Set(highlightedPartyIds),
+    [highlightedPartyIds],
+  )
 
   if (!record && emptySelection) {
     return (
@@ -61,6 +67,11 @@ export function DetailsPanel({
   const includedNames = record.includedNames?.[language] ?? []
   const includedLabel = `${translate(language, 'includesLocalities')}: ${includedNames.join(', ')}`
   const notice = record.notice?.[language]
+  const highlightedParties = highlightedPartyIds.slice(0, 2).map((partyId) => ({
+    partyId,
+    party: partyById.get(partyId) ?? null,
+    votes: record.partyVotes[partyId] ?? 0,
+  }))
 
   return (
     <aside className="details-panel">
@@ -100,6 +111,33 @@ export function DetailsPanel({
         <span>{formatPercent(record.winner.voteShare, language)}</span>
       </div>
 
+      {highlightedParties.length === 2 ? (
+        <div
+          className="party-comparison-details"
+          aria-label={translate(language, 'partyComparisonDetails')}
+        >
+          {highlightedParties.map(({ partyId, party, votes }) => (
+            <div key={partyId}>
+              <span
+                className="party-swatch"
+                style={{ backgroundColor: party?.color ?? '#68706a' }}
+                aria-hidden="true"
+              />
+              <span title={party?.names[language] ?? partyId}>
+                {party?.names[language] ?? partyId}
+              </span>
+              <strong>{formatNumber(votes, language)}</strong>
+              <span>
+                {formatPercent(
+                  record.totals.validVotes > 0 ? votes / record.totals.validVotes : 0,
+                  language,
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       <dl className={`metric-grid${isEnvelope ? ' metric-grid--envelope' : ''}`}>
         {!isEnvelope ? (
           <div>
@@ -133,7 +171,14 @@ export function DetailsPanel({
           {orderedParties.map(([partyId, votes]) => {
             const party = partyById.get(partyId)
             return (
-              <li key={partyId}>
+              <li
+                key={partyId}
+                className={
+                  highlightedPartyIdSet.has(partyId)
+                    ? 'party-breakdown__highlighted'
+                    : undefined
+                }
+              >
                 <span
                   className="party-swatch"
                   style={{ backgroundColor: party?.color ?? '#68706a' }}

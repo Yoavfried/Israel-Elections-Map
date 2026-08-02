@@ -13,6 +13,12 @@ import {
   buildResultPolygonVisibilityFilter,
   mayHaveDisplayMarker,
 } from '../domain/mapPresentation'
+import { UNMAPPED_GEOGRAPHY_COLOR } from '../domain/color'
+import {
+  partyComparisonBalance,
+  partyComparisonColor,
+} from '../domain/partyComparison'
+import { partyGradientColor, partyVoteShare } from '../domain/partyMap'
 import type {
   GeographyBounds,
   GeographyMode,
@@ -32,7 +38,6 @@ const LINE_LAYER_ID = 'election-line'
 const MARKER_LAYER_ID = 'election-markers'
 const BACKDROP_FILL_LAYER_ID = 'election-backdrop-fill'
 const MAP_BACKGROUND_COLOR = '#f3f0e8'
-const UNMAPPED_GEOGRAPHY_COLOR = '#aeb5b0'
 const GEOGRAPHY_BORDER_COLOR = '#626a65'
 const UNMAPPED_AREA_FILL_OPACITY = 0.58
 
@@ -51,6 +56,17 @@ interface MapCanvasProps {
     id: string
     bounds: GeographyBounds
     requestId: number
+  } | null
+  partyMap: {
+    partyId: string
+    color: string
+    upperBoundShare: number
+  } | null
+  partyComparison: {
+    firstPartyId: string
+    firstColor: string
+    secondPartyId: string
+    secondColor: string
   } | null
   onSelect: (id: string | null) => void
 }
@@ -79,6 +95,8 @@ export default function MapCanvas({
   hiddenGeographyIds,
   selectedId,
   focusRequest,
+  partyMap,
+  partyComparison,
   onSelect,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -260,7 +278,7 @@ export default function MapCanvas({
           'case',
           ['boolean', ['feature-state', 'selected'], false],
           0.9,
-          0.7,
+          ['case', ['boolean', ['feature-state', 'analysisMode'], false], 0.84, 0.7],
         ],
       },
     }
@@ -312,7 +330,7 @@ export default function MapCanvas({
         'circle-opacity': [
           'case',
           ['boolean', ['feature-state', 'hasData'], false],
-          0.82,
+          ['case', ['boolean', ['feature-state', 'analysisMode'], false], 0.9, 0.82],
           0.42,
         ],
         'circle-radius': [
@@ -418,9 +436,28 @@ export default function MapCanvas({
       map.removeFeatureState({ source: MARKER_SOURCE_ID })
       for (const record of records) {
         const party = partyById.get(record.winner.partyId)
+        let color = party?.color ?? '#69736d'
+        if (partyMap) {
+          color = partyGradientColor(
+            partyMap.color,
+            partyVoteShare(record, partyMap.partyId),
+            partyMap.upperBoundShare,
+          )
+        } else if (partyComparison) {
+          color = partyComparisonColor(
+            partyComparison.firstColor,
+            partyComparison.secondColor,
+            partyComparisonBalance(
+              record,
+              partyComparison.firstPartyId,
+              partyComparison.secondPartyId,
+            ),
+          )
+        }
         const state = {
           hasData: true,
-          color: party?.color ?? '#69736d',
+          color,
+          analysisMode: Boolean(partyMap || partyComparison),
           selected: record.id === selectedId,
         }
         map.setFeatureState(
@@ -452,7 +489,17 @@ export default function MapCanvas({
     return () => {
       map.off('sourcedata', handleSourceData)
     }
-  }, [geometryUrl, hiddenGeographyIds, mapReady, markerGeometryUrl, partyById, records, selectedId])
+  }, [
+    geometryUrl,
+    hiddenGeographyIds,
+    mapReady,
+    markerGeometryUrl,
+    partyById,
+    partyComparison,
+    partyMap,
+    records,
+    selectedId,
+  ])
 
   useEffect(() => {
     const map = mapRef.current

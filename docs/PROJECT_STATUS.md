@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-07-31
+Last updated: 2026-08-02
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -18,7 +18,7 @@ but open/complete workstream declarations belong here.
 | Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
 | UX and accessibility | Continuous | Responsive bilingual UX, mobile behavior, keyboard support, and accessibility remain ongoing product requirements. |
 | National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
-| Product features | Search implemented; single-party next | Election-aware bilingual geography search is implemented. Single-party mode, two-party comparison, and the equal-priority satellite/OSM/3D suite remain in `FEATURE_PLAN.md`. |
+| Product features | Search and party-analysis maps implemented; basemaps next | Election-aware bilingual geography search, the single-party vote-share gradient, and two-party head-to-head comparison are implemented. Vote-sized circles remain an optional single-party extension. The equal-priority satellite/OSM/3D suite remains in `FEATURE_PLAN.md`. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 102 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Future versioning policy remains open. |
 | Public repository hardening | In progress | Split licensing now keeps the reusable data release and reviewed data tables under MIT while reserving rights in the website and other project materials; third-party notices and public-facing repository hygiene are in place. Fresh-clone source bootstrap, CI, and performance checks are unfinished. |
 

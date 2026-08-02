@@ -1,6 +1,6 @@
 # Product Feature Plan
 
-Last updated: 2026-07-31
+Last updated: 2026-08-02
 
 This document records the intended design and delivery order for future map
 features. It is not a completion tracker. Actual complete/in-progress state is
@@ -14,9 +14,7 @@ polygon.
 
 Current priority:
 
-1. single-party map mode;
-2. two-party comparison mode;
-3. satellite, OSM vector, and 3D-building basemaps at the same priority.
+1. satellite, OSM vector, and 3D-building basemaps at the same priority.
 
 The national-results baseline is implemented as a primary top-bar view and
 remains the reference surface for the completed party-name, color, and
@@ -60,32 +58,40 @@ Implemented behavior:
 - envelope votes included in the national totals;
 - Hebrew and English party names and reviewed article links where available.
 
-### 3. Single-Party Map Mode
+### 3. Single-Party Map Mode (Delivered Baseline)
 
-Allow one election-specific party/list to be selected. Polygon color is a
+One election-specific party/list can be selected. Polygon color is a
 sequential gradient derived from that party's reviewed base color: stronger
 color means a higher share of valid votes and weaker color means a lower share.
 
-Expected behavior:
+Implemented behavior:
 
-- election-aware party search because ballot letters can change meaning;
-- a numeric legend with a stated percentage domain;
+- an election-specific selector that never carries a ballot-letter identity
+  into another election;
+- a numeric legend from zero to the 95th percentile of positive polygon vote
+  shares in the selected election and geography mode; higher outliers use the
+  full party color, while a quadratic white-to-color ramp keeps low relative
+  shares visually close to white;
 - selecting a polygon still opens the complete area result;
-- an optional circle mode where circle size represents that party's vote count
-  and color represents its vote share;
 - zero, missing, and statistically unresolved results remain distinguishable.
 
-### 4. Two-Party Comparison
+Optional extension:
 
-Allow two election-specific parties to define the two ends of a diverging
-color scale. Each polygon receives a mixed color based on the local balance
-between the selected parties.
+- a circle mode where circle size represents that party's vote count and color
+  represents its vote share.
 
-Expected behavior:
+### 4. Two-Party Comparison (Delivered Baseline)
+
+Two election-specific parties define the ends of a diverging color scale. Each
+polygon receives a mixed color based on each party's share of their combined
+vote in that result.
+
+Implemented behavior:
 
 - both selected parties and their base colors remain visible in the controls
   and legend;
-- the comparison metric and neutral midpoint are stated explicitly;
+- the head-to-head metric has a white 50/50 midpoint and reaches either
+  reviewed party color at its endpoint;
 - selecting a polygon opens the complete result while visually emphasizing the
   two compared parties;
 - ties, zero votes for both parties, and missing results have explicit neutral
@@ -137,11 +143,9 @@ hosting must remain replaceable configuration.
 
 ## Technical Sequence
 
-1. Add single-party polygon and circle presentation modes.
-2. Add the two-party comparison mode.
-3. Add a replaceable basemap/source abstraction without changing result IDs.
-4. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
-5. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
+1. Add a replaceable basemap/source abstraction without changing result IDs.
+2. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
+3. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
    result-click regression tests for every stage.
 
 ## Reference Policies And Capabilities

@@ -6,7 +6,10 @@ election-appropriate statistical area.
 
 The map includes offline election-aware search across Hebrew and English
 locality names, statistical areas, historical names, reviewed aliases, and
-geography codes.
+geography codes. A separate single-party view colors those same geographies by
+the selected list's local vote share while retaining the complete area result
+on selection. A two-party comparison view adds a diverging head-to-head balance
+without changing the underlying election or geography data.
 
 The repository contains a Python data pipeline, a React/TypeScript/MapLibre
 client, and a committed public-data release. Statistical results use direct CBS

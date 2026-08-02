@@ -5,6 +5,8 @@ import { EnvelopeSummary } from './components/EnvelopeSummary'
 import { GeographySearch } from './components/GeographySearch'
 import { LoadingState } from './components/LoadingState'
 import { NationalResultsScreen } from './components/NationalResultsScreen'
+import { PartyComparisonPanel } from './components/PartyComparisonPanel'
+import { PartyMapPanel } from './components/PartyMapPanel'
 import { PrimaryTabs } from './components/PrimaryTabs'
 import type { AppView } from './components/PrimaryTabs'
 import {
@@ -23,6 +25,7 @@ import type {
   Language,
   NationalResults,
 } from './domain/schemas'
+import { partyVoteShareUpperBound, rankPartiesForMap } from './domain/partyMap'
 import { translate } from './i18n/translations'
 import { loadPreferences, savePreferences } from './state/preferences'
 
@@ -48,6 +51,10 @@ export default function App() {
     status: 'loading',
   })
   const [activeView, setActiveView] = useState<AppView>('map')
+  const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null)
+  const [comparisonPartyIds, setComparisonPartyIds] = useState<
+    [string | null, string | null]
+  >([null, null])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedSearchItem, setSelectedSearchItem] =
     useState<GeographySearchItem | null>(null)
@@ -57,6 +64,10 @@ export default function App() {
     requestId: number
   } | null>(null)
   const { language, electionId, geographyMode } = preferences
+  const isGeographicView =
+    activeView === 'map' ||
+    activeView === 'party-map' ||
+    activeView === 'party-comparison'
 
   useEffect(() => {
     let active = true
@@ -94,7 +105,7 @@ export default function App() {
   const selectedGeography = selectedElection?.geographiesByMode[geographyMode]
 
   useEffect(() => {
-    if (!selectedElection || activeView !== 'map') {
+    if (!selectedElection || !isGeographicView) {
       return
     }
     let active = true
@@ -117,7 +128,7 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [activeView, geographyMode, selectedElection])
+  }, [geographyMode, isGeographicView, selectedElection])
 
   useEffect(() => {
     if (!selectedElection || activeView !== 'national') {
@@ -142,7 +153,7 @@ export default function App() {
   }, [activeView, selectedElection])
 
   useEffect(() => {
-    if (!selectedElection || activeView !== 'map') {
+    if (!selectedElection || !isGeographicView) {
       return
     }
     let active = true
@@ -161,7 +172,7 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [activeView, selectedElection])
+  }, [isGeographicView, selectedElection])
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -194,6 +205,60 @@ export default function App() {
     nationalResultsState.data.electionId === electionId
       ? nationalResultsState.data
       : null
+  const partyMapParties = useMemo(
+    () =>
+      results
+        ? rankPartiesForMap(results.parties, results.records, results.envelope, language)
+        : [],
+    [language, results],
+  )
+  const effectivePartyId = partyMapParties.some((party) => party.id === selectedPartyId)
+    ? selectedPartyId
+    : partyMapParties[0]?.id ?? null
+  const selectedParty =
+    results?.parties.find((party) => party.id === effectivePartyId) ?? null
+  const effectiveComparisonFirstId = partyMapParties.some(
+    (party) => party.id === comparisonPartyIds[0],
+  )
+    ? comparisonPartyIds[0]
+    : partyMapParties[0]?.id ?? null
+  const effectiveComparisonSecondId = partyMapParties.some(
+    (party) =>
+      party.id === comparisonPartyIds[1] && party.id !== effectiveComparisonFirstId,
+  )
+    ? comparisonPartyIds[1]
+    : partyMapParties.find((party) => party.id !== effectiveComparisonFirstId)?.id ?? null
+  const comparisonFirstParty =
+    partyMapParties.find((party) => party.id === effectiveComparisonFirstId) ?? null
+  const comparisonSecondParty =
+    partyMapParties.find((party) => party.id === effectiveComparisonSecondId) ?? null
+  const partyMapUpperBoundShare =
+    results && effectivePartyId
+      ? partyVoteShareUpperBound(results.records, effectivePartyId)
+      : 0
+  const partyMapPresentation = useMemo(
+    () =>
+      activeView === 'party-map' && selectedParty
+        ? {
+            partyId: selectedParty.id,
+            color: selectedParty.color,
+            upperBoundShare: partyMapUpperBoundShare,
+          }
+        : null,
+    [activeView, partyMapUpperBoundShare, selectedParty],
+  )
+  const partyComparisonPresentation = useMemo(
+    () =>
+      activeView === 'party-comparison' && comparisonFirstParty && comparisonSecondParty
+        ? {
+            firstPartyId: comparisonFirstParty.id,
+            firstColor: comparisonFirstParty.color,
+            secondPartyId: comparisonSecondParty.id,
+            secondColor: comparisonSecondParty.color,
+          }
+        : null,
+    [activeView, comparisonFirstParty, comparisonSecondParty],
+  )
 
   const updatePreferences = (nextPreferences: typeof preferences) => {
     setPreferences(nextPreferences)
@@ -203,6 +268,8 @@ export default function App() {
     setSelectedId(null)
     setSelectedSearchItem(null)
     setFocusRequest(null)
+    setSelectedPartyId(null)
+    setComparisonPartyIds([null, null])
     updatePreferences({ ...preferences, electionId: nextElectionId })
   }
   const handleGeographyChange = (nextMode: GeographyMode) => {
@@ -210,6 +277,22 @@ export default function App() {
     setSelectedSearchItem(null)
     setFocusRequest(null)
     updatePreferences({ ...preferences, geographyMode: nextMode })
+  }
+  const handleComparisonFirstChange = (partyId: string) => {
+    setComparisonPartyIds([
+      partyId,
+      effectiveComparisonSecondId && effectiveComparisonSecondId !== partyId
+        ? effectiveComparisonSecondId
+        : partyMapParties.find((party) => party.id !== partyId)?.id ?? null,
+    ])
+  }
+  const handleComparisonSecondChange = (partyId: string) => {
+    setComparisonPartyIds([
+      effectiveComparisonFirstId && effectiveComparisonFirstId !== partyId
+        ? effectiveComparisonFirstId
+        : partyMapParties.find((party) => party.id !== partyId)?.id ?? null,
+      partyId,
+    ])
   }
   const toggleLanguage = () => {
     const nextLanguage: Language = language === 'en' ? 'he' : 'en'
@@ -282,7 +365,7 @@ export default function App() {
         </button>
       </header>
 
-      {activeView === 'map' ? (
+      {isGeographicView ? (
         <div className="map-stage">
           {resultsState.status === 'ready' && results ? (
             <Suspense fallback={<LoadingState language={language} kind="map" />}>
@@ -302,6 +385,8 @@ export default function App() {
                 hiddenGeographyIds={results.hiddenGeographyIds}
                 selectedId={selectedId}
                 focusRequest={focusRequest}
+                partyMap={partyMapPresentation}
+                partyComparison={partyComparisonPresentation}
                 onSelect={handleMapSelect}
               />
             </Suspense>
@@ -324,6 +409,25 @@ export default function App() {
               onElectionChange={handleElectionChange}
               onGeographyModeChange={handleGeographyChange}
             />
+            {activeView === 'party-map' ? (
+              <PartyMapPanel
+                language={language}
+                parties={partyMapParties}
+                selectedPartyId={effectivePartyId}
+                upperBoundShare={partyMapUpperBoundShare}
+                onPartyChange={setSelectedPartyId}
+              />
+            ) : null}
+            {activeView === 'party-comparison' ? (
+              <PartyComparisonPanel
+                language={language}
+                parties={partyMapParties}
+                firstPartyId={effectiveComparisonFirstId}
+                secondPartyId={effectiveComparisonSecondId}
+                onFirstPartyChange={handleComparisonFirstChange}
+                onSecondPartyChange={handleComparisonSecondChange}
+              />
+            ) : null}
             <GeographySearch
               language={language}
               electionId={electionId}
@@ -351,6 +455,13 @@ export default function App() {
                   : null
               }
               parties={results?.parties ?? []}
+              highlightedPartyIds={
+                activeView === 'party-comparison' &&
+                effectiveComparisonFirstId &&
+                effectiveComparisonSecondId
+                  ? [effectiveComparisonFirstId, effectiveComparisonSecondId]
+                  : []
+              }
             />
           </div>
         </div>

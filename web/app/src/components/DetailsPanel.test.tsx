@@ -63,6 +63,22 @@ describe('DetailsPanel', () => {
     expect(html).not.toContain('Geography code')
   })
 
+  it('surfaces and highlights both selected comparison parties', () => {
+    const html = renderToStaticMarkup(
+      <DetailsPanel
+        language="en"
+        record={record}
+        parties={parties}
+        highlightedPartyIds={['P2', 'P7']}
+      />,
+    )
+
+    expect(html).toContain('aria-label="Selected-party comparison"')
+    expect(html.match(/class="party-breakdown__highlighted"/g)).toHaveLength(2)
+    expect(html).toContain('<strong>8</strong><span>17.8%</span>')
+    expect(html).toContain('<strong>3</strong><span>6.7%</span>')
+  })
+
   it('shows attached locality names through a bilingual info tooltip', () => {
     const joinedRecord: ResultRecord = {
       ...record,

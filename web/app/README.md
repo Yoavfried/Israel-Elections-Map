@@ -1,8 +1,9 @@
 # Israel Election Map Web App
 
 Local-first React/TypeScript client for the K17-K25 pipeline. Primary top-bar
-views expose the geographic map and complete national results. The app does not
-read working CSV files at runtime. A build-time compiler validates them and
+views expose the geographic map, a single-party vote-share map, and complete
+national results, plus a two-party head-to-head comparison map. The app does
+not read working CSV files at runtime. A build-time compiler validates them and
 writes disposable web assets under `public/data/v2/`.
 
 ## Run Locally
@@ -65,6 +66,19 @@ The map includes an offline, election-aware bilingual search across localities,
 statistical areas, historical names, reviewed aliases, and geography codes.
 Selecting a match changes geography mode when needed, fits and highlights its
 geometry, and opens either its result or an explicit no-result state.
+
+The single-party view reuses the same election-specific geography and result
+details. It colors every result-bearing polygon on a continuous scale from zero
+to the 95th percentile of positive vote shares for the selected list. Higher
+outliers use the full party color, while a quadratic white-to-color ramp keeps
+low relative shares pale and geography without a result retains a separate
+neutral state.
+
+The two-party comparison view uses each selected party's share of their
+combined local vote. A 50/50 result is white, either endpoint uses that party's
+reviewed color, and separate neutral colors distinguish no votes for either
+party from geography with no result. Selecting an area retains the complete
+result and emphasizes both selected lists.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data contract and
 [`../../docs/PROJECT_STATUS.md`](../../docs/PROJECT_STATUS.md) for the sole

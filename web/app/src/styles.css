@@ -66,6 +66,7 @@ select:focus-visible {
     .language-toggle,
     .primary-tabs,
     .field,
+    .party-map-panel,
     .geography-search,
     .envelope-summary,
     .details-panel,
@@ -153,9 +154,9 @@ select:focus-visible {
 
 .primary-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-self: center;
-  min-inline-size: 258px;
+  min-inline-size: 570px;
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 9px;
@@ -176,6 +177,11 @@ select:focus-visible {
   cursor: pointer;
   font-size: var(--font-size-body);
   font-weight: 750;
+  white-space: nowrap;
+}
+
+.primary-tab__label-short {
+  display: none;
 }
 
 .primary-tab:hover {
@@ -593,6 +599,8 @@ select:focus-visible {
 }
 
 .control-panel,
+.party-map-panel,
+.party-comparison-panel,
 .geography-search,
 .envelope-summary,
 .details-panel {
@@ -608,6 +616,188 @@ select:focus-visible {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 12px;
+}
+
+.party-map-panel,
+.party-comparison-panel {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}
+
+.party-map-field {
+  display: grid;
+  gap: 6px;
+}
+
+.party-map-field > span,
+.party-map-legend__title {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.party-map-select-wrap {
+  position: relative;
+}
+
+.party-map-select-wrap > .party-swatch {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 50%;
+  inset-inline-start: 12px;
+  transform: translateY(-50%);
+}
+
+.party-map-select-wrap select {
+  inline-size: 100%;
+  block-size: 42px;
+  padding-inline: 34px 32px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background-color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.party-map-legend {
+  display: grid;
+  gap: 6px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--line);
+}
+
+.party-map-legend__ramp {
+  display: block;
+  block-size: 11px;
+  border: 1px solid rgba(23, 26, 23, 0.12);
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    var(--party-map-zero) 0%,
+    var(--party-map-color-quarter) 25%,
+    var(--party-map-color-half) 50%,
+    var(--party-map-color-three-quarter) 75%,
+    var(--party-map-color) 100%
+  );
+}
+
+.party-map-legend__labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.party-map-legend__missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+}
+
+.party-map-legend__missing > span {
+  inline-size: 12px;
+  block-size: 12px;
+  border: 1px solid rgba(23, 26, 23, 0.18);
+  border-radius: 3px;
+  background: #aeb5b0;
+}
+
+.party-comparison-panel {
+  gap: 10px;
+}
+
+.party-comparison-legend {
+  display: grid;
+  gap: 6px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--line);
+}
+
+.party-comparison-legend__title {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.party-comparison-legend__ramp {
+  display: block;
+  block-size: 11px;
+  border: 1px solid rgba(23, 26, 23, 0.12);
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    var(--comparison-first),
+    var(--comparison-tie) 50%,
+    var(--comparison-second)
+  );
+}
+
+.app-shell[data-language="he"] .party-comparison-legend__ramp {
+  background: linear-gradient(
+    to left,
+    var(--comparison-first),
+    var(--comparison-tie) 50%,
+    var(--comparison-second)
+  );
+}
+
+.party-comparison-legend__labels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+}
+
+.party-comparison-legend__labels > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.party-comparison-legend__labels > span:nth-child(2) {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.party-comparison-legend__labels > span:last-child {
+  text-align: end;
+}
+
+.party-comparison-legend__states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+}
+
+.party-comparison-legend__states > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.party-comparison-legend__states i {
+  display: inline-block;
+  inline-size: 12px;
+  block-size: 12px;
+  border: 1px solid rgba(23, 26, 23, 0.18);
+  border-radius: 3px;
+}
+
+.party-comparison-legend__no-votes {
+  background: var(--comparison-no-votes);
+}
+
+.party-comparison-legend__no-result {
+  background: var(--comparison-no-result);
 }
 
 .geography-search {
@@ -845,6 +1035,28 @@ select:focus-visible {
   padding: 18px;
 }
 
+.app-shell[data-view="party-map"] .details-panel {
+  max-block-size: min(500px, max(180px, calc(100dvh - 610px)));
+}
+
+.app-shell[data-view="party-comparison"] .details-panel {
+  max-block-size: min(500px, max(180px, calc(100dvh - 690px)));
+}
+
+@media (max-width: 1360px) {
+  .primary-tabs {
+    min-inline-size: 410px;
+  }
+
+  .primary-tab__label {
+    display: none;
+  }
+
+  .primary-tab__label-short {
+    display: inline;
+  }
+}
+
 .details-panel--empty {
   display: flex;
   align-items: center;
@@ -1008,6 +1220,49 @@ select:focus-visible {
   align-self: center;
 }
 
+.party-comparison-details {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  margin-block: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.party-comparison-details > div {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  gap: 3px 7px;
+  align-items: center;
+  min-inline-size: 0;
+  padding: 10px;
+}
+
+.party-comparison-details > div + div {
+  border-inline-start: 1px solid var(--line);
+}
+
+.party-comparison-details > div > span:nth-child(2) {
+  overflow: hidden;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.party-comparison-details strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.party-comparison-details > div > span:last-child {
+  grid-column: 2 / -1;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
 .metric-grid {
   display: grid;
   flex: 0 0 auto;
@@ -1105,6 +1360,14 @@ select:focus-visible {
   align-items: center;
   min-inline-size: 0;
   font-size: var(--font-size-small);
+}
+
+.party-breakdown li.party-breakdown__highlighted {
+  margin-inline: -5px;
+  padding: 5px;
+  border-radius: 6px;
+  background: rgba(23, 26, 23, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(23, 26, 23, 0.1);
 }
 
 .party-name {
@@ -1207,7 +1470,7 @@ select:focus-visible {
   }
 
   .primary-tabs {
-    min-inline-size: 230px;
+    min-inline-size: 350px;
   }
 
   .primary-tab {
@@ -1239,9 +1502,25 @@ select:focus-visible {
     left: 10px;
     right: 10px;
     inline-size: auto;
+    max-block-size: calc(100% - 20px);
+    padding-block-end: 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    pointer-events: auto;
+    scrollbar-width: none;
+  }
+
+  .left-rail::-webkit-scrollbar {
+    display: none;
   }
 
   .control-panel {
+    padding: 9px;
+    border-radius: 15px;
+  }
+
+  .party-map-panel,
+  .party-comparison-panel {
     padding: 9px;
     border-radius: 15px;
   }
@@ -1260,6 +1539,14 @@ select:focus-visible {
     max-block-size: 43dvh;
     padding: 14px;
     border-radius: 17px;
+  }
+
+  .app-shell[data-view="party-map"] .details-panel {
+    max-block-size: 34dvh;
+  }
+
+  .app-shell[data-view="party-comparison"] .details-panel {
+    max-block-size: 46dvh;
   }
 
   .details-panel--empty {
@@ -1290,7 +1577,14 @@ select:focus-visible {
   .primary-tabs {
     grid-column: 1 / -1;
     grid-row: 2;
-    inline-size: min(320px, 100%);
+    inline-size: min(360px, 100%);
+    min-inline-size: 0;
+  }
+
+  .primary-tab {
+    gap: 4px;
+    padding-inline: 4px;
+    font-size: var(--font-size-small);
   }
 
   .national-results-toolbar {
