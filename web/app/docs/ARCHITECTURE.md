@@ -17,8 +17,11 @@ The web app supports:
   mandates, colors, and Wikipedia controls.
 - Election-specific historical statistical-area mode and dissolved-2022-locality mode.
 - Offline election-aware locality and statistical-area search in Hebrew and English.
+- Network-assisted exact-address lookup with local election-polygon resolution.
+- A replaceable OSM-derived vector background with localized labels,
+  attribution, and a persisted neutral fallback.
 - English and Hebrew, including document-level LTR/RTL switching.
-- Desktop and mobile layouts.
+- Desktop layout plus an interim narrow-screen compatibility layout.
 - Explicit mapped/unmapped vote coverage.
 - Custom reviewed geographic buckets when they have results in an election.
 - Display-only whole-locality totals when an election/locality has zero
@@ -64,6 +67,37 @@ MapLibre feature state + React detail panels
 
 The browser loads the catalog first, then the selected election/mode result file and that election's search index. Each election carries `geographiesByMode`, so statistical geometry changes with the election: K17 loads 1995, K18 loads 2008, and K19-K25 load 2011. Locality mode uses dissolved 2022 geometry. The standard and party-analysis maps share these assets and the same result-detail contract. Single-party mode changes only MapLibre feature-state colors, using a quadratic white-to-color scale from zero to the 95th percentile of positive selected-party shares in the current result set; higher outliers are capped at the full reviewed party color. Two-party mode colors the head-to-head share of the selected parties' combined vote from the first reviewed color through a white 50/50 midpoint to the second reviewed color. A separate pale neutral identifies records where both selected parties received zero votes, while missing results retain the standard unmapped grey. Statistical assets also declare a simplified, non-interactive 2022 land backdrop; MapLibre paints it neutral grey below the historical result polygons so changing vintage does not turn uncovered Israeli land into background. For a locality with zero supported area assignments, the compiler adds a display-only current locality or reviewed composite footprint to the historical asset, hides its empty statistical components only in that election, and attaches the locality aggregate. The compiler removes source-only fields and rounds web coordinates to six decimal places. Each geography asset also has marker GeoJSON for marker-capable custom buckets and point-like proxies. The marker layer filters that asset to exact IDs present in the selected result payload, while reviewed detailed settlement and custom footprints remain polygonal.
 
+The same combobox treats text containing both letters and a number as a possible
+address. After a short debounce, Photon returns bounded OpenStreetMap address
+candidates. Candidates without an explicit matching house number are rejected.
+The client loads the selected election's visible statistical GeoJSON and runs
+point-in-polygon locally; Photon does not assign election geography. A valid
+option combines the address and resolved area. Selection switches to
+statistical mode, opens the existing result/no-result panel, fits the area, and
+adds a removable marker at the exact coordinate. Geometry and successful
+address responses are cached for the session. The endpoint is configurable
+through `VITE_ADDRESS_GEOCODER_URL`.
+
+The optional vector background is a separate MapLibre style. Thematic fills are
+inserted below its building, road, boundary, and symbol layers. Election
+outlines sit above vector detail but below symbol labels, and markers remain on
+top. Switching styles rebuilds only the election
+sources/layers and reapplies the same feature state and stable IDs. The default
+OpenFreeMap style URL can be replaced at build time without changing generated
+data or result contracts.
+
+The compiler derives an inverse presentation mask from a separate CBS/OSM
+Israel and full-West-Bank land footprint. In vector mode it paints Gaza,
+neighboring countries, and the rest of the world with the style's water color
+above non-label basemap detail. Symbol-layer filters restrict vector labels to
+the same footprint, while labels remain above election fills and outlines.
+The entire West Bank remains inside the visible footprint, preserving roads,
+labels, and Area A/B/C context. The footprint excludes administrative maritime
+extensions and the part of Ghajar north of the OSM Lebanon boundary, and also
+supplies a dedicated outer context line in vector and neutral modes, including
+the Jordan Valley edge. None of these display layers changes geography IDs or
+result coverage.
+
 Locality geometry retains CBS no-jurisdiction and regional-council display footprints even when they have no election result. MapLibre renders these features with the neutral unmapped fill and does not make them selectable. Both the statistical-area and locality IDs for Kinneret are filtered from polygon rendering, leaving water and non-polygon background areas unfilled.
 
 ## Versioned Contracts
@@ -100,8 +134,9 @@ component polygons are excluded; result-bearing custom display geometry and
 visible base locality/statistical-area geometry are included. Every item has a
 stable ID, mode, bilingual names and aliases, code, result-availability flag,
 and bounds. Selecting a cross-mode result changes mode before fitting those
-bounds. A visible feature without a result remains searchable but cannot be
-misread as a zero-vote result.
+bounds. The same visible statistical items form the candidate set for local
+address point-in-polygon resolution. A visible feature without a result remains
+searchable but cannot be misread as a zero-vote result.
 
 The compiler recomputes winner/share fields from party totals and requires their sum to equal `valid_votes`. Documented exclusions remove all 12 zero-filled columns for lists that did not run between K18 and K24 from both map and national-result payloads. The rows remain in the source registry for auditability, and an undeclared zero-vote registry row fails the build. The trailing K18 `ת. עדכון` source-metadata field is also excluded, separately from the party registry. All exclusions are surfaced in `catalog.json`; undeclared mismatches fail the build.
 
@@ -142,7 +177,7 @@ Cross-election lineage is intentionally not inferred. A shared ballot-letter col
 
 ## Geometry strategy
 
-The compiler publishes separate pruned GeoJSON assets for 1995, 2008, 2011, and 2022 statistical areas plus current localities. `scripts/build_geographies.py` also dissolves the visible locality footprints into a compact land backdrop, excluding Kinneret, every detailed West Bank locality footprint, and unresolved tiny point proxies. Polygon-only normalization after simplification prevents stray geometry collections. Schema version 3 keeps the result contract stable while allowing an election to select its own geometry, marker, and optional backdrop URLs.
+The compiler publishes separate pruned GeoJSON assets for 1995, 2008, 2011, and 2022 statistical areas plus current localities. `scripts/build_geographies.py` also dissolves the visible locality footprints into a compact land backdrop, excluding Kinneret, every detailed West Bank locality footprint, and unresolved tiny point proxies. Polygon-only normalization after simplification prevents stray geometry collections. The committed shared map-context footprint combines that CBS-derived statistical land with the OSM West Bank perimeter and a reviewed northern-Ghajar exclusion; the web compiler publishes it together with the derived inverse vector mask. Schema version 3 keeps the result contract stable while allowing an election to select its own geometry, marker, backdrop, mask, and context URLs.
 
 The migration boundary for production is intentionally narrow: replace each catalog `geometryUrl` with a PMTiles/vector-tile source and adapt only `MapCanvas`. Result contracts, controls, localization, feature IDs, and panels remain unchanged.
 
@@ -155,11 +190,21 @@ Move to tiles before public launch if any of these remain true after compression
 ## Responsive and bilingual behavior
 
 - CSS uses logical properties so the layout mirrors under RTL.
+- MapLibre loads the pinned RTL text renderer before vector labels, providing
+  bidi ordering for Hebrew and shaping plus bidi ordering for Arabic. Dynamic
+  data names use automatic direction isolation when their script differs from
+  the surrounding interface.
 - The header and controls remain reachable above the map.
-- Desktop uses floating side panels; mobile uses a full-width stacked control and result rail over the map.
+- Desktop uses floating side panels. The current narrow-screen breakpoint
+  stacks a full-width control and result rail over the map only as an interim
+  compatibility measure; it leaves the map too obscured to qualify as the
+  mobile design.
+- The planned mobile rewrite is map-first. Controls and results must become
+  collapsible or sheet-based so a useful interactive map viewport remains
+  visible throughout the core workflow.
 - The national comparison table reflows into labeled two-column party rows on
   narrow screens rather than requiring horizontal scrolling.
-- Language, election, and geography preferences are stored in one versioned, minimal local-storage record.
+- Language, election, geography, and basemap preferences are stored in one versioned, minimal local-storage record.
 - Number and percent formatting use `he-IL` or `en-IL`.
 
 ## Coverage and integrity rules
@@ -195,5 +240,6 @@ track completion or roadmap state. The repository's sole completion tracker is
 - No browser-side election ingestion or assignment logic.
 - No server database or API.
 - No claim that derivative ArcGIS display footprints are complete official CBS boundaries.
-- No public basemap dependency or API key.
+- No API key or provider-specific identity in election/result contracts; the
+  public vector style URL is replaceable at build time.
 - No attempt to invent cross-election party lineage without an explicit reviewed lineage table.

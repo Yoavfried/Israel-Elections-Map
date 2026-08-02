@@ -28,7 +28,7 @@ describe('PartyMapPanel', () => {
     )
 
     expect(html).toContain('Single Party Map controls')
-    expect(html).toContain('<option value="a" selected="">Alpha (A)</option>')
+    expect(html).toContain('<option value="a" dir="auto" selected="">Alpha (A)</option>')
     expect(html).toContain('0.0%')
     expect(html).toContain('20.0%')
     expect(html).toContain('&gt;40.0%')

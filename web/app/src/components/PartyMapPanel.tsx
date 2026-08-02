@@ -61,7 +61,7 @@ export function PartyMapPanel({
             onChange={(event) => onPartyChange(event.target.value)}
           >
             {parties.map((party) => (
-              <option key={party.id} value={party.id}>
+              <option key={party.id} value={party.id} dir="auto">
                 {party.names[language]} ({party.ballotLetter})
               </option>
             ))}

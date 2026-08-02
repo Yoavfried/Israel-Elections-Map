@@ -14,7 +14,8 @@ polygon.
 
 Current priority:
 
-1. satellite, OSM vector, and 3D-building basemaps at the same priority.
+1. optional close-zoom 3D buildings on the delivered OSM vector basemap;
+2. satellite imagery after the vector/3D implementation is stable.
 
 The national-results baseline is implemented as a primary top-bar view and
 remains the reference surface for the completed party-name, color, and
@@ -22,11 +23,29 @@ Wikipedia-link tables. Future analysis modes should use the same primary
 navigation rather than being added to the geographic-level selector.
 
 Responsive bilingual UX, accessibility, and regression QA are requirements for
-every item, not a separate planned feature.
+every item. The existing narrow-screen stack is only an interim compatibility
+layout: because it does not preserve a useful map viewport, a complete mobile
+rewrite is also a defined product task rather than completed responsive work.
 
 ## Planned Features
 
-### 1. Locality And Statistical-Area Search (Delivered Baseline)
+### Mobile Map Rewrite
+
+Replace the current stacked narrow-screen shell with a map-first mobile
+experience. The existing mobile CSS may remain useful for QA while this is
+built, but it is not the target design and should not constrain the rewrite.
+
+Required behavior:
+
+- keep a useful portion of the interactive map visible in every core state;
+- move controls and selected-area results into collapsible, sheet-based, or
+  similarly space-efficient surfaces;
+- preserve search, area selection, basemap switching, party modes, and full
+  result access without permanent map occlusion;
+- verify Hebrew and Arabic direction, touch targets, safe areas, keyboard
+  access, and representative phone viewport screenshots before completion.
+
+### 1. Geography And Address Search (Delivered Baseline)
 
 The compiler now builds an offline, election-aware search index from the map's
 own visible geography. It indexes Hebrew and English names,
@@ -43,6 +62,16 @@ Implemented behavior:
 - visible polygons without mapped results remain searchable and open an explicit
   no-result state;
 - no network dependency for locality or statistical-area lookup.
+
+Numbered-address lookup is also implemented in the same combobox. It uses a
+debounced, bounded Photon request to obtain exact house coordinates, rejects
+street/locality centroids that do not confirm the requested house number, and
+then resolves the coordinate locally against the selected election's visible
+statistical geometry. One suggestion block shows both the address and resolved
+area. Selecting it switches to statistical mode, opens the area result, and
+places an address marker. The geocoder endpoint is configurable; address lookup
+requires network access and should use a self-hosted or contracted service at
+production scale.
 
 ### 2. National Results (Delivered Baseline)
 
@@ -97,16 +126,48 @@ Implemented behavior:
 - ties, zero votes for both parties, and missing results have explicit neutral
   states.
 
-### 5. Basemap And 3D Suite
+### 5. OSM Vector Basemap (Delivered Baseline)
 
-Satellite imagery, an OSM-derived vector basemap, and optional 3D buildings
-share the same priority and follow the result-analysis modes above.
+Geographic views now use OpenFreeMap's light OSM-derived vector style by
+default, with the original neutral map retained in a persisted selector and
+automatic style-load fallback.
 
-#### Satellite Basemap
+Implemented behavior:
 
-Add a basemap selector with the existing neutral map and a satellite option.
-Election polygons remain an interactive overlay rather than becoming part of
-the imagery.
+- streets, boundaries, buildings, POIs, and localized place/road labels;
+- election fills beneath buildings, roads, boundaries, and labels, with labels
+  above election outlines and markers retained in the top layer;
+- a precise CBS/OSM-derived Israel and full-West-Bank land footprint that masks
+  surrounding land and labels without hiding West Bank detail, excludes
+  maritime extensions and northern Ghajar, and supplies the neutral map's
+  Jordan Valley outer boundary;
+- provider attribution visible whenever the vector background is active;
+- a build-time `VITE_VECTOR_BASEMAP_STYLE_URL` override, leaving result IDs and
+  election data independent of the tile host;
+- repeated vector/neutral switching without losing the selected election,
+  geography, analysis mode, or feature state.
+
+Self-hosted regional PMTiles remain the stronger long-term control option.
+Do not treat the community `tile.openstreetmap.org` or
+`vector.openstreetmap.org` servers as an unlimited production backend.
+
+### 6. Optional 3D Buildings
+
+Add a close-zoom mode using MapLibre `fill-extrusion` and available building
+height/min-height attributes.
+
+Required behavior:
+
+- pitch/bearing controls appear only when 3D mode is active;
+- election polygons and click targets remain visually dominant;
+- reduced-motion and low-performance fallbacks disable unnecessary extrusion;
+- missing building heights do not create misleading geometry.
+
+### 7. Satellite Basemap
+
+Add a basemap selector with the existing neutral/vector maps and a satellite
+option. Election polygons remain an interactive overlay rather than becoming
+part of the imagery.
 
 Required behavior:
 
@@ -117,35 +178,15 @@ Required behavior:
 - provider terms, API-key handling, cost, caching, and Israel coverage reviewed
   before selection.
 
-No satellite provider is selected yet. Esri/other commercial imagery must not be
-used merely because an unauthenticated tile URL happens to work.
-
-#### OpenStreetMap Vector Basemap And 3D Buildings
-
-Add an OSM-derived vector basemap beneath the election polygons. OpenFreeMap is
-a candidate because it exposes a MapLibre style and OSM-derived vector tiles;
-self-hosted regional PMTiles remain the stronger long-term control option.
-
-Expected behavior:
-
-- streets, labels, POIs, and building footprints visible beneath results;
-- optional 3D mode at close zoom using MapLibre `fill-extrusion` and available
-  building height/min-height attributes;
-- pitch/bearing controls appear only when 3D mode is active;
-- election polygons, hover state, and click targets remain visually dominant;
-- reduced-motion and low-performance fallbacks disable unnecessary extrusion;
-- attribution is always visible.
-
-Do not treat the community `tile.openstreetmap.org` or
-`vector.openstreetmap.org` servers as an unlimited production backend. Their
-policies require attribution and caching and prohibit bulk downloading. Tile
-hosting must remain replaceable configuration.
+No satellite provider is selected yet. Esri/other commercial imagery must not
+be used merely because an unauthenticated tile URL happens to work.
 
 ## Technical Sequence
 
-1. Add a replaceable basemap/source abstraction without changing result IDs.
-2. Add neutral/OSM/satellite selection, overlay opacity, and close-zoom 3D.
-3. Run desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
+1. Delivered: replaceable neutral/vector styles without changing result IDs.
+2. Add close-zoom 3D, then a reviewed satellite provider and overlay-opacity
+   control.
+3. Continue desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
    result-click regression tests for every stage.
 
 ## Reference Policies And Capabilities

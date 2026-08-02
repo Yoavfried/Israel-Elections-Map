@@ -24,7 +24,7 @@ describe('PartyComparisonPanel', () => {
 
     expect(html).toContain('aria-label="Party comparison controls"')
     expect(html.match(/<select/g)).toHaveLength(2)
-    expect(html).toContain('<option value="b" disabled="">Beta (b)</option>')
+    expect(html).toContain('<option value="b" dir="auto" disabled="">Beta (b)</option>')
     expect(html).toContain('Share between selected parties')
     expect(html).toContain('Equal')
     expect(html).toContain('Neither party received votes')

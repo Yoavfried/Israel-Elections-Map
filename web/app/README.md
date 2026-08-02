@@ -6,6 +6,35 @@ national results, plus a two-party head-to-head comparison map. The app does
 not read working CSV files at runtime. A build-time compiler validates them and
 writes disposable web assets under `public/data/v2/`.
 
+Geographic views use an OSM-derived OpenFreeMap vector background by default.
+The map selector can switch to the original neutral background, and the choice
+is persisted with the other display preferences. Set
+`VITE_VECTOR_BASEMAP_STYLE_URL` at build time to replace the default
+`https://tiles.openfreemap.org/styles/positron` style without changing the
+election layers or result IDs. Hebrew and Arabic vector labels use the pinned,
+locally served MapLibre RTL text plugin; `VITE_RTL_TEXT_PLUGIN_URL` can replace
+that asset URL for a downstream build.
+
+Exact numbered-address lookup uses Photon at
+`https://photon.komoot.io/api/` by default. Set `VITE_ADDRESS_GEOCODER_URL` to a
+compatible self-hosted or contracted endpoint for production-scale use. The
+service supplies coordinates only; the browser resolves each point locally
+against the selected election's statistical geometry.
+
+The vector presentation uses a dedicated CBS/OSM-derived Israel and
+full-West-Bank land footprint. Land outside it, including Gaza and neighboring
+countries, is painted with the style's water color, and vector labels are
+restricted to the footprint. West Bank roads, buildings, place names, and
+administrative detail remain visible. The same footprint supplies an outer
+boundary in the neutral map, including the Jordan Valley edge. Maritime
+administrative extensions and northern Ghajar are excluded from this
+presentation geometry.
+
+The current narrow-screen layout is an interim compatibility shell, not the
+finished mobile product. It keeps controls operable but leaves too little map
+visible. A complete map-first mobile rewrite is planned; public mobile UX
+should not be judged or documented as complete until that replacement lands.
+
 ## Run Locally
 
 Prerequisites:
@@ -66,6 +95,10 @@ The map includes an offline, election-aware bilingual search across localities,
 statistical areas, historical names, reviewed aliases, and geography codes.
 Selecting a match changes geography mode when needed, fits and highlights its
 geometry, and opens either its result or an explicit no-result state.
+Address-like queries containing a house number additionally trigger a
+debounced network lookup. Only results confirming that house number are shown.
+Each option contains the address and the election-specific statistical area;
+selection opens that area and places a marker at the returned coordinate.
 
 The single-party view reuses the same election-specific geography and result
 details. It colors every result-bearing polygon on a continuous scale from zero
@@ -79,6 +112,14 @@ combined local vote. A 50/50 result is white, either endpoint uses that party's
 reviewed color, and separate neutral colors distinguish no votes for either
 party from geography with no result. Selecting an area retains the complete
 result and emphasizes both selected lists.
+
+The vector basemap is presentation context only. Buildings, roads, boundaries,
+and localized labels render above translucent election fills; labels also sit
+above election outlines, while markers remain in the top layer. Feature state,
+selection, and hit testing remain attached to the election geometry.
+Provider attribution is supplied through MapLibre whenever the vector
+background is active. If its style cannot load promptly, the client returns to
+the neutral map rather than blocking the election results.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data contract and
 [`../../docs/PROJECT_STATUS.md`](../../docs/PROJECT_STATUS.md) for the sole

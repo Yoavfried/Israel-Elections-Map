@@ -6,10 +6,16 @@ election-appropriate statistical area.
 
 The map includes offline election-aware search across Hebrew and English
 locality names, statistical areas, historical names, reviewed aliases, and
-geography codes. A separate single-party view colors those same geographies by
+geography codes. Exact numbered-address lookup adds a network-assisted
+OpenStreetMap/Photon coordinate search; the client then resolves that point
+locally against the selected election's visible statistical geometry. A
+separate single-party view colors those same geographies by
 the selected list's local vote share while retaining the complete area result
 on selection. A two-party comparison view adds a diverging head-to-head balance
 without changing the underlying election or geography data.
+The geographic views can place those election layers over a localized,
+OSM-derived vector street map, with the original neutral background retained
+as a persisted offline-friendly fallback.
 
 The repository contains a Python data pipeline, a React/TypeScript/MapLibre
 client, and a committed public-data release. Statistical results use direct CBS

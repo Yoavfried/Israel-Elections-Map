@@ -35,7 +35,7 @@ export function DetailsPanel({
       <aside className="details-panel details-panel--empty details-panel--no-result">
         <span className="selection-marker" aria-hidden="true" />
         <div>
-          <h2>{emptySelection.names[language]}</h2>
+          <h2 dir="auto">{emptySelection.names[language]}</h2>
           <p>{translate(language, 'noMappedResult')}</p>
         </div>
       </aside>
@@ -77,7 +77,9 @@ export function DetailsPanel({
     <aside className="details-panel">
       <div className="details-heading">
         <div className="details-title-row">
-          <h2>{isEnvelope ? translate(language, 'envelopeVotes') : record.names[language]}</h2>
+          <h2 dir={isEnvelope ? undefined : 'auto'}>
+            {isEnvelope ? translate(language, 'envelopeVotes') : record.names[language]}
+          </h2>
           {includedNames.length > 0 ? (
             <span
               className="included-localities-info"
@@ -101,13 +103,13 @@ export function DetailsPanel({
       {notice ? (
         <div className="details-notice" role="note">
           <Info size={17} strokeWidth={2} aria-hidden="true" />
-          <span>{notice}</span>
+          <span dir="auto">{notice}</span>
         </div>
       ) : null}
 
       <div className="winner-card">
         <span>{translate(language, 'winner')}</span>
-        <strong>{winner?.names[language] ?? record.winner.partyId}</strong>
+        <strong dir="auto">{winner?.names[language] ?? record.winner.partyId}</strong>
         <span>{formatPercent(record.winner.voteShare, language)}</span>
       </div>
 
@@ -123,7 +125,7 @@ export function DetailsPanel({
                 style={{ backgroundColor: party?.color ?? '#68706a' }}
                 aria-hidden="true"
               />
-              <span title={party?.names[language] ?? partyId}>
+              <span dir="auto" title={party?.names[language] ?? partyId}>
                 {party?.names[language] ?? partyId}
               </span>
               <strong>{formatNumber(votes, language)}</strong>
@@ -184,7 +186,11 @@ export function DetailsPanel({
                   style={{ backgroundColor: party?.color ?? '#68706a' }}
                   aria-hidden="true"
                 />
-                <span className="party-name" title={party?.names[language] ?? partyId}>
+                <span
+                  className="party-name"
+                  dir="auto"
+                  title={party?.names[language] ?? partyId}
+                >
                   {party?.names[language] ?? partyId}
                 </span>
                 <span className="party-votes">{formatNumber(votes, language)}</span>

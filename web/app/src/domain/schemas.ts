@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const LanguageSchema = z.enum(['en', 'he'])
 export const GeographyModeSchema = z.enum(['statistical-area', 'locality'])
+export const BasemapModeSchema = z.enum(['neutral', 'vector'])
 
 export const LocalizedTextSchema = z.object({
   en: z.string().min(1),
@@ -36,6 +37,8 @@ const GeographyAssetSchema = z.object({
   geometryUrl: z.string().min(1),
   markerGeometryUrl: z.string().min(1),
   backdropGeometryUrl: z.string().min(1).optional(),
+  basemapMaskGeometryUrl: z.string().min(1).optional(),
+  mapContextGeometryUrl: z.string().min(1).optional(),
   featureCount: z.number().int().positive(),
   markerFeatureCount: z.number().int().positive(),
 })
@@ -206,6 +209,7 @@ export const NationalResultsSchema = z.object({
 
 export type Language = z.infer<typeof LanguageSchema>
 export type GeographyMode = z.infer<typeof GeographyModeSchema>
+export type BasemapMode = z.infer<typeof BasemapModeSchema>
 export type Coverage = z.infer<typeof CoverageSchema>
 export type AppCatalog = z.infer<typeof AppCatalogSchema>
 export type ElectionCatalog = AppCatalog['elections'][number]

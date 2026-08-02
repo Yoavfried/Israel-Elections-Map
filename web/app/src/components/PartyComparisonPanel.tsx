@@ -117,6 +117,7 @@ function PartySelector({
             <option
               key={party.id}
               value={party.id}
+              dir="auto"
               disabled={party.id === excludedPartyId}
             >
               {party.names[language]} ({party.ballotLetter})

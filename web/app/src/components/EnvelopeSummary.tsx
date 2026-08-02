@@ -42,7 +42,7 @@ export function EnvelopeSummary({
       </span>
       <span className="envelope-summary__result">
         <strong>{formatNumber(record.totals.actualVoters, language)}</strong>
-        <span>
+        <span dir="auto">
           {winner?.names[language] ?? record.winner.partyId} /{' '}
           {formatPercent(record.winner.voteShare, language)}
         </span>

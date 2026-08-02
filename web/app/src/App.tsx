@@ -16,6 +16,7 @@ import {
   loadNationalResults,
   resolveDataUrl,
 } from './data/client'
+import type { AddressSearchMatch } from './domain/addressSearch'
 import type {
   AppCatalog,
   ElectionResults,
@@ -58,12 +59,14 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedSearchItem, setSelectedSearchItem] =
     useState<GeographySearchItem | null>(null)
+  const [selectedAddress, setSelectedAddress] =
+    useState<AddressSearchMatch | null>(null)
   const [focusRequest, setFocusRequest] = useState<{
     id: string
     bounds: GeographySearchItem['bounds']
     requestId: number
   } | null>(null)
-  const { language, electionId, geographyMode } = preferences
+  const { language, electionId, geographyMode, basemapMode } = preferences
   const isGeographicView =
     activeView === 'map' ||
     activeView === 'party-map' ||
@@ -267,6 +270,7 @@ export default function App() {
   const handleElectionChange = (nextElectionId: string) => {
     setSelectedId(null)
     setSelectedSearchItem(null)
+    setSelectedAddress(null)
     setFocusRequest(null)
     setSelectedPartyId(null)
     setComparisonPartyIds([null, null])
@@ -275,8 +279,12 @@ export default function App() {
   const handleGeographyChange = (nextMode: GeographyMode) => {
     setSelectedId(null)
     setSelectedSearchItem(null)
+    setSelectedAddress(null)
     setFocusRequest(null)
     updatePreferences({ ...preferences, geographyMode: nextMode })
+  }
+  const handleBasemapChange = (nextMode: typeof basemapMode) => {
+    updatePreferences({ ...preferences, basemapMode: nextMode })
   }
   const handleComparisonFirstChange = (partyId: string) => {
     setComparisonPartyIds([
@@ -301,22 +309,26 @@ export default function App() {
   const handleViewChange = (nextView: AppView) => {
     setSelectedId(null)
     setSelectedSearchItem(null)
+    setSelectedAddress(null)
     setFocusRequest(null)
     setActiveView(nextView)
   }
   const clearMapSelection = () => {
     setSelectedId(null)
     setSelectedSearchItem(null)
+    setSelectedAddress(null)
     setFocusRequest(null)
   }
   const handleMapSelect = (id: string | null) => {
     setSelectedId(id)
     setSelectedSearchItem(null)
+    setSelectedAddress(null)
     setFocusRequest(null)
   }
   const handleSearchSelect = (item: GeographySearchItem) => {
     setSelectedId(item.id)
     setSelectedSearchItem(item)
+    setSelectedAddress(null)
     setFocusRequest((current) => ({
       id: item.id,
       bounds: item.bounds,
@@ -324,6 +336,19 @@ export default function App() {
     }))
     if (item.geographyMode !== geographyMode) {
       updatePreferences({ ...preferences, geographyMode: item.geographyMode })
+    }
+  }
+  const handleAddressSearchSelect = (match: AddressSearchMatch) => {
+    setSelectedId(match.area.id)
+    setSelectedSearchItem(match.area)
+    setSelectedAddress(match)
+    setFocusRequest((current) => ({
+      id: match.id,
+      bounds: match.area.bounds,
+      requestId: (current?.requestId ?? 0) + 1,
+    }))
+    if (geographyMode !== 'statistical-area') {
+      updatePreferences({ ...preferences, geographyMode: 'statistical-area' })
     }
   }
 
@@ -379,14 +404,34 @@ export default function App() {
                     ? resolveDataUrl(selectedGeography.backdropGeometryUrl)
                     : null
                 }
+                basemapMaskGeometryUrl={
+                  selectedGeography.basemapMaskGeometryUrl
+                    ? resolveDataUrl(selectedGeography.basemapMaskGeometryUrl)
+                    : null
+                }
+                mapContextGeometryUrl={
+                  selectedGeography.mapContextGeometryUrl
+                    ? resolveDataUrl(selectedGeography.mapContextGeometryUrl)
+                    : null
+                }
                 bounds={catalog.bounds}
                 records={results.records}
                 parties={results.parties}
                 hiddenGeographyIds={results.hiddenGeographyIds}
                 selectedId={selectedId}
                 focusRequest={focusRequest}
+                addressMarker={
+                  selectedAddress
+                    ? {
+                        coordinates: selectedAddress.coordinates,
+                        label: selectedAddress.label,
+                      }
+                    : null
+                }
                 partyMap={partyMapPresentation}
                 partyComparison={partyComparisonPresentation}
+                basemapMode={basemapMode}
+                onBasemapModeChange={handleBasemapChange}
                 onSelect={handleMapSelect}
               />
             </Suspense>
@@ -433,10 +478,16 @@ export default function App() {
               electionId={electionId}
               geographyMode={geographyMode}
               items={searchIndex?.items ?? []}
+              bounds={catalog.bounds}
+              statisticalGeometryUrl={resolveDataUrl(
+                selectedElection.geographiesByMode['statistical-area'].geometryUrl,
+              )}
               loading={searchState.status === 'loading'}
               error={searchState.status === 'error' ? searchState.message : null}
               selectedItem={selectedSearchItem}
+              selectedAddress={selectedAddress}
               onSelect={handleSearchSelect}
+              onAddressSelect={handleAddressSearchSelect}
               onClearSelection={clearMapSelection}
             />
             <EnvelopeSummary

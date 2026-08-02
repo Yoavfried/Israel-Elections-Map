@@ -1,5 +1,5 @@
-import { GeographyModeSchema, LanguageSchema } from '../domain/schemas'
-import type { GeographyMode, Language } from '../domain/schemas'
+import { BasemapModeSchema, GeographyModeSchema, LanguageSchema } from '../domain/schemas'
+import type { BasemapMode, GeographyMode, Language } from '../domain/schemas'
 
 const STORAGE_KEY = 'israel-election-map:preferences:v1'
 
@@ -7,6 +7,7 @@ export interface AppPreferences {
   language: Language
   electionId: string
   geographyMode: GeographyMode
+  basemapMode: BasemapMode
 }
 
 interface StorageLike {
@@ -19,6 +20,7 @@ export function defaultPreferences(browserLanguage = 'en'): AppPreferences {
     language: browserLanguage.toLowerCase().startsWith('he') ? 'he' : 'en',
     electionId: 'K25',
     geographyMode: 'statistical-area',
+    basemapMode: 'vector',
   }
 }
 
@@ -44,6 +46,7 @@ export function loadPreferences(
           ? parsed.electionId
           : defaults.electionId,
       geographyMode: GeographyModeSchema.catch(defaults.geographyMode).parse(parsed.geographyMode),
+      basemapMode: BasemapModeSchema.catch(defaults.basemapMode).parse(parsed.basemapMode),
     }
   } catch {
     return defaults

@@ -538,6 +538,62 @@ describe('generated web data', () => {
     expect(backdrop.features).toHaveLength(1)
     expect(backdrop.features[0].geometry?.type).toMatch(/^(Multi)?Polygon$/)
     expect(backdrop.features[0].geometry?.coordinates?.length).toBeGreaterThan(0)
+
+    const contextUrls = new Set(
+      catalog.elections.flatMap((election) => [
+        election.geographiesByMode['statistical-area'].mapContextGeometryUrl,
+        election.geographiesByMode.locality.mapContextGeometryUrl,
+      ]),
+    )
+    expect(contextUrls).toEqual(new Set(['geographies/map-context-footprint.geojson']))
+    const contextUrl = [...contextUrls][0]
+    if (!contextUrl) {
+      throw new Error('Missing shared map-context URL')
+    }
+    expect(catalog.assets.some((asset) => asset.path === contextUrl)).toBe(true)
+
+    const context = (await readJson(resolve(dataRoot, contextUrl))) as {
+      features: Array<{
+        properties?: { context_id?: string }
+        geometry?: { type?: string; coordinates?: number[][][] }
+      }>
+    }
+    expect(context.features).toHaveLength(1)
+    expect(context.features[0].properties?.context_id).toBe(
+      'israel-west-bank-statistical-land',
+    )
+    expect(context.features[0].geometry?.type).toBe('Polygon')
+    const contextCoordinates = context.features[0].geometry?.coordinates
+    if (!contextCoordinates) {
+      throw new Error('Missing map-context coordinates')
+    }
+    expect(polygonContainsPoint(contextCoordinates, [35.18, 32.1])).toBe(true)
+    expect(polygonContainsPoint(contextCoordinates, [35.2, 31.9])).toBe(true)
+    expect(polygonContainsPoint(contextCoordinates, [34.95, 29.56])).toBe(true)
+    expect(polygonContainsPoint(contextCoordinates, [34.45, 31.5])).toBe(false)
+    expect(polygonContainsPoint(contextCoordinates, [34.7, 32])).toBe(false)
+    expect(polygonContainsPoint(contextCoordinates, [34.92, 29.47])).toBe(false)
+    expect(polygonContainsPoint(contextCoordinates, [35.63205, 33.2763])).toBe(false)
+    expect(polygonContainsPoint(contextCoordinates, [35.633, 33.268])).toBe(true)
+
+    const maskUrls = new Set(
+      catalog.elections.flatMap((election) => [
+        election.geographiesByMode['statistical-area'].basemapMaskGeometryUrl,
+        election.geographiesByMode.locality.basemapMaskGeometryUrl,
+      ]),
+    )
+    expect(maskUrls).toEqual(new Set(['geographies/basemap-outside-mask.geojson']))
+    const maskUrl = [...maskUrls][0]
+    if (!maskUrl) {
+      throw new Error('Missing shared basemap mask URL')
+    }
+    expect(catalog.assets.some((asset) => asset.path === maskUrl)).toBe(true)
+
+    const mask = (await readJson(resolve(dataRoot, maskUrl))) as {
+      features: Array<{ properties?: { maskType?: string }; geometry?: { type?: string } }>
+    }
+    expect(mask.features).toHaveLength(1)
+    expect(mask.features[0].properties?.maskType).toBe('outside-map-context')
   })
 
   it('uses detailed West Bank footprints while preserving reviewed proxy markers', async () => {
@@ -865,7 +921,7 @@ describe('generated web data', () => {
     expect(party('K19', 'ו')).toMatchObject({ color: '#8B1E1E', colorStatus: 'reviewed' })
     expect(party('K23', 'נץ')).toMatchObject({ color: '#F5B800', colorStatus: 'reviewed' })
     expect(party('K25', 'ל')).toMatchObject({ color: '#5DADE2', colorStatus: 'reviewed' })
-    expect(party('K25', 'ד')).toMatchObject({ color: '#E67E22', colorStatus: 'reviewed' })
+    expect(party('K25', 'ד')).toMatchObject({ color: '#EE9140', colorStatus: 'reviewed' })
     expect(party('K25', 'ת')).toMatchObject({ color: '#00A651', colorStatus: 'reviewed' })
 
     const newlyReviewedColors = [
@@ -890,7 +946,7 @@ describe('generated web data', () => {
       ['K18', 'פ', '#4B5563'],
       ['K18', 'פי', '#4B5563'],
       ['K18', 'פק', '#202020'],
-      ['K18', 'צי', '#C65D16'],
+      ['K18', 'צי', '#B54E12'],
       ['K18', 'ק', '#8B1E1E'],
       ['K18', 'קפ', '#8B1E1E'],
       ['K18', 'קץ', '#5DADE2'],
@@ -908,7 +964,7 @@ describe('generated web data', () => {
       ['K19', 'נץ', '#F5B800'],
       ['K19', 'עם', '#0B5D3B'],
       ['K19', 'פ', '#202020'],
-      ['K19', 'פה', '#C65D16'],
+      ['K19', 'פה', '#B54E12'],
       ['K19', 'פז', '#4B5563'],
       ['K19', 'פי', '#F4D96B'],
       ['K19', 'פנ', '#4B5563'],
@@ -930,7 +986,7 @@ describe('generated web data', () => {
       ['K20', 'נץ', '#4B5563'],
       ['K20', 'כ', '#7B2CBF'],
       ['K20', 'ע', '#0B5D3B'],
-      ['K20', 'פה', '#C65D16'],
+      ['K20', 'פה', '#B54E12'],
       ['K20', 'ף', '#202020'],
       ['K20', 'ףץ', '#202020'],
       ['K20', 'קץ', '#202020'],
@@ -990,7 +1046,7 @@ describe('generated web data', () => {
       ['K24', 'יר', '#4B5563'],
       ['K24', 'כן', '#7B2CBF'],
       ['K24', 'עם', '#0B5D3B'],
-      ['K24', 'פה', '#C65D16'],
+      ['K24', 'פה', '#B54E12'],
       ['K24', 'ףז', '#202020'],
       ['K24', 'צי', '#F4D96B'],
       ['K24', 'צכ', '#0B5D3B'],
@@ -1009,7 +1065,7 @@ describe('generated web data', () => {
       ['K25', 'יז', '#F4D96B'],
       ['K25', 'כן', '#7B2CBF'],
       ['K25', 'עם', '#0B5D3B'],
-      ['K25', 'פה', '#C65D16'],
+      ['K25', 'פה', '#B54E12'],
       ['K25', 'ף', '#202020'],
       ['K25', 'ק', '#00A651'],
       ['K25', 'נק', '#00A651'],
@@ -1494,4 +1550,26 @@ async function readAndValidateGeography(asset: {
 }
 async function readJson(path: string): Promise<unknown> {
   return JSON.parse(await readFile(path, 'utf8'))
+}
+
+function polygonContainsPoint(polygon: number[][][], point: [number, number]): boolean {
+  return ringContainsPoint(polygon[0], point) &&
+    !polygon.slice(1).some((ring) => ringContainsPoint(ring, point))
+}
+
+function ringContainsPoint(ring: number[][], [longitude, latitude]: [number, number]): boolean {
+  let inside = false
+  for (let index = 0, previous = ring.length - 1; index < ring.length; previous = index++) {
+    const [currentLongitude, currentLatitude] = ring[index]
+    const [previousLongitude, previousLatitude] = ring[previous]
+    const crossesLatitude = currentLatitude > latitude !== previousLatitude > latitude
+    const crossingLongitude =
+      ((previousLongitude - currentLongitude) * (latitude - currentLatitude)) /
+        (previousLatitude - currentLatitude) +
+      currentLongitude
+    if (crossesLatitude && longitude < crossingLongitude) {
+      inside = !inside
+    }
+  }
+  return inside
 }

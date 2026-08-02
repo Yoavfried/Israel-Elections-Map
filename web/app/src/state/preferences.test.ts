@@ -24,12 +24,14 @@ describe('preferences', () => {
       language: 'he',
       electionId: 'K22',
       geographyMode: 'locality',
+      basemapMode: 'neutral',
     })
 
     expect(loadPreferences(storage, 'en')).toEqual({
       language: 'he',
       electionId: 'K22',
       geographyMode: 'locality',
+      basemapMode: 'neutral',
     })
   })
 

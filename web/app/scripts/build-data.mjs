@@ -53,6 +53,7 @@ async function main() {
       statisticalAreas,
       localities,
       statisticalAreaBackdrop,
+      mapContextFootprint,
       compositeLocalities,
       customGeographies,
       statisticalAreaResultAggregates,
@@ -91,6 +92,7 @@ async function main() {
       readJson(
         resolve(sourceRoot, 'geographies', 'statistical_area_land_backdrop.simplified.geojson'),
       ),
+      readJson(resolve(APP_ROOT, 'data', 'map-context-footprint.geojson')),
       readJson(resolve(sourceRoot, 'geographies', 'composite_localities.simplified.geojson')),
       readJson(resolve(sourceRoot, 'geographies', 'custom_geographies.geojson')),
       readJson(
@@ -267,6 +269,9 @@ async function main() {
       prunedStatisticalAreasByVintage.get(vintage)?.features.push(...featuresById.values())
     }
     const statisticalAreaBackdropUrl = 'geographies/statistical-area-backdrop.geojson'
+    const basemapMaskGeometryUrl = 'geographies/basemap-outside-mask.geojson'
+    const mapContextGeometryUrl = 'geographies/map-context-footprint.geojson'
+    const basemapOutsideMask = buildBasemapOutsideMask(mapContextFootprint)
     const statisticalMarkersByVintage = new Map(
       [...prunedStatisticalAreasByVintage].map(([vintage, geography]) => [
         vintage,
@@ -298,6 +303,8 @@ async function main() {
             geometryUrl: `geographies/statistical-areas-${vintage}.geojson`,
             markerGeometryUrl: `geographies/statistical-area-markers-${vintage}.geojson`,
             backdropGeometryUrl: statisticalAreaBackdropUrl,
+            basemapMaskGeometryUrl,
+            mapContextGeometryUrl,
             featureCount: geography.features.length,
             markerFeatureCount: markers.features.length,
           },
@@ -309,6 +316,8 @@ async function main() {
       geometryUrl: 'geographies/localities.geojson',
       markerGeometryUrl: 'geographies/locality-markers.geojson',
       backdropGeometryUrl: statisticalAreaBackdropUrl,
+      basemapMaskGeometryUrl,
+      mapContextGeometryUrl,
       featureCount: prunedLocalities.features.length,
       markerFeatureCount: localityMarkers.features.length,
     }
@@ -324,6 +333,8 @@ async function main() {
       writeJsonAsset(localityGeographyAsset.geometryUrl, prunedLocalities),
       writeJsonAsset(localityGeographyAsset.markerGeometryUrl, localityMarkers),
       writeJsonAsset(statisticalAreaBackdropUrl, statisticalAreaBackdrop),
+      writeJsonAsset(basemapMaskGeometryUrl, basemapOutsideMask),
+      writeJsonAsset(mapContextGeometryUrl, mapContextFootprint),
     ])
 
     const catalogElections = []
@@ -648,6 +659,51 @@ async function readJson(path) {
   } catch (error) {
     throw new Error(`Invalid JSON in ${path}: ${error.message}`)
   }
+}
+
+function buildBasemapOutsideMask(footprint) {
+  const geometry = footprint?.features?.[0]?.geometry
+  if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) {
+    throw new Error('The map-context footprint cannot define the basemap mask')
+  }
+
+  const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates
+  const outerRings = polygons.map((polygon) => orientRing(polygon[0], false))
+
+  const worldRing = [
+    [-180, -85],
+    [180, -85],
+    [180, 85],
+    [-180, 85],
+    [-180, -85],
+  ]
+
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        id: 'basemap-outside-mask',
+        properties: { maskType: 'outside-map-context' },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [orientRing(worldRing, true), ...outerRings],
+        },
+      },
+    ],
+  }
+}
+
+function orientRing(ring, counterClockwise) {
+  const isCounterClockwise = signedRingArea(ring) > 0
+  return isCounterClockwise === counterClockwise ? ring : [...ring].reverse()
+}
+
+function signedRingArea(ring) {
+  return ring.reduce((area, coordinate, index) => {
+    const next = ring[(index + 1) % ring.length]
+    return area + coordinate[0] * next[1] - next[0] * coordinate[1]
+  }, 0) / 2
 }
 
 async function readCsv(path) {

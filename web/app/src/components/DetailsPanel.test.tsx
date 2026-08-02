@@ -55,7 +55,7 @@ describe('DetailsPanel', () => {
     expect(html).toContain('<span class="party-votes">0</span>')
     expect(html).toContain('<h3>Vote breakdown</h3>')
     expect(html).toContain('1 Polling stations')
-    expect(html).toContain('<strong>List 1</strong><span>20.0%</span>')
+    expect(html).toContain('<strong dir="auto">List 1</strong><span>20.0%</span>')
     expect(html).not.toContain('vote share')
     expect(html).toContain('<span class="party-share">20.0%</span>')
     expect(html).toContain('<span class="party-share">0.0%</span>')
@@ -157,7 +157,7 @@ describe('DetailsPanel', () => {
       />,
     )
 
-    expect(html).toContain('<h2>Jerusalem · 1001</h2>')
+    expect(html).toContain('<h2 dir="auto">Jerusalem · 1001</h2>')
     expect(html).toContain(
       'No mapped result is available for this geography in the selected election.',
     )

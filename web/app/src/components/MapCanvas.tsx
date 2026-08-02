@@ -3,10 +3,14 @@ import maplibregl from 'maplibre-gl'
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
+  FilterSpecification,
   LineLayerSpecification,
   Map as MapLibreMap,
+  SymbolLayerSpecification,
 } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { basemapStyle } from '../config/basemaps'
+import { ensureRtlTextSupport } from '../config/rtlText'
 import {
   buildBackgroundPolygonVisibilityFilter,
   buildMarkerVisibilityFilter,
@@ -19,7 +23,9 @@ import {
   partyComparisonColor,
 } from '../domain/partyComparison'
 import { partyGradientColor, partyVoteShare } from '../domain/partyMap'
+import type { MapPosition } from '../domain/addressSearch'
 import type {
+  BasemapMode,
   GeographyBounds,
   GeographyMode,
   Language,
@@ -27,19 +33,46 @@ import type {
   ResultRecord,
 } from '../domain/schemas'
 import { translate } from '../i18n/translations'
+import { BasemapSelector } from './BasemapSelector'
 
 const SOURCE_ID = 'election-geographies'
 const MARKER_SOURCE_ID = 'election-geography-markers'
 const BACKDROP_SOURCE_ID = 'election-geography-backdrop'
+const BASEMAP_MASK_SOURCE_ID = 'basemap-outside-mask'
+const MAP_CONTEXT_SOURCE_ID = 'map-context-footprint'
 const BACKGROUND_FILL_LAYER_ID = 'election-background-fill'
 const BACKGROUND_LINE_LAYER_ID = 'election-background-line'
 const FILL_LAYER_ID = 'election-fill'
 const LINE_LAYER_ID = 'election-line'
 const MARKER_LAYER_ID = 'election-markers'
 const BACKDROP_FILL_LAYER_ID = 'election-backdrop-fill'
-const MAP_BACKGROUND_COLOR = '#f3f0e8'
+const BASEMAP_MASK_LAYER_ID = 'basemap-outside-mask-fill'
+const MAP_CONTEXT_LINE_LAYER_ID = 'map-context-boundary'
 const GEOGRAPHY_BORDER_COLOR = '#626a65'
 const UNMAPPED_AREA_FILL_OPACITY = 0.58
+const VECTOR_STYLE_LOAD_TIMEOUT_MS = 8_000
+const VECTOR_WATER_COLOR = '#c2c8ca'
+const SUPPRESSED_BASEMAP_LABELS = [
+  'Israel',
+  'ISRAEL',
+  'ישראל',
+  'إسرائيل',
+  'Palestinian Territories',
+  'PALESTINIAN TERRITORIES',
+  'Palestinian Territory',
+  'State of Palestine',
+  'השטחים הפלסטיניים',
+  'מדינת פלסטין',
+  'الأراضي الفلسطينية',
+]
+const BASEMAP_LABEL_NAME_FIELDS = [
+  'name',
+  'name:en',
+  'name:he',
+  'name:ar',
+  'name:latin',
+  'name:nonlatin',
+]
 
 interface MapCanvasProps {
   language: Language
@@ -47,6 +80,8 @@ interface MapCanvasProps {
   geometryUrl: string
   markerGeometryUrl: string
   backdropGeometryUrl: string | null
+  basemapMaskGeometryUrl: string | null
+  mapContextGeometryUrl: string | null
   bounds: [[number, number], [number, number]]
   records: ResultRecord[]
   parties: Party[]
@@ -56,6 +91,10 @@ interface MapCanvasProps {
     id: string
     bounds: GeographyBounds
     requestId: number
+  } | null
+  addressMarker: {
+    coordinates: MapPosition
+    label: string
   } | null
   partyMap: {
     partyId: string
@@ -68,20 +107,14 @@ interface MapCanvasProps {
     secondPartyId: string
     secondColor: string
   } | null
+  basemapMode: BasemapMode
+  onBasemapModeChange: (mode: BasemapMode) => void
   onSelect: (id: string | null) => void
 }
 
-const baseStyle = {
-  version: 8 as const,
-  sources: {},
-  layers: [
-    {
-      id: 'paper-background',
-      type: 'background' as const,
-      paint: { 'background-color': MAP_BACKGROUND_COLOR },
-    },
-  ],
-}
+type MapContextGeometry =
+  | { type: 'Polygon'; coordinates: number[][][] }
+  | { type: 'MultiPolygon'; coordinates: number[][][][] }
 
 export default function MapCanvas({
   language,
@@ -89,26 +122,40 @@ export default function MapCanvas({
   geometryUrl,
   markerGeometryUrl,
   backdropGeometryUrl,
+  basemapMaskGeometryUrl,
+  mapContextGeometryUrl,
   bounds,
   records,
   parties,
   hiddenGeographyIds,
   selectedId,
   focusRequest,
+  addressMarker,
   partyMap,
   partyComparison,
+  basemapMode,
+  onBasemapModeChange,
   onSelect,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const onSelectRef = useRef(onSelect)
+  const onBasemapModeChangeRef = useRef(onBasemapModeChange)
+  const activeBasemapModeRef = useRef(basemapMode)
+  const vectorStyleTimerRef = useRef<number | null>(null)
+  const attributionControlRef = useRef<maplibregl.AttributionControl | null>(null)
+  const addressMarkerRef = useRef<maplibregl.Marker | null>(null)
+  const basemapLabelFiltersRef = useRef(new Map<string, FilterSpecification | null>())
   const recordsByIdRef = useRef(new Map<string, ResultRecord>())
   const [mapReady, setMapReady] = useState(false)
+  const [styleRevision, setStyleRevision] = useState(0)
   const [mapError, setMapError] = useState<string | null>(null)
+  const [mapContextGeometry, setMapContextGeometry] = useState<MapContextGeometry | null>(null)
   const partyById = useMemo(() => new Map(parties.map((party) => [party.id, party])), [parties])
   const recordsById = useMemo(() => new Map(records.map((record) => [record.id, record])), [records])
 
   onSelectRef.current = onSelect
+  onBasemapModeChangeRef.current = onBasemapModeChange
   recordsByIdRef.current = recordsById
 
   useEffect(() => {
@@ -116,10 +163,17 @@ export default function MapCanvas({
       return
     }
 
+    let disposed = false
+    void ensureRtlTextSupport(maplibregl).catch(() => {
+      if (!disposed && activeBasemapModeRef.current === 'vector') {
+        onBasemapModeChangeRef.current('neutral')
+      }
+    })
+
     try {
       const map = new maplibregl.Map({
         container: containerRef.current,
-        style: baseStyle,
+        style: basemapStyle(activeBasemapModeRef.current),
         center: [35.05, 31.55],
         zoom: 6.4,
         minZoom: 5.4,
@@ -130,9 +184,28 @@ export default function MapCanvas({
       })
       mapRef.current = map
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right')
-      map.once('load', () => setMapReady(true))
+      if (activeBasemapModeRef.current === 'vector') {
+        const attributionControl = new maplibregl.AttributionControl({
+          compact: true,
+        })
+        map.addControl(attributionControl, 'bottom-left')
+        attributionControlRef.current = attributionControl
+        vectorStyleTimerRef.current = window.setTimeout(() => {
+          if (activeBasemapModeRef.current === 'vector') {
+            onBasemapModeChangeRef.current('neutral')
+          }
+        }, VECTOR_STYLE_LOAD_TIMEOUT_MS)
+      }
+      map.on('style.load', () => {
+        clearVectorStyleTimer(vectorStyleTimerRef)
+        basemapLabelFiltersRef.current.clear()
+        setMapError(null)
+        setStyleRevision((current) => current + 1)
+        setMapReady(true)
+      })
       map.on('error', (event) => {
-        if (event.error) {
+        const sourceId = 'sourceId' in event ? event.sourceId : undefined
+        if (event.error && isElectionSource(sourceId)) {
           setMapError(event.error.message)
         }
       })
@@ -141,14 +214,108 @@ export default function MapCanvas({
     }
 
     return () => {
+      disposed = true
+      clearVectorStyleTimer(vectorStyleTimerRef)
+      addressMarkerRef.current?.remove()
+      addressMarkerRef.current = null
       mapRef.current?.remove()
       mapRef.current = null
+      attributionControlRef.current = null
     }
   }, [])
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !mapReady) {
+    if (!map || activeBasemapModeRef.current === basemapMode) {
+      return
+    }
+
+    activeBasemapModeRef.current = basemapMode
+    setMapReady(false)
+    setMapError(null)
+    clearVectorStyleTimer(vectorStyleTimerRef)
+
+    if (attributionControlRef.current) {
+      map.removeControl(attributionControlRef.current)
+      attributionControlRef.current = null
+    }
+    if (basemapMode === 'vector') {
+      void ensureRtlTextSupport(maplibregl).catch(() => {
+        if (activeBasemapModeRef.current === 'vector') {
+          onBasemapModeChangeRef.current('neutral')
+        }
+      })
+      const attributionControl = new maplibregl.AttributionControl({
+        compact: true,
+      })
+      map.addControl(attributionControl, 'bottom-left')
+      attributionControlRef.current = attributionControl
+      vectorStyleTimerRef.current = window.setTimeout(() => {
+        if (activeBasemapModeRef.current === 'vector') {
+          onBasemapModeChangeRef.current('neutral')
+        }
+      }, VECTOR_STYLE_LOAD_TIMEOUT_MS)
+    }
+
+    try {
+      map.setStyle(basemapStyle(basemapMode), { diff: false })
+    } catch (error) {
+      if (basemapMode === 'vector') {
+        onBasemapModeChangeRef.current('neutral')
+      } else {
+        setMapError(error instanceof Error ? error.message : String(error))
+      }
+    }
+  }, [basemapMode])
+
+  useEffect(() => {
+    const abortController = new AbortController()
+    setMapContextGeometry(null)
+    if (!mapContextGeometryUrl) {
+      return () => abortController.abort()
+    }
+
+    void fetch(mapContextGeometryUrl, { signal: abortController.signal })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Map-context request failed with ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((payload: unknown) => {
+        if (abortController.signal.aborted) {
+          return
+        }
+        const geometry = readMapContextGeometry(payload)
+        if (geometry) {
+          setMapContextGeometry(geometry)
+        }
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
+      })
+
+    return () => abortController.abort()
+  }, [mapContextGeometryUrl])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady || !map.getStyle() || basemapMode !== 'vector') {
+      return
+    }
+    localizeBasemapLabels(
+      map,
+      language,
+      mapContextGeometry,
+      basemapLabelFiltersRef.current,
+    )
+  }, [basemapMode, language, mapContextGeometry, mapReady, styleRevision])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady || !map.getStyle()) {
       return
     }
 
@@ -170,6 +337,12 @@ export default function MapCanvas({
     if (map.getLayer(BACKDROP_FILL_LAYER_ID)) {
       map.removeLayer(BACKDROP_FILL_LAYER_ID)
     }
+    if (map.getLayer(BASEMAP_MASK_LAYER_ID)) {
+      map.removeLayer(BASEMAP_MASK_LAYER_ID)
+    }
+    if (map.getLayer(MAP_CONTEXT_LINE_LAYER_ID)) {
+      map.removeLayer(MAP_CONTEXT_LINE_LAYER_ID)
+    }
     if (map.getSource(SOURCE_ID)) {
       map.removeSource(SOURCE_ID)
     }
@@ -179,21 +352,61 @@ export default function MapCanvas({
     if (map.getSource(BACKDROP_SOURCE_ID)) {
       map.removeSource(BACKDROP_SOURCE_ID)
     }
+    if (map.getSource(BASEMAP_MASK_SOURCE_ID)) {
+      map.removeSource(BASEMAP_MASK_SOURCE_ID)
+    }
+    if (map.getSource(MAP_CONTEXT_SOURCE_ID)) {
+      map.removeSource(MAP_CONTEXT_SOURCE_ID)
+    }
+
+    const basemapDetailAnchor = findBasemapDetailAnchor(map)
+    const basemapLabelAnchor = findBasemapLabelAnchor(map)
 
     if (backdropGeometryUrl) {
       map.addSource(BACKDROP_SOURCE_ID, {
         type: 'geojson',
         data: backdropGeometryUrl,
       })
-      map.addLayer({
-        id: BACKDROP_FILL_LAYER_ID,
-        source: BACKDROP_SOURCE_ID,
-        type: 'fill',
-        filter: buildBackgroundPolygonVisibilityFilter([], []),
-        paint: {
-          'fill-color': UNMAPPED_GEOGRAPHY_COLOR,
-          'fill-opacity': 0.28,
+      map.addLayer(
+        {
+          id: BACKDROP_FILL_LAYER_ID,
+          source: BACKDROP_SOURCE_ID,
+          type: 'fill',
+          filter: buildBackgroundPolygonVisibilityFilter([], []),
+          paint: {
+            'fill-color': UNMAPPED_GEOGRAPHY_COLOR,
+            'fill-opacity': basemapMode === 'vector' ? 0.18 : 0.28,
+          },
         },
+        basemapDetailAnchor,
+      )
+    }
+
+    const maskBasemap = basemapMode === 'vector' && basemapMaskGeometryUrl
+    if (maskBasemap) {
+      map.addSource(BASEMAP_MASK_SOURCE_ID, {
+        type: 'geojson',
+        data: basemapMaskGeometryUrl,
+      })
+      map.addLayer(
+        {
+          id: BASEMAP_MASK_LAYER_ID,
+          source: BASEMAP_MASK_SOURCE_ID,
+          type: 'fill',
+          paint: {
+            'fill-antialias': false,
+            'fill-color': VECTOR_WATER_COLOR,
+            'fill-opacity': 1,
+          },
+        },
+        basemapLabelAnchor,
+      )
+    }
+
+    if (mapContextGeometryUrl) {
+      map.addSource(MAP_CONTEXT_SOURCE_ID, {
+        type: 'geojson',
+        data: mapContextGeometryUrl,
       })
     }
 
@@ -353,10 +566,35 @@ export default function MapCanvas({
         ],
       },
     }
-    map.addLayer(backgroundFillLayer)
-    map.addLayer(backgroundLineLayer)
-    map.addLayer(fillLayer)
-    map.addLayer(lineLayer)
+    map.addLayer(backgroundFillLayer, basemapDetailAnchor)
+    map.addLayer(backgroundLineLayer, basemapLabelAnchor)
+    map.addLayer(fillLayer, basemapDetailAnchor)
+    map.addLayer(lineLayer, basemapLabelAnchor)
+    if (mapContextGeometryUrl) {
+      map.addLayer(
+        {
+          id: MAP_CONTEXT_LINE_LAYER_ID,
+          source: MAP_CONTEXT_SOURCE_ID,
+          type: 'line',
+          paint: {
+            'line-color': '#747b77',
+            'line-opacity': 0.9,
+            'line-width': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              5.4,
+              0.65,
+              8,
+              1,
+              11,
+              1.4,
+            ],
+          },
+        },
+        basemapLabelAnchor,
+      )
+    }
     map.addLayer(markerLayer)
     map.fitBounds(bounds, { padding: 36, duration: 0 })
 
@@ -390,12 +628,16 @@ export default function MapCanvas({
     }
   }, [
     backdropGeometryUrl,
+    basemapMaskGeometryUrl,
+    basemapMode,
     bounds,
     geographyMode,
     geometryUrl,
     hiddenGeographyIds,
     mapReady,
+    mapContextGeometryUrl,
     markerGeometryUrl,
+    styleRevision,
   ])
 
   useEffect(() => {
@@ -499,6 +741,7 @@ export default function MapCanvas({
     partyMap,
     records,
     selectedId,
+    styleRevision,
   ])
 
   useEffect(() => {
@@ -517,7 +760,32 @@ export default function MapCanvas({
       duration: 550,
       maxZoom: geographyMode === 'statistical-area' ? 13 : 11,
     })
-  }, [focusRequest, geographyMode, geometryUrl, mapReady])
+  }, [focusRequest, geographyMode, geometryUrl, mapReady, styleRevision])
+
+  useEffect(() => {
+    const map = mapRef.current
+    addressMarkerRef.current?.remove()
+    addressMarkerRef.current = null
+    if (!map || !mapReady || !addressMarker) {
+      return
+    }
+
+    const marker = new maplibregl.Marker({ color: '#1c6457' })
+      .setLngLat(addressMarker.coordinates)
+      .addTo(map)
+    const markerElement = marker.getElement()
+    markerElement.classList.add('address-map-marker')
+    markerElement.title = addressMarker.label
+    markerElement.setAttribute('aria-label', addressMarker.label)
+    addressMarkerRef.current = marker
+
+    return () => {
+      if (addressMarkerRef.current === marker) {
+        addressMarkerRef.current = null
+      }
+      marker.remove()
+    }
+  }, [addressMarker, mapReady, styleRevision])
 
   if (mapError) {
     return (
@@ -530,12 +798,132 @@ export default function MapCanvas({
 
   return (
     <div
-      ref={containerRef}
       className="map-canvas"
       role="region"
       aria-label={translate(language, 'mapLabel')}
-    />
+    >
+      <div ref={containerRef} className="map-canvas__viewport" />
+      <BasemapSelector
+        language={language}
+        mode={basemapMode}
+        onChange={onBasemapModeChange}
+      />
+    </div>
   )
+}
+
+const BASEMAP_NAME_LAYER_PATTERN = /(airport|label|name|poi)/
+
+const SUPPRESSED_BASEMAP_LABEL_FILTER = [
+  'all',
+  ...BASEMAP_LABEL_NAME_FIELDS.map((field) => [
+    '!',
+    [
+      'in',
+      ['coalesce', ['get', field], ''],
+      ['literal', SUPPRESSED_BASEMAP_LABELS],
+    ],
+  ]),
+] as FilterSpecification
+
+function localizeBasemapLabels(
+  map: MapLibreMap,
+  language: Language,
+  mapContextGeometry: MapContextGeometry | null,
+  originalFilters: Map<string, FilterSpecification | null>,
+): void {
+  const textField =
+    language === 'he'
+      ? [
+          'coalesce',
+          ['get', 'name:he'],
+          ['get', 'name:nonlatin'],
+          ['get', 'name'],
+          ['get', 'name:latin'],
+        ]
+      : [
+          'coalesce',
+          ['get', 'name:en'],
+          ['get', 'name:latin'],
+          ['get', 'name'],
+          ['get', 'name:nonlatin'],
+        ]
+
+  for (const layer of map.getStyle()?.layers ?? []) {
+    if (layer.type !== 'symbol' || !BASEMAP_NAME_LAYER_PATTERN.test(layer.id)) {
+      continue
+    }
+    const symbolLayer = layer as SymbolLayerSpecification
+    if (symbolLayer.source !== 'openmaptiles' || !symbolLayer.layout?.['text-field']) {
+      continue
+    }
+    map.setLayoutProperty(layer.id, 'text-field', textField)
+    if (!originalFilters.has(layer.id)) {
+      originalFilters.set(layer.id, map.getFilter(layer.id) ?? null)
+    }
+    const filters = [
+      originalFilters.get(layer.id),
+      mapContextGeometry
+        ? (['within', mapContextGeometry] as FilterSpecification)
+        : null,
+      SUPPRESSED_BASEMAP_LABEL_FILTER,
+    ].filter((filter): filter is FilterSpecification => Boolean(filter))
+    map.setFilter(layer.id, ['all', ...filters] as FilterSpecification)
+  }
+}
+
+function readMapContextGeometry(payload: unknown): MapContextGeometry | null {
+  if (!payload || typeof payload !== 'object' || !('features' in payload)) {
+    return null
+  }
+  const features = (payload as { features?: unknown }).features
+  if (!Array.isArray(features) || !features[0] || typeof features[0] !== 'object') {
+    return null
+  }
+  const geometry = (features[0] as { geometry?: unknown }).geometry
+  if (!geometry || typeof geometry !== 'object' || !('type' in geometry)) {
+    return null
+  }
+  const type = (geometry as { type?: unknown }).type
+  if (type !== 'Polygon' && type !== 'MultiPolygon') {
+    return null
+  }
+  return geometry as MapContextGeometry
+}
+
+function findBasemapDetailAnchor(map: MapLibreMap): string | undefined {
+  const layers = map.getStyle()?.layers ?? []
+  const firstDetailLayer = layers.find((layer) => {
+    const sourceLayer = 'source-layer' in layer ? layer['source-layer'] : undefined
+    return (
+      sourceLayer === 'building' ||
+      sourceLayer === 'transportation' ||
+      sourceLayer === 'boundary' ||
+      layer.type === 'symbol'
+    )
+  })
+  return firstDetailLayer?.id
+}
+
+function findBasemapLabelAnchor(map: MapLibreMap): string | undefined {
+  return map.getStyle()?.layers?.find((layer) => layer.type === 'symbol')?.id
+}
+
+function isElectionSource(sourceId: unknown): boolean {
+  return (
+    sourceId === SOURCE_ID ||
+    sourceId === MARKER_SOURCE_ID ||
+    sourceId === BACKDROP_SOURCE_ID ||
+    sourceId === BASEMAP_MASK_SOURCE_ID ||
+    sourceId === MAP_CONTEXT_SOURCE_ID
+  )
+}
+
+function clearVectorStyleTimer(timerRef: { current: number | null }): void {
+  if (timerRef.current !== null) {
+    window.clearTimeout(timerRef.current)
+    timerRef.current = null
+  }
 }
 
 function featureId(event: maplibregl.MapLayerMouseEvent): string | null {

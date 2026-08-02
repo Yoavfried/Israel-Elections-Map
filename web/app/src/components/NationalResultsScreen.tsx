@@ -186,7 +186,9 @@ function NationalPartyRow({
             title={party.colorStatus}
             aria-hidden="true"
           />
-          <span className="national-party-name">{party.names[language]}</span>
+          <span className="national-party-name" dir="auto">
+            {party.names[language]}
+          </span>
           {party.colorStatus === 'provisional' ? (
             <span className="national-color-status">
               {translate(language, 'provisionalColor')}
