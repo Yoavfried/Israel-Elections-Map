@@ -1,6 +1,6 @@
 # Product Feature Plan
 
-Last updated: 2026-08-03
+Last updated: 2026-08-04
 
 This document records the intended design and delivery order for future map
 features. It is not a completion tracker. Actual complete/in-progress state is
