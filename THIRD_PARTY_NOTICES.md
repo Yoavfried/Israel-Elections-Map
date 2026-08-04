@@ -24,28 +24,12 @@ their source and method fields.
 ## Election Results
 
 Ballot-level election results originate from official Central Elections
-Committee and Israeli government data publications. The project does not
-relicense official source files, logos, or other protected presentation. Users
-of redistributed tables are responsible for complying with the terms at the
-source publication.
+Committee and Israeli government data publications. The official data.gov.il
+K17-K25 package is public, marked `isopen: true`, and classified as `Other
+(Open)`. The project retains source provenance and does not relicense official
+source files, logos, or other protected presentation:
 
-## ArcGIS Feature Services
-
-Two externally supplied ArcGIS FeatureServer layers are used for explicitly
-identified geometry supplements, display detail, and reviewed aggregate
-reconstruction evidence. Their service metadata does not state a reusable
-content license. The project therefore makes no broader licensing claim for
-those source geometries or aggregates. Every derivative use is labeled in
-geography metadata or row-level assignment provenance.
-
-## Kaplan Open Source Election Maps
-
-The optional source audit can download public election-map payloads from
-`elections.kaplanopensource.co.il` for source-grain and aggregate
-reconciliation checks. Those raw payloads are ignored by Git and are not
-redistributed in the public data release. The project makes no licensing claim
-over that third-party content and does not import its vote values or geometry
-into production outputs.
+https://data.gov.il/api/3/action/package_show?id=26f9fa06-fcd7-4173-8df5-65797b63e857
 
 ## OpenStreetMap Vector Basemap
 
@@ -59,14 +43,15 @@ The committed display-only `web/app/data/map-context-footprint.geojson`
 combines the CBS-derived statistical-land backdrop described above with
 OpenStreetMap relation `13283819` (the full West Bank Oslo-area perimeter).
 The overlap between the Ghajar statistical polygon and OpenStreetMap relation
-`184843` (Lebanon) is removed. The OpenStreetMap-derived portions remain ODbL
-data and are not relicensed under either project license. The footprint defines
-map presentation only, not election geography, sovereignty, ballot assignment,
-or result coverage.
+`184843` (Lebanon) is removed. The combined context database is distributed
+under ODbL 1.0; embedded CBS source material also retains its CBS terms. The
+footprint defines map presentation only, not election geography, sovereignty,
+ballot assignment, or result coverage.
 
 - OpenFreeMap: https://openfreemap.org/
 - OpenMapTiles: https://openmaptiles.org/
 - OpenStreetMap copyright and attribution: https://www.openstreetmap.org/copyright
+- ODbL 1.0: https://opendatacommons.org/licenses/odbl/1-0/
 
 The tile host is replaceable through web-build configuration. A downstream
 deployment that changes providers is responsible for that provider's terms,

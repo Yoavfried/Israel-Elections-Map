@@ -3,6 +3,12 @@ import { clampUnit, mixHexColors, normalizeHexColor } from './color'
 
 export const PARTY_MAP_ZERO_COLOR = '#ffffff'
 export const PARTY_MAP_UPPER_PERCENTILE = 0.95
+export const PARTY_MAP_CIRCLE_UPPER_PERCENTILE = 0.99
+export const PARTY_MAP_MAX_CIRCLE_RADIUS = 18
+export const PARTY_MAP_MIN_CIRCLE_RADIUS = 2.5
+const PARTY_MAP_CIRCLE_MIN_COLOR_INTENSITY = 0.22
+
+export type PartyMapDisplayMode = 'areas' | 'circles'
 
 export function partyVoteShare(record: ResultRecord, partyId: string): number {
   if (record.totals.validVotes <= 0) {
@@ -15,22 +21,54 @@ export function partyVoteShareUpperBound(
   records: ResultRecord[],
   partyId: string,
 ): number {
-  const positiveShares = records
-    .map((record) => partyVoteShare(record, partyId))
-    .filter((share) => share > 0)
+  return voteShareUpperBound(records, (record) => partyVoteShare(record, partyId))
+}
+
+export function partyVoteCount(record: ResultRecord, partyId: string): number {
+  return record.partyVotes[partyId] ?? 0
+}
+
+export function partyVoteCountUpperBound(
+  records: ResultRecord[],
+): number {
+  return positiveValueUpperBound(
+    records.map((record) => Math.max(0, ...Object.values(record.partyVotes))),
+    PARTY_MAP_CIRCLE_UPPER_PERCENTILE,
+  )
+}
+
+export function voteShareUpperBound(
+  records: ResultRecord[],
+  shareForRecord: (record: ResultRecord) => number,
+): number {
+  return positiveValueUpperBound(records.map(shareForRecord), PARTY_MAP_UPPER_PERCENTILE)
+}
+
+export function partyVoteCircleRadius(votes: number, upperBoundVotes: number): number {
+  if (votes <= 0 || upperBoundVotes <= 0) {
+    return 0
+  }
+  const proportionalRadius =
+    PARTY_MAP_MAX_CIRCLE_RADIUS * Math.sqrt(clampUnit(votes / upperBoundVotes))
+  return Math.max(PARTY_MAP_MIN_CIRCLE_RADIUS, proportionalRadius)
+}
+
+function positiveValueUpperBound(values: number[], percentile: number): number {
+  const positiveValues = values
+    .filter((value) => value > 0)
     .toSorted((left, right) => left - right)
 
-  if (positiveShares.length === 0) {
+  if (positiveValues.length === 0) {
     return 0
   }
 
-  const position = (positiveShares.length - 1) * PARTY_MAP_UPPER_PERCENTILE
+  const position = (positiveValues.length - 1) * percentile
   const lowerIndex = Math.floor(position)
   const upperIndex = Math.ceil(position)
   const interpolation = position - lowerIndex
   return (
-    positiveShares[lowerIndex] +
-    (positiveShares[upperIndex] - positiveShares[lowerIndex]) * interpolation
+    positiveValues[lowerIndex] +
+    (positiveValues[upperIndex] - positiveValues[lowerIndex]) * interpolation
   )
 }
 
@@ -62,4 +100,19 @@ export function partyGradientColor(
 ): string {
   const ratio = upperBoundShare > 0 ? clampUnit(share / upperBoundShare) : 0
   return mixHexColors(PARTY_MAP_ZERO_COLOR, normalizeHexColor(baseColor), ratio ** 2)
+}
+
+export function partyCircleColor(
+  baseColor: string,
+  share: number,
+  upperBoundShare: number,
+): string {
+  if (share <= 0) {
+    return PARTY_MAP_ZERO_COLOR
+  }
+  const ratio = upperBoundShare > 0 ? clampUnit(share / upperBoundShare) : 0
+  const intensity =
+    PARTY_MAP_CIRCLE_MIN_COLOR_INTENSITY +
+    (1 - PARTY_MAP_CIRCLE_MIN_COLOR_INTENSITY) * ratio ** 1.5
+  return mixHexColors(PARTY_MAP_ZERO_COLOR, normalizeHexColor(baseColor), intensity)
 }

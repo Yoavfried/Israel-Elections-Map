@@ -15,6 +15,9 @@ interface DetailsPanelProps {
   emptySelection?: GeographySearchItem | null
   parties: Party[]
   highlightedPartyIds?: string[]
+  highlightedPartiesLabel?: string
+  highlightedPartyTotalLabel?: string
+  highlightedPartyNotes?: Readonly<Record<string, string>>
 }
 
 export function DetailsPanel({
@@ -23,6 +26,9 @@ export function DetailsPanel({
   emptySelection = null,
   parties,
   highlightedPartyIds = [],
+  highlightedPartiesLabel,
+  highlightedPartyTotalLabel,
+  highlightedPartyNotes = {},
 }: DetailsPanelProps) {
   const partyById = useMemo(() => new Map(parties.map((party) => [party.id, party])), [parties])
   const highlightedPartyIdSet = useMemo(
@@ -31,12 +37,19 @@ export function DetailsPanel({
   )
 
   if (!record && emptySelection) {
+    const notice = emptySelection.notice?.[language]
     return (
       <aside className="details-panel details-panel--empty details-panel--no-result">
         <span className="selection-marker" aria-hidden="true" />
         <div>
           <h2 dir="auto">{emptySelection.names[language]}</h2>
           <p>{translate(language, 'noMappedResult')}</p>
+          {notice ? (
+            <div className="details-notice" role="note">
+              <Info size={17} strokeWidth={2} aria-hidden="true" />
+              <span dir="auto">{notice}</span>
+            </div>
+          ) : null}
         </div>
       </aside>
     )
@@ -67,11 +80,17 @@ export function DetailsPanel({
   const includedNames = record.includedNames?.[language] ?? []
   const includedLabel = `${translate(language, 'includesLocalities')}: ${includedNames.join(', ')}`
   const notice = record.notice?.[language]
-  const highlightedParties = highlightedPartyIds.slice(0, 2).map((partyId) => ({
+  const highlightedParties = highlightedPartyIds.map((partyId) => ({
     partyId,
     party: partyById.get(partyId) ?? null,
     votes: record.partyVotes[partyId] ?? 0,
   }))
+  const highlightedPartyVotes = highlightedParties.reduce(
+    (total, highlightedParty) => total + highlightedParty.votes,
+    0,
+  )
+  const highlightedLabel =
+    highlightedPartiesLabel ?? translate(language, 'partyComparisonDetails')
 
   return (
     <aside className="details-panel">
@@ -113,30 +132,60 @@ export function DetailsPanel({
         <span>{formatPercent(record.winner.voteShare, language)}</span>
       </div>
 
-      {highlightedParties.length === 2 ? (
+      {highlightedParties.length > 0 ? (
         <div
-          className="party-comparison-details"
-          aria-label={translate(language, 'partyComparisonDetails')}
+          className="party-highlight-summary"
+          aria-label={highlightedLabel}
         >
-          {highlightedParties.map(({ partyId, party, votes }) => (
-            <div key={partyId}>
-              <span
-                className="party-swatch"
-                style={{ backgroundColor: party?.color ?? '#68706a' }}
-                aria-hidden="true"
-              />
-              <span dir="auto" title={party?.names[language] ?? partyId}>
-                {party?.names[language] ?? partyId}
-              </span>
-              <strong>{formatNumber(votes, language)}</strong>
-              <span>
+          {highlightedPartyTotalLabel ? (
+            <div className="party-highlight-summary__heading">
+              <span>{highlightedPartyTotalLabel}</span>
+              <strong>
+                {formatNumber(highlightedPartyVotes, language)} ·{' '}
                 {formatPercent(
-                  record.totals.validVotes > 0 ? votes / record.totals.validVotes : 0,
+                  record.totals.validVotes > 0
+                    ? highlightedPartyVotes / record.totals.validVotes
+                    : 0,
                   language,
                 )}
-              </span>
+              </strong>
             </div>
-          ))}
+          ) : null}
+          <div className="party-highlight-details">
+            {highlightedParties.map(({ partyId, party, votes }) => (
+              <div key={partyId}>
+                <span
+                  className="party-swatch"
+                  style={{ backgroundColor: party?.color ?? '#68706a' }}
+                  aria-hidden="true"
+                />
+                <span className="party-highlight-name">
+                  <span dir="auto" title={party?.names[language] ?? partyId}>
+                    {party?.names[language] ?? partyId}
+                  </span>
+                  {highlightedPartyNotes[partyId] ? (
+                    <span
+                      className="party-highlight-note"
+                      tabIndex={0}
+                      aria-label={highlightedPartyNotes[partyId]}
+                    >
+                      <Info size={14} strokeWidth={2} aria-hidden="true" />
+                      <span role="tooltip" dir="auto">
+                        {highlightedPartyNotes[partyId]}
+                      </span>
+                    </span>
+                  ) : null}
+                </span>
+                <strong>{formatNumber(votes, language)}</strong>
+                <span>
+                  {formatPercent(
+                    record.totals.validVotes > 0 ? votes / record.totals.validVotes : 0,
+                    language,
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 

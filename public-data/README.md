@@ -8,6 +8,10 @@ polygon aggregates, full-resolution geography packages, election and party
 metadata, row-level assignment provenance, checksums, and a machine-readable
 validation report. The ballot-table contract is schema version 2.
 
+Read the [public data methodology](METHODOLOGY.md) for the exact assignment
+precedence, synthetic-link counts, unresolved-row policy, validation rules, and
+step-by-step audit procedure.
+
 ## Download One Election
 
 Each ballot CSV contains every source result row for that election, one column
@@ -111,9 +115,10 @@ must not be edited by hand.
 ## Data Versus Map Presentation
 
 This release publishes election facts, reviewed party/list metadata, assignment
-provenance, and geometry. It deliberately excludes map colors, concise UI label
-overrides, layout, and interaction configuration. Those are presentation choices
-owned by the map application under `web/app/`.
+provenance, and canonical analytical geometry. It deliberately excludes map
+colors, concise UI label overrides, web-only polygon unions and fallback
+boundaries, masks, marker placement, layout, map modes, and interaction
+configuration. Those are presentation choices owned by the map application.
 
 The map groups the K19-K25 tribal statistical-area results into one combined
 tribal marker because the available derivative footprints overlap surrounding
@@ -121,10 +126,11 @@ areas and cannot be treated as exclusive geography. The release tables do not
 collapse those records: exact tribe statistical-area identifiers, results, and
 assignment provenance remain available for analysis.
 
-When an election/locality has no supported ballot-to-area assignment, the map
-can show its whole-locality aggregate on a display-only locality boundary with
-an info notice. This does not assign any ballot or change coverage. The 308
-map substitutions and their represented totals are disclosed in
+When an election/locality or reviewed historical-composite component has no
+supported ballot-to-area assignment, the map can show its aggregate on a
+display-only locality or component boundary with an info notice. This does not
+assign any ballot or change coverage. The 314 map substitutions and their
+represented totals are disclosed in
 [`historical_municipality_display_fallbacks.csv`](v1/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
 
 The project-authored portions of this release, including its original
@@ -133,3 +139,6 @@ are available under the [MIT Data License](LICENSE). Official and third-party
 source data retain their source terms; see
 [Third-Party Data Notices](../THIRD_PARTY_NOTICES.md). The website and other
 project materials are not included in this data license.
+
+For commercial deployment, also review the explicitly published third-party
+terms collected in the [commercial-use audit](../docs/COMMERCIAL_USE_AUDIT.md).

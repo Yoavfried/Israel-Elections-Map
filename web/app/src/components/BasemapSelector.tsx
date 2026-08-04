@@ -1,4 +1,4 @@
-import { Map } from 'lucide-react'
+import { Layers, Map } from 'lucide-react'
 import type { BasemapMode, Language } from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
@@ -8,32 +8,42 @@ interface BasemapSelectorProps {
   onChange: (mode: BasemapMode) => void
 }
 
-const BASEMAP_OPTIONS: Array<{ value: BasemapMode; labelKey: 'basemapNeutral' | 'basemapVector' }> = [
-  { value: 'neutral', labelKey: 'basemapNeutral' },
-  { value: 'vector', labelKey: 'basemapVector' },
+const BASEMAP_OPTIONS: Array<{
+  value: BasemapMode
+  labelKey: 'basemapNeutral' | 'basemapVector'
+  icon: typeof Map
+}> = [
+  { value: 'neutral', labelKey: 'basemapNeutral', icon: Layers },
+  { value: 'vector', labelKey: 'basemapVector', icon: Map },
 ]
 
 export function BasemapSelector({ language, mode, onChange }: BasemapSelectorProps) {
   const label = translate(language, 'basemapLabel')
 
   return (
-    <label
+    <div
       className="basemap-selector"
       dir={language === 'he' ? 'rtl' : 'ltr'}
-      title={label}
+      role="group"
+      aria-label={label}
     >
-      <Map size={18} strokeWidth={2} aria-hidden="true" />
-      <select
-        value={mode}
-        aria-label={label}
-        onChange={(event) => onChange(event.target.value as BasemapMode)}
-      >
-        {BASEMAP_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {translate(language, option.labelKey)}
-          </option>
-        ))}
-      </select>
-    </label>
+      {BASEMAP_OPTIONS.map((option) => {
+        const Icon = option.icon
+        const optionLabel = translate(language, option.labelKey)
+        return (
+          <button
+            key={option.value}
+            type="button"
+            className={mode === option.value ? 'is-active' : undefined}
+            aria-pressed={mode === option.value}
+            title={optionLabel}
+            onClick={() => onChange(option.value)}
+          >
+            <Icon size={16} strokeWidth={2} aria-hidden="true" />
+            <span>{optionLabel}</span>
+          </button>
+        )
+      })}
+    </div>
   )
 }

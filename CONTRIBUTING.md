@@ -41,8 +41,11 @@ Contributions should preserve source provenance and avoid inventing geographic p
 
 ## Contribution Licensing
 
-- Contributions to `public-data/` or `data/manual/` are submitted under the
-  MIT Data License in `LICENSE-DATA`.
+- Contributions to `public-data/` and to non-presentation evidence files under
+  `data/manual/` are submitted under the MIT Data License in `LICENSE-DATA`.
+- The five web-presentation control tables identified in the root `LICENSE`
+  notice are protected project material even though they live under
+  `data/manual/`.
 - Contributions elsewhere are submitted for inclusion in the protected
   project. By submitting such a contribution, you grant Yoav Fried a
   perpetual, worldwide, royalty-free right to use, reproduce, modify,

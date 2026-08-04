@@ -1,6 +1,6 @@
 # Historical Statistical-Area Assignment
 
-Last updated: 2026-07-30
+Last updated: 2026-08-02
 
 ## Decision
 
@@ -82,7 +82,7 @@ The machine-readable inventory is published as
 
 ### Official Direct Crosswalks
 
-The nine CBS crosswalks provide 83,237 final row assignments. K17 tenths
+The nine CBS crosswalks provide 83,230 final row assignments. K17 tenths
 encoding and later decimal subdivisions are normalized explicitly:
 
 - in K17, `10` means ballot 1, while values such as `61` and `62` are
@@ -93,6 +93,14 @@ encoding and later decimal subdivisions are normalized explicitly:
   result row's locality boundary;
 - `Stat08_Unite` and `Stat11_Ref` are demographic reference fields, not
   instructions to merge election areas.
+
+The K17 result CSV omits locality codes, so the normalizer recovers each code
+from the official scanned polling register. It requires the recovered locality
+name and ballot number to match all 8,277 ordinary result rows before accepting
+the code. Historical matching then prefers that election-time identity over a
+modern merger alias; this prevents identical ballot numbers in Kfar Azar,
+Ramat Efal, Neve Efal, Ramat Pinkas, and Ma'ale Shomron from being matched into
+their successor municipalities.
 
 Five K19 targets contradicted independent same-vintage evidence. Reviewed rows
 in `data/manual/historical_stat_area_overrides.csv` replace those links using
@@ -244,28 +252,35 @@ multiple 1995 areas. All 84 K18 rows remain unresolved because the 2008 source
 stores those component identities inside composite-municipality geometry and
 does not publish separate component area IDs. The component evidence remains
 available for a future finer source even where no area link is published now.
+For display, a component with no supported internal area assignment can use its
+own locality boundary and component total; this does not resolve any of its
+ballots to an area.
 
 ### Single-Area And Custom Rules
 
 A locality fallback is allowed only when the active historical geography has
-exactly one canonical area. This assigns 3,845 rows. K17/K18 retain 92 reviewed
-custom-geography rows because their active historical geometry cannot
-distinguish the later 2011 areas: 90 tribal rows use one combined Negev marker,
-while the two Hebron rows use the audited detailed Hebron footprint copied from
-the exact 2011 area geometry.
+exactly one canonical area. This assigns 3,801 rows. Reviewed exclusions in
+`data/manual/historical_single_stat_fallback_exclusions.csv` prevent this rule
+from assigning a combined election municipality to only one obsolete component
+of its historical geography. K17 Modi'in-Maccabim-Re'ut is the current reviewed
+case. K17/K18 retain 92 reviewed custom-geography rows because their active
+historical geometry cannot distinguish the later 2011 areas: 90 tribal rows use
+one combined Negev marker, while the two Hebron rows use the audited detailed
+Hebron footprint copied from the exact 2011 area geometry.
 
-### Whole-Locality Display Fallback
+### Whole-Locality And Component Display Fallback
 
-The web map uses a separate display rule when an election/locality has zero
-supported ballot-to-area assignments. It shows the locality aggregate on a
-current locality or reviewed historical-composite boundary and adds an info
+The web map uses a separate display rule when an election/locality, or a
+reviewed component of a historical composite municipality, has zero supported
+ballot-to-area assignments. It shows the corresponding aggregate on a current
+locality, component, or reviewed historical-composite boundary and adds an info
 notice stating that no area-level assignment exists. It never writes a
 `stat_area_id`, changes a ballot row, or increases statistical-area coverage.
 
 | Election | Display records | Represented ballot rows | Actual voters |
 |---|---:|---:|---:|
-| K17 | 50 | 313 | 126,182 |
-| K18 | 32 | 505 | 188,962 |
+| K17 | 52 | 395 | 160,909 |
+| K18 | 36 | 505 | 188,962 |
 | K19 | 33 | 556 | 211,739 |
 | K20 | 33 | 563 | 258,064 |
 | K21 | 32 | 596 | 224,699 |
@@ -273,13 +288,14 @@ notice stating that no area-level assignment exists. It never writes a
 | K23 | 32 | 615 | 295,712 |
 | K24 | 32 | 833 | 202,743 |
 | K25 | 32 | 792 | 255,412 |
-| **Total** | **308** | **5,380** | **2,028,085** |
+| **Total** | **314** | **5,462** | **2,062,812** |
 
 The generated audit records every substituted display boundary and the totals
 shown. These records remain separate from the downloadable statistical-area
-aggregates. None of the 308 election/locality fallback cases overlaps a site in
-the currently available official polling-register evidence, so the
-polling-group network method cannot subdivide any of them.
+aggregates. Of the 314 records, 305 cover a whole result locality and nine cover
+a reviewed historical-composite component. Available polling-register evidence
+does not publish an internal statistical-area split for these records, so the
+polling-group network method cannot subdivide them.
 
 ### Polling-Group Exact and Representative Placement
 
@@ -289,35 +305,52 @@ do not provide a vote split among those areas. Treating the final host area as
 the exclusive result would therefore leave populated polygons empty and assign
 all votes to an arbitrary host.
 
-The map first looks for a closed pairing between a set of polygons and a set of
-final polling groups:
+The map first builds a bipartite graph between final polling groups and their
+candidate polygons:
 
 1. A polling group's value is the exact sum of its final ballot rows.
-2. Its candidate polygons are only the areas explicitly linked to that group by
-   official pre-election evidence.
-3. A combined unit is exact only when all votes from its polygons and only
+2. Exact election-specific ballot-to-area matches are removed before sites are
+   linked. A ballot base or normalized site label may link planned and final
+   sites only when that link is unique on both sides.
+3. The remaining candidate polygons come only from official same-election
+   evidence or the documented two-reference continuity rule.
+4. A combined unit is exact only when all votes from its polygons and only
    votes from those polygons are included. Exact units may contain several
    polygons and several polling groups.
-4. For exactly balanced eligible-voter networks, a transport-flow solver
+5. For exactly balanced eligible-voter networks, a transport-flow solver
    calculates the minimum and maximum possible flow on every area-to-group
    edge. Edges whose maximum is zero are removed; each remaining closed graph
    component is an exact display unit.
-5. A closed official network with a small documented planned/final electorate
-   difference remains exact as a whole, but is not split internally by flow.
-6. Exact closed units have no uncertainty notice.
+6. A structurally closed one-unit graph may remain exact as a whole even when
+   planned and final eligibility counts differ. The count difference is kept as
+   evidence and never used to manufacture or move votes.
+7. Exact closed units have no uncertainty notice.
 
-Only the remaining networks use representative placement. Within each such
-network, every candidate polygon is assigned once, every final polling group
-receives at least one polygon, and a group may receive only one of its own
-candidate polygons. The solver first requires connected ownership and
-maximizes the weakest represented share of planned electorate, then total
-represented electorate, then applies a stable deterministic tie-break.
-If no connected solution exists, a disconnected representative placement is
-accepted only after the solver proves that no connected all-groups-covered
-solution exists. Its notice discloses the disconnected geometry.
-If unique ownership is impossible because there are fewer polygons than
-groups or several groups have the same sole candidate, one broad network
-aggregate is displayed with an uncertainty notice instead.
+Only the remaining networks use representative placement. Every candidate
+polygon and every final polling group is used once, but one displayed unit may
+now contain multiple polling groups. The solver starts from the most detailed
+one-group ownership and merges the most strongly coupled units only as needed.
+A robust unit must have at least 50% precision and 50% recall under all three
+weighting models: raw planned eligibility, final actual voters distributed by
+the planned proportions, and final eligible voters distributed by those same
+proportions. These weights select a display partition; they never alter final
+votes. Disconnected geometry is retained and disclosed rather than used as a
+reason to merge otherwise distinct polling groups.
+
+A planned site with no identifiable final ballot rows is reconciled to a
+surviving final-result site only when all four tests agree: same election and
+locality, overlapping candidate areas, matching normalized polling-place text,
+and a unique eligible-voter surplus match within 2% or 50 voters. Twelve K25
+sites in seven components pass this strict consolidation test. Five are in Tel
+Aviv, including the planned Tel Nordau site that recovers area 335. Unmatched
+planned-only sites remain omitted.
+
+When no mutually-majority partition exists without collapsing a larger
+network, the original detailed ownership is retained with uncertainty notices.
+This avoids replacing useful local detail with a city-wide aggregate merely to
+make a low-confidence partition look exact. The new multi-group units also
+remove the old need for broad fallback aggregates when there are more polling
+groups than polygons.
 
 No vote is divided, estimated, or moved between statistical areas. Exact units
 state a set-level truth, not an invented split inside the combined geometry.
@@ -325,6 +358,15 @@ Representative units remain map placement and retain their bilingual
 uncertainty notices. Existing directly assigned result rows inside a network
 are retained exactly once with the unit owning their polygon.
 Planned-to-final eligible-voter differences never change final vote totals.
+
+One reviewed K23 Tel Aviv exception combines statistical areas 347 and 612 as
+a disconnected representative display set. K23 ballots 390.1-390.9 are
+recorded under area 347 while the area-612 ballot bases disappear; the same
+polling place and near-identical group totals recur under area 612 in K21,
+K22, and K25. The displayed set therefore includes all 13 K23 result rows now
+attached to areas 347/612, totaling 5,245 actual voters, without asserting a
+split between the two polygons. The uncertainty notice remains, and the
+underlying row-level assignments are not changed.
 
 Representative notices now distinguish two directions of uncertainty. A
 possible inflow lists candidate areas whose voters may contribute to the result
@@ -337,51 +379,52 @@ human-readable area-number sets.
 
 Direct same-election evidence is available for K21 and K24 from official
 pre- and post-election registers, and for K25 from the official pre-election
-register plus final results. K22 and K23 use continuity only when the locality,
-official site ID, normalized site text, and final ballot base match in at least
-two direct-evidence elections. Their candidate polygons are the intersection of
-the matching reference sets. K17-K19 have no compatible polling-group register.
-The K20 file is post-election only and has no official site ID, so it cannot
-satisfy either the direct or continuity rule.
+register plus final results. A consolidated final ballot base in K21-K23 is
+treated as a whole polling-site group only when the locality and official site
+ID remain stable, at least one normalized site label matches, and at least two
+direct-evidence elections agree on the exact same multi-area set. This prevents
+decimal subdivisions from blindly inheriting one obsolete base-ballot area.
+Other K22/K23 continuity units retain the stricter site-and-ballot-base rule and
+use the intersection of matching reference sets. K17-K19 have no compatible
+polling-group register. The K20 file is post-election only and has no official
+site ID, so it cannot satisfy either continuity rule.
 
 | Election | Evidence | All display units | Exact closed units | Representative units | Owned polygon memberships | Representative components | Broad fallbacks |
 |---|---|---:|---:|---:|---:|---:|---:|
-| K21 | Direct official registers | 167 | 8 | 159 | 352 | 123 | 0 |
-| K22 | Two-reference continuity | 344 | 0 | 344 | 656 | 235 | 0 |
-| K23 | Two-reference continuity | 352 | 0 | 352 | 676 | 239 | 0 |
-| K24 | Direct official registers | 670 | 152 | 518 | 1,215 | 153 | 6 |
-| K25 | Direct official register + final results | 684 | 95 | 589 | 1,176 | 217 | 3 |
-| **Total** |  | **2,217** | **255** | **1,962** | **4,075** | **967** | **9** |
+| K21 | Direct registers + two-reference site continuity | 226 | 134 | 92 | 497 | 47 | 0 |
+| K22 | Two-reference site continuity | 433 | 0 | 433 | 870 | 284 | 0 |
+| K23 | Two-reference site continuity | 430 | 0 | 430 | 870 | 280 | 0 |
+| K24 | Direct official registers | 596 | 193 | 403 | 1,252 | 119 | 0 |
+| K25 | Direct official register + final results | 589 | 190 | 399 | 1,202 | 125 | 0 |
+| **Total** |  | **2,274** | **517** | **1,757** | **4,691** | **855** | **0** |
 
 Compared with the direct statistical-area result tables, the approved policy
-recovers 697 election-specific polygon placements that would otherwise be
-blank: 52 in K21, 76 in K22, 81 in K23, 228 in K24, and 260 in K25. It does not
+recovers 846 election-specific polygon placements that would otherwise be
+blank: 80 in K21, 133 in K22, 130 in K23, 236 in K24, and 267 in K25. It does not
 color a remaining blank polygon without qualifying polling-group evidence.
 
-The 255 exact units cover 677 polygon-election memberships and 397 final
-polling groups. Ninety-four exact units combine more than one polling group.
+The 517 exact units cover 1,249 polygon-election memberships and 646 final
+polling groups. Ninety-seven exact units combine more than one polling group.
 The flow audit tested ten exactly balanced closed networks; no impossible-edge
 removal divided a real network into more than one smaller closed component.
 The full reproducible edge bounds are published in
 `statistical_area_polling_group_exact_groups.csv`.
 
-Of the 967 representative components, 950 have connected ownership and 17
-require disclosed disconnected placement. All nine broad fallback networks are
-connected. The bounded ownership search completed without reaching its search
-limit. Thirty-one planned groups in 24 direct-evidence components have no
-identifiable final result row; those groups are omitted, and polygons that only
-they could own remain ordinary or neutral rather than being absorbed into
-another result.
+Of the 855 representative components, 393 pass the mutual-majority rule and
+462 retain the most detailed available placement. Across their 1,757 displayed
+units, 1,743 are connected and 14 require disclosed disconnected placement.
+Strict site consolidation reconciles 12 planned-only K25 sites; remaining
+planned groups without identifiable final results are omitted.
 
 Jerusalem area 1024 illustrates the rule:
 
 | Election | Final polling group | Representative polygons |
 |---|---|---|
-| K21 | Ballots 228.1-228.4 | Areas 1022 and 1024; shared area 864 is represented by another group |
-| K22 | Ballots 228.1-228.4 | Areas 864, 1022, and 1024, using two-reference continuity |
-| K23 | Ballots 228.1-228.4 | Areas 864, 1022, and 1024, using two-reference continuity |
-| K24 | Ballots 228.1-228.4 | Areas 1022, 1023, and 1024; shared area 864 is represented by another group |
-| K25 | Ballots 36.1-36.4 | Areas 1022, 1023, and 1024; shared area 864 is represented by another group |
+| K21 | Ballots 228.1-228.4 | Areas 1022 and 1024; shared area 864 may contribute votes |
+| K22 | Ballots 228.1-228.4 | Areas 1022, 1023, and 1024; shared area 864 is represented by another group |
+| K23 | Ballots 228.1-228.4 | Areas 1022, 1023, and 1024; shared area 864 is represented by another group |
+| K24 | Ballots 228.1-228.4 | Areas 864, 1022, 1023, and 1024; some votes may be represented by adjacent units |
+| K25 | Ballots 36.1-36.4 | Areas 864, 1022, 1023, and 1024; some votes may be represented by adjacent units |
 
 K19 and K20 area 1024 remain separate because no comparable consolidation is
 established for those elections.
@@ -392,6 +435,7 @@ The reproducible chain is:
 - `scripts/build_statistical_area_polling_group_policy.py`
 - `scripts/polling_group_flow.py`
 - `scripts/polling_group_ownership.py`
+- `scripts/polling_group_partition.py`
 - `scripts/build_statistical_area_result_aggregates.py`
 - `scripts/build_statistical_area_polling_group_displays.py`
 
@@ -404,16 +448,16 @@ owned twice and that every displayed total reconciles to its source rows.
 
 | Evidence class | Rows | Synthetic link |
 |---|---:|---|
-| `official_direct_crosswalk` | 83,237 | No |
+| `official_direct_crosswalk` | 83,230 | No |
 | `official_direct_ags` | 74 | No |
-| `deterministic_single_area_locality` | 3,845 | No |
+| `deterministic_single_area_locality` | 3,801 | No |
 | `official_stability_inferred_link` | 134 | Yes |
 | `reviewed_exact_aggregate_inferred_link` | 9 | Yes |
 | `reviewed_cross_election_inferred_link` | 5 | Yes |
 | `reviewed_polling_register_continuity_inferred_link` | 50 | Yes |
 | `reviewed_custom_geography` | 92 | No |
 | `non_geographic` | 3,585 | No |
-| `unresolved` | 5,498 | No |
+| `unresolved` | 5,549 | No |
 | **Total** | **96,529** | |
 
 Every public ballot row carries `assignment_evidence_class`,
@@ -429,7 +473,7 @@ denominator.
 
 | Election | Vintage | Supported rows | Pending rows | Pending actual voters | Supported voter share |
 |---|---:|---:|---:|---:|---:|
-| K17 | 1995 | 7,916 | 358 | 136,480 | 95.47% |
+| K17 | 1995 | 7,865 | 409 | 161,195 | 94.65% |
 | K18 | 2008 | 8,741 | 518 | 189,252 | 94.14% |
 | K19 | 2011 | 9,317 | 558 | 212,413 | 94.13% |
 | K20 | 2011 | 9,545 | 567 | 259,204 | 93.55% |
@@ -439,10 +483,10 @@ denominator.
 | K24 | 2011 | 11,251 | 868 | 212,156 | 94.71% |
 | K25 | 2011 | 10,893 | 806 | 259,533 | 94.01% |
 
-The 5,498 pending rows are fully classified:
+The 5,549 pending rows are fully classified:
 
-- 5,245 belong to entire localities omitted from an official crosswalk;
-- 55 use an election locality identity absent from the active historical
+- 5,298 belong to entire localities omitted from an official crosswalk;
+- 53 use an election locality identity absent from the active historical
   vintage;
 - 31 are K17 component-locality rows where the component has multiple 1995
   areas but no component crosswalk;
@@ -458,7 +502,7 @@ CBS-documented address-anchoring limitation in many Arab and Druze localities.
 
 "Identity absent" does not mean that the source file dropped a polygon. It
 means the election result uses a locality code or identity that did not exist
-as an independent area in that vintage. This covers 54 K17 rows across 34
+as an independent area in that vintage. This covers 52 K17 rows across 34
 identities and one K18 Tzur Yitzhak row. The transition tables provide no
 1995/2008 predecessor link for them. The K17 identities later appear as one
 2008 area except Kacir and Sansana, which first appear in 2011; K18 Tzur

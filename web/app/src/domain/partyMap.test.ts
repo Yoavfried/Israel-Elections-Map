@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 import type { Party, ResultRecord } from './schemas'
 import {
   PARTY_MAP_ZERO_COLOR,
+  partyCircleColor,
   partyGradientColor,
+  partyVoteCircleRadius,
+  partyVoteCountUpperBound,
   partyVoteShare,
   partyVoteShareUpperBound,
   rankPartiesForMap,
@@ -33,6 +36,41 @@ describe('single-party map calculations', () => {
     expect(partyGradientColor('#2244aa', 0.5, 0.5)).toBe('#2244aa')
     expect(partyGradientColor('#2244aa', 0.9, 0.5)).toBe('#2244aa')
     expect(partyGradientColor('#000000', 0.1, 1)).toBe('#fcfcfc')
+  })
+
+  it('sizes circles by vote count with a shared 99th-percentile cap', () => {
+    const records = [
+      record('one', 100, { a: 10, b: 90 }),
+      record('two', 100, { a: 20, b: 80 }),
+      record('three', 100, { a: 30, b: 70 }),
+      record('four', 100, { a: 40, b: 60 }),
+      record('outlier', 100, { a: 90, b: 10 }),
+      record('zero', 100, { a: 0, b: 100 }),
+    ]
+
+    expect(partyVoteCountUpperBound(records)).toBeCloseTo(99.5)
+    expect(partyVoteCircleRadius(0, 100)).toBe(0)
+    expect(partyVoteCircleRadius(25, 100)).toBeCloseTo(9)
+    expect(partyVoteCircleRadius(100, 100)).toBe(18)
+    expect(partyVoteCircleRadius(900, 100)).toBe(18)
+  })
+
+  it('does not inflate a small party with a party-specific size scale', () => {
+    const records = [
+      record('one', 1_000, { a: 5, b: 995 }),
+      record('two', 1_000, { a: 10, b: 990 }),
+    ]
+
+    const upperBound = partyVoteCountUpperBound(records)
+    expect(upperBound).toBeGreaterThan(980)
+    expect(partyVoteCircleRadius(10, upperBound)).toBe(2.5)
+  })
+
+  it('keeps every positive-vote circle visibly tinted without changing area colors', () => {
+    expect(partyGradientColor('#2244aa', 0.01, 0.5)).toBe('#ffffff')
+    expect(partyCircleColor('#2244aa', 0, 0.5)).toBe(PARTY_MAP_ZERO_COLOR)
+    expect(partyCircleColor('#2244aa', 0.01, 0.5)).not.toBe(PARTY_MAP_ZERO_COLOR)
+    expect(partyCircleColor('#2244aa', 0.5, 0.5)).toBe('#2244aa')
   })
 
   it('orders the selector by mapped and envelope votes', () => {

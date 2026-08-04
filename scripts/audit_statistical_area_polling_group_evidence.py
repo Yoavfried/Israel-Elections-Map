@@ -255,18 +255,20 @@ def link_site_components(
     planned_sites_by_base = unique_sets(planned, "ballot_base", "site_key")
     final_sites_by_base = unique_sets(final, "ballot_base", "site_key")
     for base in set(planned_sites_by_base) & set(final_sites_by_base):
-        for planned_site in planned_sites_by_base[base]:
-            for final_site in final_sites_by_base[base]:
-                graph.union(f"p:{planned_site}", f"f:{final_site}")
+        planned_sites = planned_sites_by_base[base]
+        final_sites = final_sites_by_base[base]
+        if len(planned_sites) == 1 and len(final_sites) == 1:
+            graph.union(f"p:{planned_sites[0]}", f"f:{final_sites[0]}")
 
     planned_sites_by_location = unique_sets(planned, "location_key", "site_key")
     final_sites_by_location = unique_sets(final, "location_key", "site_key")
     for location in set(planned_sites_by_location) & set(final_sites_by_location):
         if location == "|":
             continue
-        for planned_site in planned_sites_by_location[location]:
-            for final_site in final_sites_by_location[location]:
-                graph.union(f"p:{planned_site}", f"f:{final_site}")
+        planned_sites = planned_sites_by_location[location]
+        final_sites = final_sites_by_location[location]
+        if len(planned_sites) == 1 and len(final_sites) == 1:
+            graph.union(f"p:{planned_sites[0]}", f"f:{final_sites[0]}")
 
     planned["site_component"] = planned["site_key"].map(
         lambda value: graph.find(f"p:{value}")
@@ -399,6 +401,16 @@ def main() -> None:
                 election_crosswalk["locality_code"].eq(locality_code)
             ].copy()
 
+            exact_area_sets = (
+                locality_crosswalk.groupby("ballot_number")["stat_area_id"]
+                .agg(
+                    lambda values: sorted(
+                        {clean(value) for value in values if clean(value)}
+                    )
+                )
+                .to_dict()
+            )
+
             area_by_base = (
                 locality_crosswalk.groupby("ballot_base")["stat_area_id"]
                 .agg(lambda values: sorted(set(value for value in values if value)))
@@ -412,10 +424,36 @@ def main() -> None:
                 )
             )
 
-            planned, final_register = link_site_components(planned, final_register)
             locality_results = result_rows.loc[
                 result_rows["source_locality_code"].eq(locality_code)
             ].copy()
+            exact_direct_area = {
+                ballot: area_ids[0]
+                for ballot, area_ids in exact_area_sets.items()
+                if len(area_ids) == 1
+                and ballot in set(locality_results["source_kalpi"])
+            }
+            locality_results["exact_direct_area_id"] = locality_results[
+                "source_kalpi"
+            ].map(exact_direct_area).fillna("")
+            locality_results["is_exact_direct"] = locality_results[
+                "exact_direct_area_id"
+            ].ne("")
+
+            planned_bases = set(planned["ballot_base"])
+            final_only_direct_ballots = {
+                ballot
+                for ballot in exact_direct_area
+                if ballot_base(ballot) not in planned_bases
+            }
+            linkable_final_register = final_register.loc[
+                ~final_register["source_kalpi"].isin(
+                    final_only_direct_ballots
+                )
+            ].copy()
+            planned, final_register = link_site_components(
+                planned, linkable_final_register
+            )
             locality_results = result_site(locality_results, final_register)
             active_result_bases = set(locality_results["ballot_base"])
 
@@ -432,6 +470,9 @@ def main() -> None:
             missing_crosswalk = locality_crosswalk.loc[
                 ~locality_crosswalk["ballot_base"].isin(found_planned_bases)
                 & locality_crosswalk["ballot_base"].isin(active_result_bases)
+                & ~locality_crosswalk["ballot_number"].isin(
+                    exact_direct_area
+                )
             ]
             missing_by_area = missing_crosswalk.groupby("stat_area_id").size().to_dict()
             for area_id, missing_count in missing_by_area.items():
@@ -529,11 +570,40 @@ def main() -> None:
                     ]
                 )
 
+                direct_bases: set[str] = set()
+                for base, final_base_rows in final_site.groupby("ballot_base"):
+                    final_ballots = set(final_base_rows["source_kalpi"])
+                    if not final_ballots or not final_ballots.issubset(
+                        exact_direct_area
+                    ):
+                        continue
+                    direct_areas = {
+                        exact_direct_area[ballot] for ballot in final_ballots
+                    }
+                    planned_base_rows = planned_by_base.loc[
+                        planned_by_base["ballot_base"].eq(base)
+                    ]
+                    if (
+                        len(direct_areas) == 1
+                        and len(planned_base_rows) == 1
+                        and integer(
+                            planned_base_rows.iloc[0]["stat_area_count"]
+                        )
+                        == 1
+                        and clean(
+                            planned_base_rows.iloc[0]["stat_area_id"]
+                        )
+                        in direct_areas
+                    ):
+                        direct_bases.add(clean(base))
+                preserved_bases.update(direct_bases)
+
                 residual_planned = planned_site.loc[
                     ~planned_site["ballot_base"].isin(preserved_bases)
                 ]
                 residual_final = final_site.loc[
                     ~final_site["ballot_base"].isin(preserved_bases)
+                    & ~final_site["source_kalpi"].isin(exact_direct_area)
                 ]
                 all_area_ids = sorted(set(planned_site["stat_area_id"]) - {""})
                 residual_area_ids = sorted(
@@ -680,7 +750,10 @@ def main() -> None:
                         "current_hosts_outside_residual": pipe(hosts_outside),
                         "unmapped_planned_rows": unmapped_planned_rows,
                         "result_rows_without_site_in_locality": int(
-                            locality_results["site_component"].eq("").sum()
+                            (
+                                locality_results["site_component"].eq("")
+                                & ~locality_results["is_exact_direct"]
+                            ).sum()
                         ),
                         "final_register_balance": final_register_balance,
                         "final_register_eligible_difference": (
@@ -918,11 +991,14 @@ def main() -> None:
     summary = {
         "scope": sorted(SOURCES),
         "method": (
-            "Official pre-balance polling registers are linked to final result "
-            "rows by locality, polling-site identity, surviving ballot base, "
-            "and exact site text. Bases whose eligible-voter totals remain "
-            "within three voters are retained as separate. Only the residual "
-            "multi-area balance is considered an aggregate candidate."
+            "Exact election-specific final ballot-to-area matches are removed "
+            "before polling-site linkage. Remaining official pre-balance and "
+            "final-register sites are linked by exact site identity, or by a "
+            "ballot base or normalized location that is unique on both sides. "
+            "Surviving single-area bases are retained separately. Only the "
+            "residual multi-area ballot-to-area graph is considered ambiguous; "
+            "planned/final eligible differences are recorded as evidence rather "
+            "than treated as a conservation requirement."
         ),
         "site_classifications": (
             site_frame.groupby(["election", "classification"])

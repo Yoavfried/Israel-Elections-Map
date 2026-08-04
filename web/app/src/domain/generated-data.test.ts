@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { coalitionDefinition } from '../config/coalitions'
 import {
   AppCatalogSchema,
   ElectionResultsSchema,
@@ -25,6 +26,22 @@ describe('generated web data', () => {
 
     expect(catalog.elections).toHaveLength(9)
     expect(catalog.buildId).toHaveLength(16)
+  })
+
+  it('resolves every configured coalition member to an election ballot', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+
+    for (const election of catalog.elections) {
+      const definition = coalitionDefinition(election.id)
+      expect(definition, election.id).not.toBeNull()
+      const results = ElectionResultsSchema.parse(
+        await readJson(resolve(dataRoot, election.resultUrls.locality)),
+      )
+      const partyIds = new Set(results.parties.map((party) => party.id))
+      for (const partyId of definition?.memberPartyIds ?? []) {
+        expect(partyIds.has(partyId), `${election.id}:${partyId}`).toBe(true)
+      }
+    }
   })
 
   it('publishes an election-aware search index for every visible geography', async () => {
@@ -389,11 +406,11 @@ describe('generated web data', () => {
     }
   })
 
-  it('publishes zero-assignment municipalities as documented display-only totals', async () => {
+  it('publishes zero-assignment result units as documented display-only totals', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedFallbackCounts: Record<string, number> = {
-      K17: 50,
-      K18: 32,
+      K17: 52,
+      K18: 36,
       K19: 33,
       K20: 33,
       K21: 32,
@@ -402,6 +419,17 @@ describe('generated web data', () => {
       K24: 32,
       K25: 32,
     }
+    const expectedComponentFallbackIds = new Set([
+      'municipality-component-fallback:1995:loc:494',
+      'municipality-component-fallback:1995:loc:6000',
+      'municipality-component-fallback:2008:loc:483',
+      'municipality-component-fallback:2008:loc:490',
+      'municipality-component-fallback:2008:loc:494',
+      'municipality-component-fallback:2008:loc:516',
+      'municipality-component-fallback:2008:loc:534',
+      'municipality-component-fallback:2008:loc:6000',
+      'municipality-component-fallback:2008:loc:628',
+    ])
 
     for (const election of catalog.elections) {
       const statisticalPayload = ElectionResultsSchema.parse(
@@ -419,6 +447,7 @@ describe('generated web data', () => {
             geographyType?: string
             localityId?: string
             componentLocalityIds?: string[]
+            fallbackNoticeType?: string
           }
         }>
       }
@@ -433,19 +462,44 @@ describe('generated web data', () => {
 
       expect(fallbackRecords, election.id).toHaveLength(expectedFallbackCounts[election.id])
       for (const record of fallbackRecords) {
-        expect(record.notice?.en, `${election.id}/${record.id}`).toContain(
-          'No ballot-to-statistical-area assignments',
-        )
         const feature = featuresById.get(record.id)
         expect(feature?.properties?.geographyType, `${election.id}/${record.id}`).toBe(
           'municipality-fallback',
         )
-        const localityRecord =
-          localityRecordsById.get(record.localityId ?? '') ??
-          localityPayload.records.find((candidate) => candidate.code === record.code)
-        expect(localityRecord, `${election.id}/${record.localityId}`).toBeDefined()
-        expect(record.totals, `${election.id}/${record.id}`).toEqual(localityRecord?.totals)
-        expect(record.partyVotes, `${election.id}/${record.id}`).toEqual(localityRecord?.partyVotes)
+        const noticeType = feature?.properties?.fallbackNoticeType
+        expect(
+          [
+            'historical-geometry-proxy',
+            'single-historical-area-exact',
+            'multi-area-unsplit',
+          ],
+          `${election.id}/${record.id}`,
+        ).toContain(noticeType)
+        const expectedNoticeText =
+          noticeType === 'historical-geometry-proxy'
+            ? 'does not appear as a separate area'
+            : 'No ballot-to-statistical-area assignments'
+        if (noticeType === 'single-historical-area-exact') {
+          expect(record.notice, `${election.id}/${record.id}`).toBeUndefined()
+        } else {
+          expect(record.notice?.en, `${election.id}/${record.id}`).toContain(expectedNoticeText)
+        }
+        if (record.id.startsWith('municipality-component-fallback:')) {
+          expect(expectedComponentFallbackIds.delete(record.id), record.id).toBe(true)
+          expect(
+            Object.values(record.partyVotes).reduce((sum, votes) => sum + votes, 0),
+            record.id,
+          ).toBe(record.totals.validVotes)
+        } else {
+          const localityRecord =
+            localityRecordsById.get(record.localityId ?? '') ??
+            localityPayload.records.find((candidate) => candidate.code === record.code)
+          expect(localityRecord, `${election.id}/${record.localityId}`).toBeDefined()
+          expect(record.totals, `${election.id}/${record.id}`).toEqual(localityRecord?.totals)
+          expect(record.partyVotes, `${election.id}/${record.id}`).toEqual(
+            localityRecord?.partyVotes,
+          )
+        }
 
         const componentLocalityIds = feature?.properties?.componentLocalityIds?.length
           ? feature.properties.componentLocalityIds
@@ -458,6 +512,49 @@ describe('generated web data', () => {
           expect(hiddenIds.has(component.id ?? ''), `${election.id}/${component.id}`).toBe(true)
         }
       }
+    }
+    expect([...expectedComponentFallbackIds]).toEqual([])
+  })
+
+  it('publishes reviewed resolutions for the remaining populated empty areas', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+
+    for (const electionId of ['K18', 'K20']) {
+      const election = catalog.elections.find((entry) => entry.id === electionId)
+      expect(election, electionId).toBeDefined()
+      const searchIndex = GeographySearchIndexSchema.parse(
+        await readJson(resolve(dataRoot, election?.resultUrls.search ?? '')),
+      )
+      const group = searchIndex.items.find(
+        (item) => item.id === `display:reviewed-continuity:${electionId}:4201-4502`,
+      )
+
+      expect(group?.hasResults, electionId).toBe(true)
+      expect(group?.aliases.en, electionId).toContain('EIN QINIYYE')
+      expect(group?.notice?.en, electionId).toContain('No source supports a reliable internal split')
+    }
+
+    const populatedNoResultCases = [
+      ['K20', 'stat2011:30002511', 'no eligible voters'],
+      ['K20', 'stat2011:30002611', 'no eligible voters'],
+      ['K20', 'stat2011:30002612', 'no eligible voters'],
+      ['K20', 'stat2011:30002711', 'no eligible voters'],
+      ['K20', 'stat2011:30002812', 'no eligible voters'],
+      ['K21', 'stat2011:30002611', 'absent from the final register'],
+      ['K22', 'stat2011:30002611', 'absent from the final register'],
+      ['K23', 'stat2011:30002611', 'absent from the final register'],
+    ] as const
+
+    for (const [electionId, geographyId, expectedNotice] of populatedNoResultCases) {
+      const election = catalog.elections.find((entry) => entry.id === electionId)
+      expect(election, electionId).toBeDefined()
+      const searchIndex = GeographySearchIndexSchema.parse(
+        await readJson(resolve(dataRoot, election?.resultUrls.search ?? '')),
+      )
+      const area = searchIndex.items.find((item) => item.id === geographyId)
+
+      expect(area?.hasResults, `${electionId}/${geographyId}`).toBe(false)
+      expect(area?.notice?.en, `${electionId}/${geographyId}`).toContain(expectedNotice)
     }
   })
 
@@ -1348,31 +1445,32 @@ describe('generated web data', () => {
   it('publishes nationwide polling-group placement only where evidence qualifies', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
-      K21: 159,
-      K22: 344,
-      K23: 352,
-      K24: 518,
-      K25: 589,
+      K21: 92,
+      K22: 433,
+      K23: 430,
+      K24: 403,
+      K25: 398,
     }
     const expectedExactClosedCounts: Record<string, number> = {
-      K21: 8,
-      K24: 152,
-      K25: 95,
-    }
-    const expectedFallbackCounts: Record<string, number> = {
-      K24: 6,
-      K25: 3,
+      K21: 134,
+      K24: 193,
+      K25: 189,
     }
 
     for (const election of catalog.elections) {
       const payload = ElectionResultsSchema.parse(
         await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])),
       )
-      const pollingGroupRecords = payload.records.filter((record) =>
-        record.id.startsWith('display:polling-group:'),
+      const pollingGroupRecords = payload.records.filter(
+        (record) =>
+          record.id.startsWith('display:polling-group:') ||
+          record.id.startsWith('display:polling-partition:') ||
+          record.id.startsWith('display:polling-continuity-partition:'),
       )
-      const exactClosedRecords = payload.records.filter((record) =>
-        record.id.startsWith('display:polling-exact:'),
+      const exactClosedRecords = payload.records.filter(
+        (record) =>
+          record.id.startsWith('display:polling-exact:') ||
+          record.id.startsWith('display:polling-topology:'),
       )
       const fallbackRecords = payload.records.filter((record) =>
         record.id.startsWith('display:polling-network-fallback:'),
@@ -1384,7 +1482,7 @@ describe('generated web data', () => {
         expectedExactClosedCounts[election.id] ?? 0,
       )
       expect(fallbackRecords, election.id).toHaveLength(
-        expectedFallbackCounts[election.id] ?? 0,
+        0,
       )
       for (const record of pollingGroupRecords) {
         expect(record.geographyType, record.id).toBe('custom')
@@ -1417,47 +1515,107 @@ describe('generated web data', () => {
     )
     expect(
       k24Payload.records.find(
-        (record) => record.id === 'display:polling-group:K24:3000:122',
+        (record) => record.id === 'display:polling-partition:K24:1031:aggregate:1:1',
       )?.notice?.en,
-    ).toContain(
-      'Votes from these areas may be displayed in areas 864, 1311, 1313, 1322. This result may also include votes from areas 864, 1314.',
-    )
+    ).toContain('This result may also include votes from areas 4.')
     expect(
       k24Payload.records.find(
-        (record) => record.id === 'display:polling-group:K24:3000:172',
+        (record) => record.id === 'display:polling-partition:K24:1034:aggregate:1:3',
       )?.notice?.en,
-    ).toContain('This result may include votes from areas 864.')
+    ).toContain('This result may include votes from areas 2, 5.')
+
+    const k21Catalog = catalog.elections.find((election) => election.id === 'K21')
+    if (!k21Catalog) {
+      throw new Error('Missing K21 catalog entry')
+    }
+    const k21Payload = ElectionResultsSchema.parse(
+      await readJson(resolve(dataRoot, k21Catalog.resultUrls['statistical-area'])),
+    )
+    const southTelAvivDisplay = k21Payload.records.find(
+      (record) => record.id === 'display:polling-topology:K21:5000:aggregate:21:1',
+    )
+    expect(southTelAvivDisplay).toMatchObject({
+      names: { he: expect.stringContaining('811, 812, 813') },
+      totals: {
+        contributingRows: 14,
+        contributingKalpis: 14,
+        eligibleVoters: 8_887,
+        actualVoters: 5_352,
+        validVotes: 5_332,
+      },
+    })
+    expect(southTelAvivDisplay?.notice).toBeUndefined()
+    const k21Search = GeographySearchIndexSchema.parse(
+      await readJson(resolve(dataRoot, k21Catalog.resultUrls.search)),
+    )
+    expect(
+      k21Search.items.find(
+        (item) => item.id === 'display:polling-topology:K21:5000:aggregate:21:1',
+      )?.names.he,
+    ).toContain('811, 812, 813')
+
+    const k25Catalog = catalog.elections.find((election) => election.id === 'K25')
+    if (!k25Catalog) {
+      throw new Error('Missing K25 catalog entry')
+    }
+    const k25Payload = ElectionResultsSchema.parse(
+      await readJson(resolve(dataRoot, k25Catalog.resultUrls['statistical-area'])),
+    )
+    const telNordauDisplay = k25Payload.records.find(
+      (record) => record.id === 'display:polling-partition:K25:5000:aggregate:6:1',
+    )
+    expect(telNordauDisplay).toMatchObject({
+      names: { he: expect.stringContaining('334, 335, 336, 337') },
+      totals: {
+        contributingRows: 21,
+        contributingKalpis: 21,
+        eligibleVoters: 12_889,
+        actualVoters: 5_941,
+        validVotes: 5_926,
+      },
+    })
+    expect(telNordauDisplay?.notice?.en).toContain(
+      'This result may include votes from areas 512.',
+    )
+    const k25Search = GeographySearchIndexSchema.parse(
+      await readJson(resolve(dataRoot, k25Catalog.resultUrls.search)),
+    )
+    expect(
+      k25Search.items.find(
+        (item) => item.id === 'display:polling-partition:K25:5000:aggregate:6:1',
+      )?.names.he,
+    ).toContain('335')
 
     const area1024Displays = {
       K21: {
-        id: 'display:polling-group:K21:3000:133',
+        id: 'display:polling-partition:K21:3000:aggregate:4:2',
         totals: { eligibleVoters: 2_421, actualVoters: 1_528, validVotes: 1_524 },
         geometryType: 'Polygon',
         geometryPartCount: 1,
       },
       K22: {
-        id: 'display:polling-group:continuity:K22:3000:183:228',
-        totals: { eligibleVoters: 3_845, actualVoters: 2_217, validVotes: 2_214 },
-        geometryType: 'MultiPolygon',
-        geometryPartCount: 2,
+        id: 'display:polling-continuity-partition:continuity:K22:3000:component:20:2',
+        totals: { eligibleVoters: 2_439, actualVoters: 1_438, validVotes: 1_437 },
+        geometryType: 'Polygon',
+        geometryPartCount: 1,
       },
       K23: {
-        id: 'display:polling-group:continuity:K23:3000:184:228',
-        totals: { eligibleVoters: 3_916, actualVoters: 2_247, validVotes: 2_244 },
+        id: 'display:polling-continuity-partition:continuity:K23:3000:component:20:2',
+        totals: { eligibleVoters: 2_491, actualVoters: 1_448, validVotes: 1_446 },
+        geometryType: 'Polygon',
+        geometryPartCount: 1,
+      },
+      K24: {
+        id: 'display:polling-partition:K24:3000:aggregate:10:4',
+        totals: { eligibleVoters: 2_544, actualVoters: 1_473, validVotes: 1_469 },
         geometryType: 'MultiPolygon',
         geometryPartCount: 2,
       },
-      K24: {
-        id: 'display:polling-group:K24:3000:172',
-        totals: { eligibleVoters: 2_544, actualVoters: 1_473, validVotes: 1_469 },
-        geometryType: 'Polygon',
-        geometryPartCount: 1,
-      },
       K25: {
-        id: 'display:polling-group:K25:3000:187',
-        totals: { eligibleVoters: 2_591, actualVoters: 1_466, validVotes: 1_462 },
-        geometryType: 'Polygon',
-        geometryPartCount: 1,
+        id: 'display:polling-partition:K25:3000:aggregate:10:4',
+        totals: { eligibleVoters: 3_290, actualVoters: 1_825, validVotes: 1_821 },
+        geometryType: 'MultiPolygon',
+        geometryPartCount: 2,
       },
     }
 
@@ -1499,17 +1657,26 @@ describe('generated web data', () => {
       expect(geometryPartCount, expected.id).toBe(expected.geometryPartCount)
     }
 
-    for (const electionId of ['K19', 'K20']) {
-      const election = catalog.elections.find((candidate) => candidate.id === electionId)
-      if (!election) {
-        throw new Error(`Missing ${electionId} catalog entry`)
-      }
-      const payload = ElectionResultsSchema.parse(
-        await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])),
-      )
-      expect(payload.hiddenGeographyIds).not.toContain('stat2011:30001024')
-      expect(payload.records.some((record) => record.id === 'stat2011:30001024')).toBe(true)
+    const k19Election = catalog.elections.find((candidate) => candidate.id === 'K19')
+    const k20Election = catalog.elections.find((candidate) => candidate.id === 'K20')
+    if (!k19Election || !k20Election) {
+      throw new Error('Missing K19 or K20 catalog entry')
     }
+    const k19Payload = ElectionResultsSchema.parse(
+      await readJson(resolve(dataRoot, k19Election.resultUrls['statistical-area'])),
+    )
+    expect(k19Payload.hiddenGeographyIds).toContain('stat2011:30001024')
+    expect(
+      k19Payload.records.some(
+        (record) => record.id === 'display:reviewed-attachment:K19:3000:1021-1024',
+      ),
+    ).toBe(true)
+
+    const k20Payload = ElectionResultsSchema.parse(
+      await readJson(resolve(dataRoot, k20Election.resultUrls['statistical-area'])),
+    )
+    expect(k20Payload.hiddenGeographyIds).not.toContain('stat2011:30001024')
+    expect(k20Payload.records.some((record) => record.id === 'stat2011:30001024')).toBe(true)
   })
 })
 

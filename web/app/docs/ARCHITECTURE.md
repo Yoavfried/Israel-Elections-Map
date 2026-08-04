@@ -13,6 +13,8 @@ The web app supports:
   numeric vote-share gradient.
 - A primary two-party map with a diverging head-to-head balance and explicit
   tie, no-votes, and no-result states.
+- A primary coalition map using reviewed election-specific first-coalition or
+  transitional-coalition membership and a combined vote-share gradient.
 - A primary national-results view with every positive-vote list, final votes, threshold,
   mandates, colors, and Wikipedia controls.
 - Election-specific historical statistical-area mode and dissolved-2022-locality mode.
@@ -65,7 +67,7 @@ Zod-validated browser data client
 MapLibre feature state + React detail panels
 ```
 
-The browser loads the catalog first, then the selected election/mode result file and that election's search index. Each election carries `geographiesByMode`, so statistical geometry changes with the election: K17 loads 1995, K18 loads 2008, and K19-K25 load 2011. Locality mode uses dissolved 2022 geometry. The standard and party-analysis maps share these assets and the same result-detail contract. Single-party mode changes only MapLibre feature-state colors, using a quadratic white-to-color scale from zero to the 95th percentile of positive selected-party shares in the current result set; higher outliers are capped at the full reviewed party color. Two-party mode colors the head-to-head share of the selected parties' combined vote from the first reviewed color through a white 50/50 midpoint to the second reviewed color. A separate pale neutral identifies records where both selected parties received zero votes, while missing results retain the standard unmapped grey. Statistical assets also declare a simplified, non-interactive 2022 land backdrop; MapLibre paints it neutral grey below the historical result polygons so changing vintage does not turn uncovered Israeli land into background. For a locality with zero supported area assignments, the compiler adds a display-only current locality or reviewed composite footprint to the historical asset, hides its empty statistical components only in that election, and attaches the locality aggregate. The compiler removes source-only fields and rounds web coordinates to six decimal places. Each geography asset also has marker GeoJSON for marker-capable custom buckets and point-like proxies. The marker layer filters that asset to exact IDs present in the selected result payload, while reviewed detailed settlement and custom footprints remain polygonal.
+The browser loads the catalog first, then the selected election/mode result file and that election's search index. Each election carries `geographiesByMode`, so statistical geometry changes with the election: K17 loads 1995, K18 loads 2008, and K19-K25 load 2011. Locality mode uses dissolved 2022 geometry. The standard and party-analysis maps share these assets and the same result-detail contract. Single-party mode changes MapLibre feature-state colors, using a quadratic white-to-color scale from zero to the 95th percentile of positive selected-party shares in the current result set; higher outliers are capped at the full reviewed party color. Its circle option uses the same result IDs and search-index centers: color remains vote share with a minimum positive-vote tint, while circle area represents absolute party votes. One party-independent size scale is capped at the 99th percentile of each area's leading-party vote total, with a smaller maximum radius. Two-party mode colors the head-to-head share of the selected parties' combined vote from the first reviewed color through a white 50/50 midpoint to the second reviewed color. Coalition mode sums a reviewed fixed list of election-specific ballots and applies the same 95th-percentile sequential scale using the largest coalition member's color. K21 and K22 use the outgoing transitional coalition; partial joint-list membership in K21-K23 remains explicitly disclosed because ballot votes cannot be split by component party. A separate pale neutral identifies records where both selected comparison parties received zero votes, while missing results retain the standard unmapped grey. Statistical assets also declare a simplified, non-interactive 2022 land backdrop; MapLibre paints it neutral grey below the historical result polygons so changing vintage does not turn uncovered Israeli land into background. For a locality with zero supported area assignments, the compiler adds a display-only current locality or reviewed composite footprint to the historical asset, hides its empty statistical components only in that election, and attaches the locality aggregate. The compiler removes source-only fields and rounds web coordinates to six decimal places. Each geography asset also has marker GeoJSON for marker-capable custom buckets and point-like proxies. The marker layer filters that asset to exact IDs present in the selected result payload, while reviewed detailed settlement and custom footprints remain polygonal.
 
 The same combobox treats text containing both letters and a number as a possible
 address. After a short debounce, Photon returns bounded OpenStreetMap address
@@ -87,10 +89,11 @@ OpenFreeMap style URL can be replaced at build time without changing generated
 data or result contracts.
 
 The compiler derives an inverse presentation mask from a separate CBS/OSM
-Israel and full-West-Bank land footprint. In vector mode it paints Gaza,
-neighboring countries, and the rest of the world with the style's water color
-above non-label basemap detail. Symbol-layer filters restrict vector labels to
-the same footprint, while labels remain above election fills and outlines.
+Israel and full-West-Bank land footprint. In vector mode it
+paints Gaza, neighboring countries, sea, and the rest of the world with the
+style's water color above basemap detail. Symbol-layer filters restrict vector
+labels to the same footprint, while labels remain above election fills and
+outlines.
 The entire West Bank remains inside the visible footprint, preserving roads,
 labels, and Area A/B/C context. The footprint excludes administrative maritime
 extensions and the part of Ghajar north of the OSM Lebanon boundary, and also
@@ -219,7 +222,7 @@ Move to tiles before public launch if any of these remain true after compression
   map-wide coverage bubble is not treated as assignment evidence; uncertainty
   is disclosed on affected geographic results.
 - Coverage is mode-specific: locality result-row coverage is complete;
-  historical statistical coverage ranges from 93.06% to 95.47% by election.
+  historical statistical coverage ranges from 93.08% to 94.71% by election.
   The partial-presence locality audit remains open.
 - Envelope votes are excluded from polygon coverage and remain visible through the separate national result control.
 - Active composite localities hide their 2022 component features; inactive composites are hidden. A joined-register union replaces exactly one published host result and is rejected if another union claims that host or an attached component has a standalone result. Its visible title/code remain the host's, and attached polygon names are exposed separately through the details-panel info tooltip. Other hidden-result conflicts remain fatal.

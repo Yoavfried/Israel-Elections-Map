@@ -2,9 +2,9 @@
 
 Local-first React/TypeScript client for the K17-K25 pipeline. Primary top-bar
 views expose the geographic map, a single-party vote-share map, and complete
-national results, plus a two-party head-to-head comparison map. The app does
-not read working CSV files at runtime. A build-time compiler validates them and
-writes disposable web assets under `public/data/v2/`.
+national results, plus two-party comparison and coalition-results maps. The
+app does not read working CSV files at runtime. A build-time compiler validates
+them and writes disposable web assets under `public/data/v2/`.
 
 Geographic views use an OSM-derived OpenFreeMap vector background by default.
 The map selector can switch to the original neutral background, and the choice
@@ -105,7 +105,12 @@ details. It colors every result-bearing polygon on a continuous scale from zero
 to the 95th percentile of positive vote shares for the selected list. Higher
 outliers use the full party color, while a quadratic white-to-color ramp keeps
 low relative shares pale and geography without a result retains a separate
-neutral state.
+neutral state. A second display option replaces those fills with circles: color
+continues to represent vote share, circle area represents absolute votes, and
+the 99th percentile of each area's leading-party vote total caps one smaller,
+party-independent size scale. Positive circles receive a minimum visible party
+tint so low-share results do not become large white discs. Every circle retains
+the same result ID and complete click-through detail.
 
 The two-party comparison view uses each selected party's share of their
 combined local vote. A 50/50 result is white, either endpoint uses that party's
@@ -113,13 +118,24 @@ reviewed color, and separate neutral colors distinguish no votes for either
 party from geography with no result. Selecting an area retains the complete
 result and emphasizes both selected lists.
 
+The coalition view uses a reviewed fixed member list for every election. It
+maps the members' combined local vote share from white to the nationally
+largest member's reviewed color, with the positive-share 95th percentile as
+the full-color ceiling. K21 and K22 show the outgoing transitional coalition
+because neither Knesset formed a government. Joint ballots in K21-K23 are
+marked when only some component factions were represented in the outgoing or
+first government. K23 excludes Yamina because only one member joined; the
+Labor-Gesher-Meretz ballot remains included with a short member-level caveat.
+Selecting an area shows the coalition total and emphasizes every included list.
+
 The vector basemap is presentation context only. Buildings, roads, boundaries,
 and localized labels render above translucent election fills; labels also sit
 above election outlines, while markers remain in the top layer. Feature state,
 selection, and hit testing remain attached to the election geometry.
-Provider attribution is supplied through MapLibre whenever the vector
-background is active. If its style cannot load promptly, the client returns to
-the neutral map rather than blocking the election results.
+Provider attribution is supplied through MapLibre whenever a remote background
+is active. OSM attribution for the committed context boundary remains visible
+in neutral mode too. If a remote style cannot load promptly, the client returns
+to the neutral map rather than blocking the election results.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data contract and
 [`../../docs/PROJECT_STATUS.md`](../../docs/PROJECT_STATUS.md) for the sole

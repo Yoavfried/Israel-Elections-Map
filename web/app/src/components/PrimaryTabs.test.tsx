@@ -13,6 +13,7 @@ describe('PrimaryTabs', () => {
     expect(html).toContain('National results')
     expect(html).toContain('Single Party Map')
     expect(html).toContain('Party Comparison')
+    expect(html).toContain('Coalition Results')
     expect(html).toContain('Full Map')
   })
 })

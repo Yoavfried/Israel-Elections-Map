@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-02
+Last updated: 2026-08-04
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -12,15 +12,15 @@ but open/complete workstream declarations belong here.
 |---|---|---|
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
 | Locality-mode aggregation | Implemented; audit complete | Every geographic-scope result row is mapped. The 80 partial-presence localities create 227 election-specific gaps: 215 have supported explanations and 12 cells across 8 localities remain explicitly neutral because no source supports a host. |
-| Historical statistical-area mode | Implemented; reviewed pass ongoing | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty high-confidence row-level continuity links are approved and labeled synthetic. The K21-K25 polling-group policy now publishes 255 exact closed units without notices, 1,962 representative units with notices, and nine broad fallbacks across 4,075 polygon-election memberships. Entirely unassigned localities use a separate display-only map fallback. K17-K20 lack qualifying polling-group evidence, and further host-code anomaly review remains open. |
+| Historical statistical-area mode | Implemented; reviewed pass ongoing | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty high-confidence row-level continuity links are approved and labeled synthetic. The K21-K25 polling-group graph now publishes 517 exact closed units without notices and 1,757 representative units with notices across 4,691 polygon-election memberships; disconnected geometry no longer forces mega-groups, and 12 strictly matched K25 planned-site consolidations recover otherwise dropped areas. Multi-group units remove all broad network fallbacks. Entirely unassigned localities use a separate display-only map fallback. K17-K20 lack qualifying polling-group evidence, and further host-code anomaly review remains open. |
 | Party/list names | Complete | All published K17-K25 lists have reviewed display names. English labels may fall back to Hebrew where no separate translation is maintained. |
 | Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
 | Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
 | UX and accessibility | Desktop implemented; mobile rewrite planned | Desktop bilingual behavior is active, including document-level direction and properly shaped Hebrew/Arabic vector labels. The current narrow-screen stack is an interim compatibility shell and obscures too much of the map; it will be replaced by a complete map-first mobile design. Keyboard and accessibility review remain continuous. |
 | National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
-| Product features | Address search and OSM vector basemap implemented; 3D next | Election-aware bilingual geography search, exact numbered-address lookup with local election-polygon resolution, both party-analysis modes, and a localized OSM-derived vector street background with a persisted neutral fallback are implemented. A precise display-only CBS/OSM Israel/full-West-Bank land footprint preserves West Bank vector detail, filters surrounding labels, excludes maritime extensions and northern Ghajar, and outlines the Jordan Valley edge in neutral mode. Optional close-zoom 3D buildings are next; satellite follows them. Vote-sized circles remain an optional single-party extension. |
+| Product features | Core desktop analysis modes implemented | Election-aware bilingual geography and numbered-address search, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 102 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Future versioning policy remains open. |
-| Public repository hardening | In progress | Split licensing now keeps the reusable data release and reviewed data tables under MIT while reserving rights in the website and other project materials; third-party notices and public-facing repository hygiene are in place. Fresh-clone source bootstrap, CI, and performance checks are unfinished. |
+| Public repository hardening | In progress | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The commercial-use audit records explicitly published third-party terms. A public Sources/Legal/Privacy surface, fresh-clone source bootstrap, CI, and performance checks remain unfinished. |
 
 ## Public Data Release
 
@@ -34,6 +34,10 @@ data. It includes:
 - direct `geography_id` joins, party/election metadata, checksums, and validation;
 - 30 machine-readable provenance and audit artifacts under
   `metadata/assignment-provenance/`.
+
+`public-data/METHODOLOGY.md` now states the exact assignment precedence,
+synthetic-link counts, unresolved-row policy, validation rules, and audit path
+under the MIT data licence.
 
 The release marks 198 ballot-to-area links as synthetic links, representing
 58,829 actual voters. The ballot rows and votes themselves are never synthetic:
@@ -59,13 +63,13 @@ Statistical mode uses the historical vintage named by the official crosswalk:
 1995 for K17, 2008 for K18, and 2011 for K19-K25. K25 is not converted to 2022
 areas because its official crosswalk still targets 2011.
 
-Across all elections, 5,498 rows representing 2,055,696 actual voters remain
+Across all elections, 5,549 rows representing 2,080,411 actual voters remain
 without a defensible statistical-area target. Supported statistical-mode voter
-coverage is 94.09% overall. Locality coverage is 100% in every election.
+coverage is 94.02% overall. Locality coverage is 100% in every election.
 
 | Election | Vintage | Statistical-area rows | Custom rows | Pending rows | Pending actual voters | Supported voter share |
 |---|---:|---:|---:|---:|---:|---:|
-| K17 | 1995 | 7,872 | 44 | 358 | 136,480 | 95.47% |
+| K17 | 1995 | 7,821 | 44 | 409 | 161,195 | 94.65% |
 | K18 | 2008 | 8,693 | 48 | 518 | 189,252 | 94.14% |
 | K19 | 2011 | 9,317 | 0 | 558 | 212,413 | 94.13% |
 | K20 | 2011 | 9,545 | 0 | 567 | 259,204 | 93.55% |
@@ -79,31 +83,52 @@ The unresolved rows are classified rather than silently estimated:
 
 | Current explanation | Rows |
 |---|---:|
-| Entire locality omitted from the official crosswalk | 5,245 |
-| Election locality identity absent from the active historical vintage | 55 |
+| Entire locality omitted from the official crosswalk | 5,298 |
+| Election locality identity absent from the active historical vintage | 53 |
 | K17 component locality has multiple areas but no component crosswalk | 31 |
 | K18 component locality is nested in the published composite geometry | 84 |
 | Central ballot 990, intentionally locality-only | 70 |
 | Specific ordinary ballot omitted from the official crosswalk | 13 |
-| **Total** | **5,498** |
+| **Total** | **5,549** |
+
+These numbers are source limitations, not one undifferentiated repair queue:
+
+| Item | Plain meaning | Current treatment | What could change it |
+|---|---|---|---|
+| 12 partial-presence locality/election cells | A current 2022 locality polygon exists, but no standalone result or reviewed host was found for that election. | Leave the polygon neutral. | A polling register or result source that explicitly identifies the host result. |
+| 13 omitted ordinary ballots | The final ballot result exists, but its key is absent from the official CBS area crosswalk. | Keep the row in locality totals with a blank area ID. | A direct crosswalk, AGS value, or independently reconcilable register link. |
+| 70 ballot-990 rows | These are explicitly central/unallocated locality ballots, not ordinary area ballots. | Keep them locality-only and out of area totals. | Only election-specific evidence assigning a particular 990 row to an area. |
+| 31 K17 composite rows | The component locality is known, but it has several 1995 areas and no component ballot-to-area crosswalk. | Preserve component-locality evidence; do not choose an area. | A component-level K17 crosswalk or equivalent register evidence. |
+| 84 K18 composite rows | The component locality is known, but the 2008 source publishes it inside composite geometry without separate component area IDs. | Preserve the component evidence; do not invent a subdivision. | A more detailed official 2008 geometry/crosswalk source. |
+| K17 Maghar stations 17-20 | The planned register lists the stations, but the official final digital result contains only stations 1-16. The missing vote rows do not exist in the result source. | Record the source omission and do not synthesize votes. | A complete official final result source containing those stations. |
+| Entirely unassigned localities | The locality result is known, but no ballot in that locality has a supported area ID for that election. | Show a clearly labeled display-only whole-locality fallback; keep all public row assignments blank. | A detailed official crosswalk or independently reconcilable ballot-register source. |
+
+The first, second, fourth, fifth, sixth, and seventh items can improve only if a
+new source is found. The 990 treatment is normally the correct final state, not
+a bug. None should be solved from polling-place address alone.
 
 Statistical mode now makes the dominant missing-municipality case visible
-without pretending it is area-level data. For 308 election/locality cases where
-no ballot has a supported statistical-area assignment, the map shows the whole
-locality total on a display-only locality or reviewed composite boundary with an
-info notice. These displays represent 5,380 unresolved ballot rows and
-2,028,085 actual voters. They do not write area IDs, alter the downloadable
-ballot assignments, or increase the 94.09% coverage figure.
+without pretending it is area-level data. For 314 election/locality or reviewed
+component cases where no ballot has a supported statistical-area assignment,
+the map shows the corresponding total on a display-only locality, component, or
+reviewed composite boundary with an info notice. These displays represent 5,462
+unresolved ballot rows and 2,062,812 actual voters. They do not write area IDs, alter the downloadable
+ballot assignments, or increase the 94.02% coverage figure.
 
-A second display-only rule covers 4,075 polygon-election memberships across
-K21-K25. It publishes 2,217 polling-group units: 255 exact closed units and
-1,962 representative units. The exact units cover 677 polygon memberships and
-397 final polling groups; 94 combine multiple polling groups, and none carries
+A second display-only rule covers 4,691 polygon-election memberships across
+K21-K25. It publishes 2,274 polling-group units: 517 exact closed units and
+1,757 representative units. The exact units cover 1,249 polygon memberships and
+646 final polling groups; 97 combine multiple polling groups, and none carries
 an uncertainty notice. Direct official pre-election evidence supports K21,
-K24, and K25; K22 and K23 require exact site/base continuity in at least two
-direct-evidence elections. Nine K24/K25 networks remain broad aggregates with
-notices. Seventeen representative components require disclosed disconnected
-placement after the solver proves no connected solution covers every group.
+K24, and K25. Consolidated final subdivisions in K21-K23 require continuous
+locality/site identity and at least two direct-evidence elections agreeing on
+the exact multi-area set; remaining K22/K23 groups retain the stricter
+site-and-ballot-base rule. Representative units may contain multiple polling
+groups and must pass majority precision and recall under three weighting models
+or retain the most detailed placement with a notice. Geometry disconnection is
+disclosed rather than used to merge groups. Twelve K25 planned-only sites pass
+a strict unique site-text and eligible-balance consolidation rule. No broad
+network fallback remains. Fourteen representative units require disclosed disconnected placement.
 Public ballot assignments, per-area tables, and coverage remain unchanged. No
 vote is divided or estimated.
 
@@ -166,11 +191,13 @@ unallocated-register candidates remain withheld.
 3. Preserve the K17 Maghar source omission as an explicit result-source gap:
    the planned list has stations 17-20, but the official digital result table
    has stations 1-16 only. Do not synthesize missing result rows.
-4. Decide whether acceptable detailed display boundaries exist for Rotem,
-   Maskiyot, Avnat, and Mavo'ot Yeriho. This is a geometry-quality issue, not an
-   assignment gap.
-5. Continue UX work and implement the remaining feature order in
-   `FEATURE_PLAN.md`; the national-results baseline is complete.
+4. Search for defensible detailed display boundaries for Rotem, Maskiyot,
+   Avnat, and Mavo'ot Yeriho. No better candidate boundaries have been located
+   yet, so there is currently nothing awaiting approval. Keep the present
+   proxy/hidden treatment unless a sourced candidate is found. This is a
+   geometry-quality issue, not an assignment gap.
+5. Continue desktop UX/accessibility work and build the planned map-first mobile
+   rewrite. Satellite and 3D-building modes are not part of the plan.
 6. Add reproducible fresh-clone source bootstrap and CI checks.
 7. Treat the supplied Kaplan layers as exhausted locality/neighborhood
    aggregates. Reopen recurring crosswalk omissions only if the internal CBS

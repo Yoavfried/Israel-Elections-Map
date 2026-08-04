@@ -59,6 +59,7 @@ async function main() {
       statisticalAreaResultAggregates,
       statisticalAreaPollingGroupDisplayRows,
       statisticalAreaPollingGroupDisplays,
+      statisticalAreaPollingGroupAreaEvidenceRows,
     ] = await Promise.all([
       readJson(resolve(APP_ROOT, 'config', 'elections.json')),
       readJson(resolve(APP_ROOT, 'config', 'party-overrides.json')),
@@ -106,6 +107,13 @@ async function main() {
           sourceRoot,
           'geographies',
           'statistical_area_polling_group_displays.geojson',
+        ),
+      ),
+      readCsv(
+        resolve(
+          sourceRoot,
+          'audits',
+          'statistical_area_polling_group_area_evidence.csv',
         ),
       ),
     ])
@@ -195,7 +203,10 @@ async function main() {
         pruneGeography(
           source.geography,
           'statistical-area',
-          vintage === 2011 ? statisticalCustomGeographies : customGeographies,
+          filterStatisticalCustomGeographiesByVintage(
+            statisticalCustomGeographies,
+            vintage,
+          ),
         ),
       ]),
     )
@@ -380,9 +391,13 @@ async function main() {
         localityMetadata,
         displayOverrides,
       )
-      const electionStatisticalMetadata = applyMetadataNameOverrides(
-        statisticalMetadata,
-        statisticalDisplayOverrides,
+      const electionStatisticalMetadata = applyPendingAggregateNotices(
+        applyMetadataNameOverrides(
+          statisticalMetadata,
+          statisticalDisplayOverrides,
+        ),
+        statisticalAreaPollingGroupAreaEvidenceRows,
+        election.id,
       )
       const displayedLocalityRows = aliasJoinedCompositeResults(
         localityRows,
@@ -488,11 +503,13 @@ async function main() {
             geographyMode: 'statistical-area',
             geography: prunedStatisticalAreasByVintage.get(statisticalAreaVintage),
             results: statisticalPayload,
+            metadataById: electionStatisticalMetadata,
           },
           {
             geographyMode: 'locality',
             geography: prunedLocalities,
             results: localityPayload,
+            metadataById: electionLocalityMetadata,
           },
         ],
       })
@@ -761,12 +778,21 @@ function buildStatisticalAreaDisplayOverrideIndex(rows, elections, metadataByVin
     const nameHe = String(row.name_he ?? '').trim()
     const nameEn = String(row.name_en ?? '').trim()
     const note = String(row.note ?? '').trim()
+    const noticeHe = String(row.notice_he ?? '').trim()
+    const noticeEn = String(row.notice_en ?? '').trim()
+    const notice =
+      noticeHe || noticeEn
+        ? {
+            he: noticeHe || noticeEn,
+            en: noticeEn || noticeHe,
+          }
+        : undefined
 
     if (
       !statAreaId ||
       !['default', 'hidden'].includes(visibility) ||
       electionIds.length === 0 ||
-      (visibility === 'default' && !nameHe && !nameEn)
+      (visibility === 'default' && !nameHe && !nameEn && !notice)
     ) {
       throw new Error(`Invalid statistical-area display override: ${statAreaId || '(blank ID)'}`)
     }
@@ -783,7 +809,13 @@ function buildStatisticalAreaDisplayOverrideIndex(rows, elections, metadataByVin
       if (electionOverrides.has(statAreaId)) {
         throw new Error(`Duplicate statistical-area display override: ${electionId}.${statAreaId}`)
       }
-      electionOverrides.set(statAreaId, { visibility, nameHe, nameEn, note })
+      electionOverrides.set(statAreaId, {
+        visibility,
+        nameHe,
+        nameEn,
+        note,
+        notice,
+      })
     }
   }
 
@@ -897,17 +929,63 @@ function mergeFeatureCollections(...collections) {
   return { type: 'FeatureCollection', features }
 }
 
+function filterStatisticalCustomGeographiesByVintage(collection, vintage) {
+  const prefix = `stat${vintage}:`
+  return {
+    type: 'FeatureCollection',
+    features: collection.features.filter((feature) => {
+      const componentIds = String(
+        feature.properties?.component_stat_area_ids ?? '',
+      )
+        .split('|')
+        .map((value) => value.trim())
+        .filter(Boolean)
+      return componentIds.length === 0 || componentIds.every((id) => id.startsWith(prefix))
+    }),
+  }
+}
+
 function applyMetadataNameOverrides(metadataById, overrides) {
   const output = new Map(metadataById)
   for (const [id, override] of overrides) {
-    if (!override.nameHe && !override.nameEn) {
+    if (!override.nameHe && !override.nameEn && !override.notice) {
       continue
     }
     const metadata = output.get(id)
     output.set(id, {
       ...metadata,
-      nameHe: override.nameHe || metadata.nameHe,
-      nameEn: override.nameEn || metadata.nameEn,
+      nameHe: override.nameHe || metadata?.nameHe,
+      nameEn: override.nameEn || metadata?.nameEn,
+      notice: override.notice ?? metadata?.notice,
+    })
+  }
+  return output
+}
+
+const PENDING_AGGREGATE_NOTICE = {
+  he: 'לא ניתן לשייך את מלוא תוצאות האזור במדויק. ייתכן שחלק מקולותיו מוצגים באזור אחר או שהתוצאה כוללת קולות מאזורים אחרים.',
+  en: 'The complete result for this area cannot be assigned precisely. Some of its votes may be shown elsewhere, or this result may include votes from other areas.',
+}
+
+function applyPendingAggregateNotices(metadataById, evidenceRows, electionId) {
+  const output = new Map(metadataById)
+  for (const row of evidenceRows) {
+    if (
+      String(row.election ?? '').trim() !== electionId ||
+      String(row.evidence_class ?? '').trim() !==
+        'cannot_show_separately_pending_aggregate_review'
+    ) {
+      continue
+    }
+
+    const statAreaId = String(row.stat_area_id ?? '').trim()
+    const metadata = output.get(statAreaId)
+    if (!metadata) {
+      throw new Error(`${electionId} pending aggregate references unavailable area ${statAreaId}`)
+    }
+    output.set(statAreaId, {
+      ...metadata,
+      notice: metadata.notice ?? PENDING_AGGREGATE_NOTICE,
     })
   }
   return output

@@ -58,16 +58,16 @@ handling.
 
 | Evidence class | Rows | Meaning |
 |---|---:|---|
-| `official_direct_crosswalk` | 83,237 | Direct election-specific CBS crosswalk, including supported base subdivisions. |
+| `official_direct_crosswalk` | 83,230 | Direct election-specific CBS crosswalk, including supported base subdivisions. |
 | `official_direct_ags` | 74 | Direct AGS from the official K23 CEC report. |
-| `deterministic_single_area_locality` | 3,845 | The active historical locality has exactly one canonical area; reviewed composite-component evidence may first identify that locality. |
+| `deterministic_single_area_locality` | 3,801 | The active historical locality has exactly one canonical area; reviewed combined-municipality exclusions prevent assignment to only one obsolete component. |
 | `official_stability_inferred_link` | 134 | Official CBS stable-ballot evidence has a unanimous same-vintage target. |
 | `reviewed_exact_aggregate_inferred_link` | 9 | Reviewed unique exact K21 ArcGIS residual partition. |
 | `reviewed_cross_election_inferred_link` | 5 | Reviewed correction supported by independent same-vintage evidence. |
 | `reviewed_polling_register_continuity_inferred_link` | 50 | Approved high-confidence link from exact cross-election polling-register continuity and direct same-vintage targets. |
 | `reviewed_custom_geography` | 92 | Supported custom geography where historical geometry cannot represent the target; the tribal bucket is a marker and Hebron uses a detailed polygon. K19-K25 ballots retain their exact tribe/statistical-area IDs in this package even though the web map combines those results into the same marker. |
 | `non_geographic` | 3,585 | Envelope or other reviewed non-geographic row. |
-| `unresolved` | 5,498 | No defensible historical area under the current evidence. |
+| `unresolved` | 5,549 | No defensible historical area under the current evidence. |
 
 The four inferred evidence paths total 198 rows and 58,829 actual voters. Filter
 `assignment_is_synthetic_link=false` when an analysis requires only direct or
@@ -128,10 +128,11 @@ Geographic aggregate tables expose `geography_id` and `geography_type` as their
 first join columns. Vote totals and party columns are additive. Never split a
 published aggregate among component polygons without independent evidence.
 
-The web map's whole-locality fallback is not a statistical aggregate or ballot
-assignment. Rows remain in `aggregates/unresolved`; the separate
+The web map's whole-locality or reviewed-component fallback is not a
+statistical aggregate or ballot assignment. Rows remain in
+`aggregates/unresolved`; the separate
 `metadata/assignment-provenance/historical_municipality_display_fallbacks.csv`
-audit identifies the 308 display-only substitutions.
+audit identifies the 314 display-only substitutions.
 
 The K17 envelope/non-geographic row stores 4,087 eligible voters as a technical
 national-denominator bucket: 518 from three source camp rows plus the separate
@@ -168,7 +169,7 @@ contains 30 inspectable artifacts:
 - historical overrides;
 - approved cross-election polling-register continuity reviews;
 - unresolved row/locality classifications;
-- display-only whole-locality fallback records;
+- display-only whole-locality and reviewed-component fallback records;
 - per-election polygon coverage and cross-election persistence.
 
 Population values in the polygon audit are demographic proxies. They are not

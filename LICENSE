@@ -12,7 +12,7 @@ The project-authored portions of these paths are licensed under the MIT terms
 in LICENSE-DATA:
 
 - public-data/**
-- data/manual/**
+- data/manual/**, except for the presentation-control files listed in section 2
 
 This grant covers the project's original selection, arrangement,
 normalization, annotations, reviewed assignment metadata, and accompanying
@@ -33,14 +33,38 @@ source-visible but are not open source and are not licensed for reuse,
 redistribution, modification, deployment, or derivative works without prior
 written permission.
 
-3. Earlier versions
+The following reviewed files are website-presentation configuration, not open
+assignment data, and are also covered by LICENSE-WEBSITE:
+
+- data/manual/locality_display_overrides.csv
+- data/manual/statistical_area_display_groups.csv
+- data/manual/statistical_area_display_overrides.csv
+- data/manual/statistical_area_polling_group_display_reviews.csv
+- data/manual/statistical_area_result_display_reviews.csv
+
+Canonical geography packages and row-level assignment fields published under
+`public-data/` remain on the open-data side. Web-only polygon unions,
+representative display groups, fallback boundaries, masks, marker placement,
+party colors, styles, and map modes remain on the protected product side.
+
+3. OSM-derived map-context database
+
+The project-authored database arrangement in
+`web/app/data/map-context-footprint.geojson`, together with its
+OpenStreetMap-derived database portions, is distributed under the Open Data
+Commons Open Database License 1.0 (ODbL) as documented in
+`web/app/data/README.md`. Externally supplied CBS material embedded in that
+file remains under the CBS source licence. This exception does not apply to
+website code, visual design, or map presentation.
+
+4. Earlier versions
 
 Versions of this repository published before July 31, 2026 were offered under
 the repository's previous MIT License. Rights already granted for those
 versions are not withdrawn. This split-license notice governs this version and
 later contributions unless a file states otherwise.
 
-4. Third-party software
+5. Third-party software
 
 Third-party software dependencies remain under their own licenses. No rights
 in third-party trademarks, logos, or other protected material are granted by

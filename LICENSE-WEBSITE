@@ -9,6 +9,9 @@ LICENSE-DATA. It includes, without limitation:
 - tests, build scripts, configuration, and architecture;
 - user-interface and interaction design;
 - visual styling, map presentation, and party-color configuration;
+- web-only polygon unions, representative display groups, fallback
+  boundaries, masks, marker placement, basemap modes, and related reviewed
+  presentation-control tables identified in the root `LICENSE` notice;
 - project-authored text, documentation, graphics, and other site content.
 
 The material is published for viewing and reference. No permission is granted

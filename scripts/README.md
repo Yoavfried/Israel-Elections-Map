@@ -57,7 +57,9 @@ Production stages:
 - `build_assignment_plan.py` applies envelope handling, locality identities,
   and reviewed custom classifications.
 - `build_historical_ballot_assignments.py` applies the official crosswalks and
-  the unique historical-area locality fallback.
+  the unique historical-area locality fallback, except for reviewed combined
+  municipalities listed in
+  `data/manual/historical_single_stat_fallback_exclusions.csv`.
 - `audit_arcgis_assignment_reconstruction.py` emits K20/K21 unique exact
   partition candidates, checks valid/invalid totals per residual area, and
   attaches the reviewed decisions. The published approvals are one Tier A and
@@ -66,18 +68,31 @@ Production stages:
   statistical-area assignment fields and applies only approved exact or
   high-confidence reviewed links after official crosswalk assignments.
 - `build_public_outputs.py` writes aggregates, contributions, coverage, and
-  pending rows, plus display-only whole-locality fallbacks for elections where
+  pending rows, plus display-only whole-locality or reviewed-component fallbacks where
   a locality has no supported area assignments.
-- `audit_statistical_area_polling_group_evidence.py` links official planned and
-  final polling registers and emits nationwide overlapping-area networks.
+- `audit_statistical_area_polling_group_evidence.py` first removes exact final
+  ballot-to-area matches, then links official planned and final polling sites
+  only through unique site, ballot-base, or normalized-location evidence.
 - `build_statistical_area_polling_group_policy.py` first uses
   `polling_group_flow.py` to publish provably closed polygon/polling-group
-  units, then uses `polling_group_ownership.py` for the remaining
-  representative placements. Exact closed units have no uncertainty notice.
+  units. For the remaining networks, `polling_group_partition.py` starts with
+  the detailed ownership from `polling_group_ownership.py` and merges polling
+  groups only until each unit has majority precision and recall under planned,
+  final-actual, and final-eligible weighting. Multiple polling groups may share
+  one displayed polygon combination. Disconnected geometry is disclosed but
+  never causes polling groups to merge. A planned-only site is reconciled to a
+  final-result site only when candidate areas, normalized polling-place text,
+  and eligible-voter arithmetic identify one unique target. Final decimal subdivisions still require
+  stable site identity and exact area-set agreement in at least two
+  direct-evidence elections. Exact closed units have no uncertainty notice.
 - `build_statistical_area_result_aggregates.py` and
-  `build_statistical_area_polling_group_displays.py` generate broad fallback,
-  exact closed, and representative presentation layers without changing
-  row-level assignments.
+  `build_statistical_area_polling_group_displays.py` generate exact closed and
+  representative presentation layers without changing row-level assignments.
+  Reviewed set-level display corrections are sourced from
+  `data/manual/statistical_area_polling_group_display_reviews.csv`; they may
+  replace generated polygon ownership but never rewrite the ballot table.
+  The aggregate builder emits an empty artifact when no broad fallback is
+  required, preventing stale fallback geometry from surviving a rebuild.
 - `build_public_data_release.py` publishes `public-data/v1` ballot CSVs,
   aggregate tables, full-resolution geography ZIPs, metadata, checksums, and
   release validation.

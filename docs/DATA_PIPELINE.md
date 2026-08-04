@@ -50,7 +50,9 @@ python scripts/run_pipeline.py --skip-geographies
 14. audit official planned/final polling-group networks;
 15. identify exact closed polygon/polling-group units with transport-flow
     bounds;
-16. solve representative polygon ownership for the remaining networks;
+16. reconstruct consolidated final subdivisions only from strict
+    two-reference polling-site continuity, then solve representative polygon
+    ownership for the remaining networks;
 17. generate exact closed, representative, and broad-fallback display layers;
 18. build the committed schema-v2 `public-data/v1` release and validation report.
 
@@ -137,12 +139,22 @@ mismatch. These are labeled synthetic links; no vote value is changed.
 
 ### Gap And Polygon Audit
 
-`scripts/audit_historical_assignment_gaps.py` classifies all 5,498 pending rows,
+`scripts/audit_historical_assignment_gaps.py` classifies all 5,549 pending rows,
 compares K20/K21 detailed ArcGIS polygons where applicable, and writes
 election-level polygon coverage, recurring crosswalk-locality omission, and
 cross-election persistence tables.
 Demographic population is labeled as a proxy and never treated as an
 election-specific eligibility count.
+
+### Reviewed Set-Level Displays
+
+`data/manual/statistical_area_polling_group_display_reviews.csv` records
+presentation-only corrections where source conflicts make a generated polygon
+owner misleading but do not justify splitting votes. The display builder
+releases the reviewed polygons and ballot rows from the generated partition,
+dissolves the approved polygon set, and aggregates complete final ballot rows
+onto that set. Row-level assignments and downloadable ballot tables remain
+unchanged.
 
 ## Historical Geometry
 
@@ -209,11 +221,11 @@ decisions.
 
 ## Verified Coverage
 
-Verified from the offline rebuild on 2026-07-18:
+Verified from the offline rebuild on 2026-08-03:
 
 | Election | Vintage | Supported rows | Pending rows | Supported voter share | Locality share |
 |---|---:|---:|---:|---:|---:|
-| K17 | 1995 | 7,916 | 358 | 95.47% | 100% |
+| K17 | 1995 | 7,865 | 409 | 94.65% | 100% |
 | K18 | 2008 | 8,741 | 518 | 94.14% | 100% |
 | K19 | 2011 | 9,317 | 558 | 94.13% | 100% |
 | K20 | 2011 | 9,545 | 567 | 93.55% | 100% |
@@ -226,10 +238,16 @@ Verified from the offline rebuild on 2026-07-18:
 ## Other Reviewed Inputs
 
 - `data/manual/k17_eligible_voters.csv` restores K17 ordinary-register turnout
-  and reconciles to 5,011,053 eligible voters.
+  and reconciles to 5,011,053 eligible voters. Its official scan locality code,
+  locality name, and ballot number are validated against every ordinary K17
+  result row so historical matching does not rely on modern merger aliases.
 - `data/manual/composite_localities.csv` and
   `data/manual/joined_locality_composites.csv` control election-specific
   locality display unions.
+- `data/manual/historical_single_stat_fallback_exclusions.csv` blocks the
+  deterministic single-area fallback when an election result represents a
+  reviewed combined municipality but the historical layer retains separate
+  component polygons.
 - `data/manual/locality_display_overrides.csv` controls reviewed historical
   names and visibility.
 - `data/manual/statistical_area_display_overrides.csv` controls reviewed
@@ -252,10 +270,16 @@ Verified from the offline rebuild on 2026-07-18:
 Polling-group display ownership is intentionally not a manual input. The
 pipeline rebuilds it from the audited official-register evidence, validates
 unique ballot and polygon ownership, and fails if either the flow analysis or
-bounded ownership solver does not finish. It currently publishes 255 exact
-closed units without uncertainty notices, 1,962 representative units with
-notices, and passes nine broad network fallbacks to
-`build_statistical_area_result_aggregates.py`.
+bounded partition solver does not finish. Exact final ballot matches are peeled
+before unique site linkage. Planned counts then weight graph edges without
+being treated as conserved final totals. Disconnected geometry never forces
+otherwise distinct polling groups to merge. Planned-only sites are reconciled
+only through unique agreement on candidate areas, polling-place text, and
+eligible-voter arithmetic. The pipeline currently publishes 517 exact closed
+units without uncertainty notices and 1,757 representative units with notices.
+Multi-group representative units eliminate every former broad
+network fallback; `build_statistical_area_result_aggregates.py` emits an empty
+artifact so stale fallback geometry cannot survive a rebuild.
 
 ## Web Build
 

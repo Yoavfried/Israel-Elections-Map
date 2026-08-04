@@ -1,0 +1,2 @@
+election,source_locality_code,source_locality_name,expected_rows,evidence_status,evidence_source,note
+K17,1200,מודיעין-מכבים-רעו,53,reviewed_combined_municipality,CEC K17 final results|CBS 1995 statistical-area geography,"The K17 result is published for the already-united Modi'in-Maccabim-Re'ut municipality. The historical layer still has separate Modi'in and Maccabim-Re'ut polygons, so the result cannot be assigned only to the single Modi'in component."

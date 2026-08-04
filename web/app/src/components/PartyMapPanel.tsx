@@ -1,6 +1,11 @@
 import type { CSSProperties } from 'react'
-import { formatPercent } from '../domain/format'
-import { partyGradientColor, PARTY_MAP_ZERO_COLOR } from '../domain/partyMap'
+import { formatNumber, formatPercent } from '../domain/format'
+import {
+  partyGradientColor,
+  partyVoteCircleRadius,
+  PARTY_MAP_ZERO_COLOR,
+} from '../domain/partyMap'
+import type { PartyMapDisplayMode } from '../domain/partyMap'
 import type { Language, Party } from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
@@ -9,6 +14,8 @@ interface PartyMapPanelProps {
   parties: Party[]
   selectedPartyId: string | null
   upperBoundShare: number
+  displayMode: PartyMapDisplayMode
+  upperBoundVotes: number
   onPartyChange: (partyId: string) => void
 }
 
@@ -17,6 +24,8 @@ export function PartyMapPanel({
   parties,
   selectedPartyId,
   upperBoundShare,
+  displayMode,
+  upperBoundVotes,
   onPartyChange,
 }: PartyMapPanelProps) {
   const selectedParty = parties.find((party) => party.id === selectedPartyId) ?? null
@@ -91,6 +100,42 @@ export function PartyMapPanel({
           {translate(language, 'partyMapNoResult')}
         </span>
       </div>
+
+      {displayMode === 'circles' && upperBoundVotes > 0 ? (
+        <div className="party-map-size-legend">
+          <span className="party-map-legend__title">
+            {translate(language, 'partyMapVoteCount')}
+          </span>
+          <div className="party-map-size-legend__samples" dir="ltr">
+            {[0.25, 0.5, 1].map((ratio) => {
+              const value = upperBoundVotes * ratio
+              const diameter = partyVoteCircleRadius(value, upperBoundVotes) * 2
+              return (
+                <span className="party-map-size-legend__sample" key={ratio}>
+                  <span
+                    className="party-map-size-legend__circle"
+                    style={{
+                      inlineSize: diameter,
+                      blockSize: diameter,
+                      backgroundColor: selectedParty?.color ?? '#69736d',
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span
+                    aria-label={
+                      ratio === 1
+                        ? `${translate(language, 'partyMapVoteCountUpperBoundAria')} ${formatNumber(value, language)}`
+                        : undefined
+                    }
+                  >
+                    {ratio === 1 ? '>' : ''}{formatNumber(value, language)}
+                  </span>
+                </span>
+              )
+            })}
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

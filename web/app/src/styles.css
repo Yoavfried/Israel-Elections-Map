@@ -67,6 +67,7 @@ select:focus-visible {
     .primary-tabs,
     .field,
     .party-map-panel,
+    .coalition-panel,
     .geography-search,
     .envelope-summary,
     .details-panel,
@@ -154,9 +155,9 @@ select:focus-visible {
 
 .primary-tabs {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   justify-self: center;
-  min-inline-size: 570px;
+  min-inline-size: 720px;
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 9px;
@@ -575,40 +576,55 @@ select:focus-visible {
   block-size: 100%;
 }
 
-.basemap-selector {
+:is(.basemap-selector, .party-map-display-selector) {
   position: absolute;
   z-index: 6;
-  top: 10px;
   right: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-inline-size: 124px;
-  block-size: 34px;
-  padding-inline: 8px 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  min-inline-size: 226px;
+  padding: 3px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--paper);
-  color: var(--muted);
   box-shadow: 0 8px 24px rgba(35, 36, 31, 0.12);
 }
 
-.basemap-selector:hover {
-  color: var(--ink);
+.basemap-selector {
+  top: 10px;
 }
 
-.basemap-selector select {
-  min-inline-size: 0;
-  inline-size: 100%;
+.party-map-display-selector {
+  top: 52px;
+}
+
+:is(.basemap-selector, .party-map-display-selector) button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   block-size: 30px;
   border: 0;
+  border-radius: 4px;
   outline: 0;
   background: transparent;
-  color: var(--ink);
+  color: var(--muted);
   cursor: pointer;
+  font-size: var(--font-size-small);
+  font-weight: 700;
 }
 
-.basemap-selector:focus-within {
+:is(.basemap-selector, .party-map-display-selector) button:hover {
+  color: var(--ink);
+}
+
+:is(.basemap-selector, .party-map-display-selector) button.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+:is(.basemap-selector, .party-map-display-selector) button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
@@ -652,6 +668,7 @@ select:focus-visible {
 .control-panel,
 .party-map-panel,
 .party-comparison-panel,
+.coalition-panel,
 .geography-search,
 .envelope-summary,
 .details-panel {
@@ -670,10 +687,68 @@ select:focus-visible {
 }
 
 .party-map-panel,
-.party-comparison-panel {
+.party-comparison-panel,
+.coalition-panel {
   display: grid;
   gap: 12px;
   padding: 12px;
+}
+
+.coalition-panel {
+  gap: 10px;
+}
+
+.coalition-legend {
+  display: grid;
+  gap: 6px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--line);
+}
+
+.coalition-legend__title {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.coalition-legend__ramp {
+  display: block;
+  block-size: 11px;
+  border: 1px solid rgba(23, 26, 23, 0.12);
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    var(--coalition-zero) 0%,
+    var(--coalition-color-quarter) 25%,
+    var(--coalition-color-half) 50%,
+    var(--coalition-color-three-quarter) 75%,
+    var(--coalition-color) 100%
+  );
+}
+
+.coalition-legend__labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.coalition-legend__missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+}
+
+.coalition-legend__missing > span {
+  inline-size: 12px;
+  block-size: 12px;
+  border: 1px solid rgba(23, 26, 23, 0.18);
+  border-radius: 3px;
+  background: #aeb5b0;
 }
 
 .party-map-field {
@@ -756,6 +831,39 @@ select:focus-visible {
   border: 1px solid rgba(23, 26, 23, 0.18);
   border-radius: 3px;
   background: #aeb5b0;
+}
+
+.party-map-size-legend {
+  display: grid;
+  gap: 6px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--line);
+}
+
+.party-map-size-legend__samples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  min-block-size: 60px;
+}
+
+.party-map-size-legend__sample {
+  display: grid;
+  grid-template-rows: 40px auto;
+  align-items: end;
+  justify-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.party-map-size-legend__circle {
+  max-inline-size: 36px;
+  max-block-size: 36px;
+  border: 1px solid rgba(21, 24, 21, 0.64);
+  border-radius: 50%;
+  opacity: 0.8;
 }
 
 .party-comparison-panel {
@@ -1126,9 +1234,13 @@ select:focus-visible {
   max-block-size: min(500px, max(180px, calc(100dvh - 690px)));
 }
 
+.app-shell[data-view="coalition"] .details-panel {
+  max-block-size: min(500px, max(180px, calc(100dvh - 690px)));
+}
+
 @media (max-width: 1360px) {
   .primary-tabs {
-    min-inline-size: 410px;
+    min-inline-size: 510px;
   }
 
   .primary-tab__label {
@@ -1303,18 +1415,40 @@ select:focus-visible {
   align-self: center;
 }
 
-.party-comparison-details {
-  display: grid;
+.party-highlight-summary {
   flex: 0 0 auto;
+  margin-block: 0 15px;
+}
+
+.party-highlight-summary__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-end: 7px;
+}
+
+.party-highlight-summary__heading span {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.party-highlight-summary__heading strong {
+  font-size: var(--font-size-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.party-highlight-details {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   overflow: hidden;
-  margin-block: 0 15px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.48);
 }
 
-.party-comparison-details > div {
+.party-highlight-details > div {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto;
   gap: 3px 7px;
@@ -1323,23 +1457,76 @@ select:focus-visible {
   padding: 10px;
 }
 
-.party-comparison-details > div + div {
+.party-highlight-details > div:nth-child(even) {
   border-inline-start: 1px solid var(--line);
 }
 
-.party-comparison-details > div > span:nth-child(2) {
+.party-highlight-details > div:nth-child(n + 3) {
+  border-block-start: 1px solid var(--line);
+}
+
+.party-highlight-name {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  min-inline-size: 0;
   overflow: hidden;
   font-size: var(--font-size-small);
   font-weight: 700;
+}
+
+.party-highlight-name > span:first-child {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.party-comparison-details strong {
+.party-highlight-note {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--accent);
+  cursor: help;
+}
+
+.party-highlight-note > span {
+  position: absolute;
+  z-index: 5;
+  inset-block-end: calc(100% + 6px);
+  inset-inline-start: 50%;
+  visibility: hidden;
+  inline-size: 240px;
+  max-inline-size: calc(100vw - 56px);
+  padding: 8px 9px;
+  border-radius: 6px;
+  background: #171a17;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(23, 26, 23, 0.2);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.party-highlight-note:hover > span,
+.party-highlight-note:focus > span {
+  visibility: visible;
+  opacity: 1;
+}
+
+.party-highlight-note:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.party-highlight-details strong {
   font-variant-numeric: tabular-nums;
 }
 
-.party-comparison-details > div > span:last-child {
+.party-highlight-details > div > span:last-child {
   grid-column: 2 / -1;
   color: var(--muted);
   font-size: var(--font-size-small);
@@ -1438,7 +1625,7 @@ select:focus-visible {
 
 .party-breakdown li {
   display: grid;
-  grid-template-columns: 12px minmax(50px, 0.8fr) auto minmax(52px, 1.2fr) auto;
+  grid-template-columns: 12px minmax(50px, 0.8fr) 8ch minmax(52px, 1.2fr) 6ch;
   gap: 7px;
   align-items: center;
   min-inline-size: 0;
@@ -1463,6 +1650,8 @@ select:focus-visible {
 .party-votes {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
 }
 
 .party-share {
@@ -1553,7 +1742,7 @@ select:focus-visible {
   }
 
   .primary-tabs {
-    min-inline-size: 350px;
+    min-inline-size: 440px;
   }
 
   .primary-tab {
@@ -1809,7 +1998,7 @@ select:focus-visible {
   }
 
   .party-breakdown li {
-    grid-template-columns: 12px minmax(42px, 1fr) auto minmax(52px, 1fr) auto;
+    grid-template-columns: 12px minmax(42px, 1fr) 8ch minmax(52px, 1fr) 6ch;
     gap: 5px;
   }
 }

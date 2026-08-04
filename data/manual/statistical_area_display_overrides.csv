@@ -1,20 +1,39 @@
-stat_area_id,elections,visibility,name_he,name_en,note
-stat2011:38230001,K19|K20,hidden,,,Ganne Modi'in was still part of Modi'in Illit; suppress its separate 2011 display proxy for these elections.
-stat1995:1062001,K17,hidden,,,Reviewed placement uses this historical component as the displayed geometry for Yehud statistical area 8; hide the duplicate source feature.
-stat1995:9400008,K17,default,יהוד,Yehud,Reviewed 2006 display name; the canonical transition identifier and source name remain unchanged in the downloadable data.
-stat1995:5405001,K17,hidden,,,Kfar Darom was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5407001,K17,hidden,,,Morag was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5408001,K17,hidden,,,Netzarim was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5410001,K17,hidden,,,Netzer Hazani was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5423001,K17,hidden,,,Katif was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5424001,K17,hidden,,,Ganne Tal was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5425001,K17,hidden,,,Bene Azmon was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5426001,K17,hidden,,,Nisanit was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5427001,K17,hidden,,,Newe Deqalim was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5428001,K17,hidden,,,Ele Sinay was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5429001,K17,hidden,,,Gadid was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5431001,K17,hidden,,,Gan Or was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5432001,K17,hidden,,,Bedolah was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5433001,K17,hidden,,,Rafiah Yam was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5434001,K17,hidden,,,Selaw was evacuated before K17; retain the historical source geometry but do not display it for this election.
-stat1995:5435001,K17,hidden,,,Dugit was evacuated before K17; retain the historical source geometry but do not display it for this election.
+﻿"stat_area_id","elections","visibility","name_he","name_en","note","notice_he","notice_en"
+"stat2011:38230001","K19|K20","hidden","","","Ganne Modi'in was still part of Modi'in Illit; suppress its separate 2011 display proxy for these elections.",,
+"stat1995:1062001","K17","hidden","","","Reviewed placement uses this historical component as the displayed geometry for Yehud statistical area 8; hide the duplicate source feature.",,
+"stat1995:9400008","K17","default","יהוד","Yehud","Reviewed 2006 display name; the canonical transition identifier and source name remain unchanged in the downloadable data.",,
+"stat1995:5405001","K17","hidden","","","Kfar Darom was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5407001","K17","hidden","","","Morag was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5408001","K17","hidden","","","Netzarim was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5410001","K17","hidden","","","Netzer Hazani was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5423001","K17","hidden","","","Katif was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5424001","K17","hidden","","","Ganne Tal was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5425001","K17","hidden","","","Bene Azmon was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5426001","K17","hidden","","","Nisanit was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5427001","K17","hidden","","","Newe Deqalim was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5428001","K17","hidden","","","Ele Sinay was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5429001","K17","hidden","","","Gadid was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:1273001","K17","hidden","","","The K17 result is published only for the united Modi'in-Maccabim-Re'ut municipality; suppress the obsolete separate Maccabim-Re'ut component beneath the whole-municipality fallback.",,
+"stat1995:5431001","K17","hidden","","","Gan Or was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5432001","K17","hidden","","","Bedolah was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5433001","K17","hidden","","","Rafiah Yam was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5434001","K17","hidden","","","Selaw was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat1995:5435001","K17","hidden","","","Dugit was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
+"stat2011:13360001","K19|K20","hidden","","","Irus has no standalone final register in K19 or K20; its later-populated 2011 geometry is not an election-time result area in those elections.",,
+"stat2011:13650001","K19|K20","hidden","","","Eliav has no standalone final register in K19 or K20; do not present its later standalone geometry as a blank election area.",,
+"stat2011:13740001","K19|K20","hidden","","","Karme Katif was established after these elections; suppress its later geometry in K19 and K20.",,
+"stat2011:37770001","K19","hidden","","","Sansana has no standalone K19 final register; its standalone geometry is first supported by later election results.",,
+"stat2011:38220001","K19","hidden","","","Rehelim has no standalone K19 final register; its standalone geometry is first supported by later election results.",,
+"stat2011:13600001","K19","hidden","","","The K19 Molada-Sawa register is explicitly attached to a tribal ballot and is represented by the combined tribal display marker.",,
+"stat2011:13750001","K19|K20","hidden","","","The Abu Tulul register is represented by the reviewed combined tribal display marker in these elections.",,
+"stat2011:12000031","K19|K20","hidden","","","No final ballot result supports this later-populated statistical zone before K21.",,
+"stat2011:21000002","K19|K20|K21","hidden","","","No final ballot result supports this later-populated statistical zone before K22.",,
+"stat2011:26100038","K19","hidden","","","No final ballot result supports this later-populated statistical zone before K20.",,
+"stat2011:77000018","K19","hidden","","","No final ballot result supports this later-populated statistical zone before K20.",,
+stat2008:13180001,K18,default,,,,נתוני המקור אינם מצביעים על אוכלוסייה בוגרת באזור המוסדי הזה ולא קיימת עבורו תוצאת קלפי נפרדת.,The source data shows no adult population in this institutional area and no standalone ballot result exists for it.
+stat2011:30002511,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.
+stat2011:30002611,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.
+stat2011:30002611,K21|K22|K23,default,,,,האזור מופיע במפתח התכנון אך הקלפיות שיועדו לו אינן מופיעות במרשם התוצאות הסופי ולכן אין תוצאה שניתן לשייך אליו.,The area appears in the planning crosswalk but its planned ballots are absent from the final register so no result can be assigned to it.
+stat2011:30002612,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.
+stat2011:30002711,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.
+stat2011:30002812,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.

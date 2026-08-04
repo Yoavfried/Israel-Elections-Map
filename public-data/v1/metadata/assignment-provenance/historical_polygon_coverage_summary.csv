@@ -1,5 +1,5 @@
 ﻿election,stat_area_vintage,statistical_area_polygons,polygons_with_assigned_ballots,assigned_polygons_in_localities_with_pending_ballots,polygons_without_assigned_ballots,arcgis_detailed_or_single_area_records,arcgis_dissolved_locality_aggregate_records,unassigned_polygons_with_official_arcgis_electorate,arcgis_polygons_matching_special_non_geographic_rows,unassigned_polygons_in_localities_with_pending_ballots,unassigned_polygons_with_positive_population_proxy,polygons_requiring_assignment_followup
-K17,1995,2661,2367,0,294,0,0,0,0,86,0,86
+K17,1995,2661,2371,0,290,0,0,0,0,87,0,87
 K18,2008,3030,2633,0,397,0,0,0,0,152,203,152
 K19,2011,3115,2692,3,423,0,0,0,0,147,131,150
 K20,2011,3115,2707,23,408,2826,35,0,0,145,119,168

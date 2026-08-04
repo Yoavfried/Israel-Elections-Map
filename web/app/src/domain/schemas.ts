@@ -170,6 +170,7 @@ const GeographySearchItemSchema = z.object({
   code: z.string(),
   hasResults: z.boolean(),
   bounds: GeographyBoundsSchema,
+  notice: LocalizedTextSchema.optional(),
 })
 
 export const GeographySearchIndexSchema = z.object({

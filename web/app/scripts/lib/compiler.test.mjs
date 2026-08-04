@@ -410,6 +410,24 @@ describe('web data compiler', () => {
             coordinates: [[[35.2, 32], [35.3, 32], [35.3, 32.1], [35.2, 32]]],
           },
         },
+        {
+          type: 'Feature',
+          id: 'loc:30',
+          properties: {
+            id: 'loc:30',
+            geographyType: 'locality',
+            localityId: 'loc:30',
+            localityCode: '30',
+            nameHe: 'Proxy locality',
+            nameEn: 'Proxy locality',
+            displayMode: 'polygon',
+            isComposite: false,
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[35.4, 32], [35.5, 32], [35.5, 32.1], [35.4, 32]]],
+          },
+        },
       ],
     }
     const statisticalGeography = {
@@ -447,6 +465,12 @@ describe('web data compiler', () => {
           '20',
           'יישוב היסטורי',
         ),
+        fallbackRow(
+          'municipality-fallback:2011:loc:30',
+          'loc:30',
+          '30',
+          'Proxy locality',
+        ),
       ],
       localityGeography,
       statisticalGeography,
@@ -454,6 +478,7 @@ describe('web data compiler', () => {
 
     expect(display.hiddenGeographyIds).toEqual(['stat2011:1', 'stat2011:2', 'stat2011:3'])
     expect(display.features.map((feature) => feature.properties.geographyType)).toEqual([
+      'municipality-fallback',
       'municipality-fallback',
       'municipality-fallback',
     ])
@@ -467,13 +492,20 @@ describe('web data compiler', () => {
     expect(display.metadataById.get('municipality-fallback:2011:loc:10')).toMatchObject({
       geographyType: 'municipality-fallback',
       localityId: 'loc:10',
-      notice: {
-        en: expect.stringContaining('No ballot-to-statistical-area'),
-        he: expect.stringContaining('אין נתוני שיוך'),
-      },
+      fallbackNoticeType: 'single-historical-area-exact',
     })
+    expect(display.metadataById.get('municipality-fallback:2011:loc:10')).not.toHaveProperty(
+      'notice',
+    )
     expect(display.metadataById.get('municipality-fallback:2011:composite:test')).toMatchObject({
       includedNames: { he: ['מרכיב'], en: ['Component'] },
+      fallbackNoticeType: 'multi-area-unsplit',
+    })
+    expect(display.metadataById.get('municipality-fallback:2011:loc:30')).toMatchObject({
+      fallbackNoticeType: 'historical-geometry-proxy',
+      notice: {
+        en: expect.stringContaining('does not appear as a separate area'),
+      },
     })
   })
 

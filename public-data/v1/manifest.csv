@@ -1,5 +1,5 @@
 ﻿path,category,election,stat_area_vintage,format,rows_or_features,bytes,sha256,description
-aggregates/custom-geographies/k17.csv,aggregate-custom-geographies,K17,1995,csv,4,1246,5da0f733ce0776539d7919cc613efb296f9b6ea19bbbbb2fae633fbca0abf2dd,K17 custom-geographies aggregate or review table.
+aggregates/custom-geographies/k17.csv,aggregate-custom-geographies,K17,1995,csv,4,1248,454fc43f46dcccafe2d7920b62a24c5d0bf46ed394647c06d7b4036bddfa21c9,K17 custom-geographies aggregate or review table.
 aggregates/custom-geographies/k18.csv,aggregate-custom-geographies,K18,2008,csv,4,1289,7275d7e4ad935460244c8fb8ba6287c69d9b2b649bdaa2aa222b3989f8797fb9,K18 custom-geographies aggregate or review table.
 aggregates/custom-geographies/k19.csv,aggregate-custom-geographies,K19,2011,csv,2,863,d79f765be61ae2a854bffe02c2915320eaa5a9ede3150aa64ead662d8498de0c,K19 custom-geographies aggregate or review table.
 aggregates/custom-geographies/k20.csv,aggregate-custom-geographies,K20,2011,csv,2,802,e32e4be4c3d11846b178f9bcaec08d3c70c92320e0ac71a616b95323d55bc384,K20 custom-geographies aggregate or review table.
@@ -8,7 +8,7 @@ aggregates/custom-geographies/k22.csv,aggregate-custom-geographies,K22,2011,csv,
 aggregates/custom-geographies/k23.csv,aggregate-custom-geographies,K23,2011,csv,2,828,b1a5a71af33b302ede07f1a100af5e3ae613deb46a0275b3c4b8065bbf0ad2ce,K23 custom-geographies aggregate or review table.
 aggregates/custom-geographies/k24.csv,aggregate-custom-geographies,K24,2011,csv,2,900,79723b77e104e397232e6c6e0c8ceb232a3289aee584f2e678463ce731ad2800,K24 custom-geographies aggregate or review table.
 aggregates/custom-geographies/k25.csv,aggregate-custom-geographies,K25,2011,csv,2,906,4463ce0a2a8fb010076fefe579fdf3645d784f5f70a9e6b38a631b6b042f4d28,K25 custom-geographies aggregate or review table.
-aggregates/envelopes/k17.csv,aggregate-envelopes,K17,1995,csv,1,646,c68da263b338487ee5d5f9808b8f84b387b7126097aec6306872634954b65673,K17 envelopes aggregate or review table.
+aggregates/envelopes/k17.csv,aggregate-envelopes,K17,1995,csv,1,646,9329775393c052f9d78898fd37ecf72365651ae8410ea38f4400c379b087d16f,K17 envelopes aggregate or review table.
 aggregates/envelopes/k18.csv,aggregate-envelopes,K18,2008,csv,1,657,c04169e5e6e875f29690d24d610a494b4c99f2fd812ef92a82d0c8f1fd30418b,K18 envelopes aggregate or review table.
 aggregates/envelopes/k19.csv,aggregate-envelopes,K19,2011,csv,1,675,7c836a1de8383d7c8de4a8637a5aac9cb5b46dee4a4f28df3cdca2810b11f941,K19 envelopes aggregate or review table.
 aggregates/envelopes/k20.csv,aggregate-envelopes,K20,2011,csv,1,605,2e5265663f4cf34ca3893d81dbab56303ed679ae49f128ba7bd678a6dbc352e7,K20 envelopes aggregate or review table.
@@ -17,7 +17,7 @@ aggregates/envelopes/k22.csv,aggregate-envelopes,K22,2011,csv,1,646,63ebfe53ccad
 aggregates/envelopes/k23.csv,aggregate-envelopes,K23,2011,csv,1,627,10bcfd98848a3a389598fcb42bd0d1db8b71992a74b082834651bec72172b326,K23 envelopes aggregate or review table.
 aggregates/envelopes/k24.csv,aggregate-envelopes,K24,2011,csv,1,712,3f9ee5603976d469a83f832f942628d4ab5260530cb6b842160e965509c29e84,K24 envelopes aggregate or review table.
 aggregates/envelopes/k25.csv,aggregate-envelopes,K25,2011,csv,1,719,f557ce45ae43b6e2ae2c70c8c7294b74b04a3b0d417274fa42383cc5cb6fef9f,K25 envelopes aggregate or review table.
-aggregates/localities/k17.csv,aggregate-localities,K17,1995,csv,1120,183208,6933be202f9954747cc9485f08c7b9b2cc33e778ecbcf7b113f2b78932f97607,K17 localities aggregate or review table.
+aggregates/localities/k17.csv,aggregate-localities,K17,1995,csv,1120,183218,da716b58f0872a6fc4c17746f90e2e0ab80a01fbec244f2285b6da91ebbf48ea,K17 localities aggregate or review table.
 aggregates/localities/k18.csv,aggregate-localities,K18,2008,csv,1131,191329,ca13484ace77c1577256c583360e8148f9ac69f928d4067142c4261fa3b07351,K18 localities aggregate or review table.
 aggregates/localities/k19.csv,aggregate-localities,K19,2011,csv,1155,198175,d9b682e3988c6aa2bac1c9cdf6ed35caaec687b61269ec8c166596e9c3d13ac7,K19 localities aggregate or review table.
 aggregates/localities/k20.csv,aggregate-localities,K20,2011,csv,1165,181149,d8ddc0ccf21d8eb6bca1d9ab1c34af7015ebe8e34e474abc8eb86be1afa6f434,K20 localities aggregate or review table.
@@ -26,7 +26,7 @@ aggregates/localities/k22.csv,aggregate-localities,K22,2011,csv,1184,197037,085c
 aggregates/localities/k23.csv,aggregate-localities,K23,2011,csv,1184,190870,03f030bc24e57f9f93f673c48ca292549ace9e1e3376db89db3bf9b1742a53c6,K23 localities aggregate or review table.
 aggregates/localities/k24.csv,aggregate-localities,K24,2011,csv,1186,215446,466e6f3f2165463fea6cfccf8619bf3b328ee480676c4937d5bf0bff7c7de5f7,K24 localities aggregate or review table.
 aggregates/localities/k25.csv,aggregate-localities,K25,2011,csv,1187,217057,b0c7c78f292054d3fbb2d47b5a34ae7bf89709125052e984afc8f10c376d16ec,K25 localities aggregate or review table.
-aggregates/statistical-areas/k17.csv,aggregate-statistical-areas,K17,1995,csv,2367,511822,0b49baf29cadc0f8876ac911761d628da5836bd0b0a9415c0f46a7d7dd4e236b,K17 statistical-areas aggregate or review table.
+aggregates/statistical-areas/k17.csv,aggregate-statistical-areas,K17,1995,csv,2371,512650,32e88e7b7a6fafac9690a9089fb086c87786d4e444247f01b11ee82687769a74,K17 statistical-areas aggregate or review table.
 aggregates/statistical-areas/k18.csv,aggregate-statistical-areas,K18,2008,csv,2633,591196,7bd6560ca5c90144faad8809c30699ce5ff758600d09eb0c53b08ea02dbc7594,K18 statistical-areas aggregate or review table.
 aggregates/statistical-areas/k19.csv,aggregate-statistical-areas,K19,2011,csv,2692,613257,11199d5706a18e9970addfb717925d0a5de085a4d7e68c5e3213bbb202771e1f,K19 statistical-areas aggregate or review table.
 aggregates/statistical-areas/k20.csv,aggregate-statistical-areas,K20,2011,csv,2707,573525,690f763b6bc0c4a867f6462e7dd537a3a6bc37eeb0edf40d332e08d00a4e2302,K20 statistical-areas aggregate or review table.
@@ -35,7 +35,7 @@ aggregates/statistical-areas/k22.csv,aggregate-statistical-areas,K22,2011,csv,26
 aggregates/statistical-areas/k23.csv,aggregate-statistical-areas,K23,2011,csv,2659,576179,37f8da2e46623b6ed20bcc069b636afe66e5f5aa78528966dee692e91ba33241,K23 statistical-areas aggregate or review table.
 aggregates/statistical-areas/k24.csv,aggregate-statistical-areas,K24,2011,csv,2572,611944,6b0283071133f7a8361388ba6e29068209565119d0ae59ffe8e0d401760271c2,K24 statistical-areas aggregate or review table.
 aggregates/statistical-areas/k25.csv,aggregate-statistical-areas,K25,2011,csv,2565,612400,f701d44976f797576c80c9dfdb951e14f801becb83acfb1c861c548e95e8c82d,K25 statistical-areas aggregate or review table.
-aggregates/unresolved/k17.csv,aggregate-unresolved,K17,1995,csv,510,171750,6e9104a9220c078d000f7c9ebe70576b1105d2bb84e667b474b81c5c23bdb6a8,K17 unresolved aggregate or review table.
+aggregates/unresolved/k17.csv,aggregate-unresolved,K17,1995,csv,561,201291,33b95a261dffc980d534ed99bc664eef3658414e45ac8cd3bda0c58fd285a6e9,K17 unresolved aggregate or review table.
 aggregates/unresolved/k18.csv,aggregate-unresolved,K18,2008,csv,523,186349,7455ca4c15e35b53ed3689c94156df0d40f5ca53522fa7a691ecccfa1182b7bf,K18 unresolved aggregate or review table.
 aggregates/unresolved/k19.csv,aggregate-unresolved,K19,2011,csv,792,273159,9ff8b305c382c55f2266604fb96714c5b72820ebbf0af22936280a7768b13382,K19 unresolved aggregate or review table.
 aggregates/unresolved/k20.csv,aggregate-unresolved,K20,2011,csv,869,281863,e12f922ab9d02bc6aa8d119ef8e8652f3add9c4145ffbb9c10ecb3761fd75981,K20 unresolved aggregate or review table.
@@ -44,7 +44,7 @@ aggregates/unresolved/k22.csv,aggregate-unresolved,K22,2011,csv,979,328206,c71a9
 aggregates/unresolved/k23.csv,aggregate-unresolved,K23,2011,csv,1173,382923,cab4ee6acda1dc292121689ee9920d283b04856981e605e56c8d975c42c467a8,K23 unresolved aggregate or review table.
 aggregates/unresolved/k24.csv,aggregate-unresolved,K24,2011,csv,1675,586632,cee541644aa3643d8f6153898657845fc214433db2ba1e320762af1a4d0e3903,K24 unresolved aggregate or review table.
 aggregates/unresolved/k25.csv,aggregate-unresolved,K25,2011,csv,1652,575585,8c3d8830fd7dbe7b9ce8d0dff0bc2586caad1d03b066829e308b368492be0577,K25 unresolved aggregate or review table.
-ballots/k17.csv,ballot-results,K17,1995,csv,8426,3876030,a72c6459158f8af1054cd758f60d7a716fe1ebb5f211a7d5e8a0fa97dff18e85,Complete ballot-row vote table with statistical and locality join IDs.
+ballots/k17.csv,ballot-results,K17,1995,csv,8426,3917267,507015d3d8a2c7c4f387aa3d7102ab496935c14426f631656e5efeeeffb7e01d,Complete ballot-row vote table with statistical and locality join IDs.
 ballots/k18.csv,ballot-results,K18,2008,csv,9264,4234410,51f5b4b8ed25104cb9ca0897631533df7951413588f3661a78e04c90fc20a558,Complete ballot-row vote table with statistical and locality join IDs.
 ballots/k19.csv,ballot-results,K19,2011,csv,10109,4609420,6625816ce15493900ebfd543eb565ee172b676e6b4fa8d11277933889b862494,Complete ballot-row vote table with statistical and locality join IDs.
 ballots/k20.csv,ballot-results,K20,2011,csv,10414,4591300,2239fe42a9c69cd94a7465dff26fa8989d44e46bb25a19eba104419642df4534,Complete ballot-row vote table with statistical and locality join IDs.
@@ -74,18 +74,18 @@ metadata/assignment-provenance/arcgis_reconstruction_summary.json,assignment-pro
 metadata/assignment-provenance/cross_election_stat_area_reviews.csv,assignment-provenance,,,csv,50,15813,862decdda6393d30f83bab8994a1cd496b46ca20049076a967775d1e848d9fcd,Approved high-confidence synthetic links reconstructed from cross-election polling-register continuity.
 metadata/assignment-provenance/election_source_geography_field_audit.csv,assignment-provenance,,,csv,17,4707,d95b340af9b545892b610d9650860035a53a9ce658296af453385f43f613490e,Reproducible inventory of statistical-area and AGS fields in official sources.
 metadata/assignment-provenance/election_source_geography_field_audit.json,assignment-provenance,,,json,,1475,2e35c367bdbe99751e7aa7d611261ceee41ab9f3d353b6f285a2c6adc95aeaac,Machine-readable summary for the corresponding assignment audit.
-metadata/assignment-provenance/final_assignment_summary.csv,assignment-provenance,,,csv,9,1427,db33bdbc0deb968938a30bcbc212479acb90b28fd40ff74cb809c2e8e0b2bc7d,Per-election row and voter coverage for final geography assignments.
-metadata/assignment-provenance/historical_assignment_gap_localities.csv,assignment-provenance,,,csv,365,47746,3aebbf640efd99cdb627c02b887032f871810b2bc93793cf4e7640b51eea999e,"Unresolved assignment totals by election, reason, and locality."
-metadata/assignment-provenance/historical_assignment_gap_rows.csv,assignment-provenance,,,csv,5498,2830645,0daaccdadaf07d2765a74a08615d8327e9e7940f4801e376d60e99c91a7ab21e,Every unresolved ballot row with a machine-readable reason.
-metadata/assignment-provenance/historical_assignment_gap_summary.csv,assignment-provenance,,,csv,35,3302,7fe4ca64885fd64dfd833f15c9faf9c3e6aa77aee2c7684496eafc2605705c61,Unresolved assignment totals by election and reason.
-metadata/assignment-provenance/historical_assignment_gap_summary.json,assignment-provenance,,,json,,12314,323c66698876aecd9f9fab775611b414dd41e74d5b6f0e2bf8a707beefc1d427,Machine-readable summary for the corresponding assignment audit.
+metadata/assignment-provenance/final_assignment_summary.csv,assignment-provenance,,,csv,9,1427,c59d23694c8bddc8cc6078757ea41328f38a57a8403736fe35ea13790e14acc8,Per-election row and voter coverage for final geography assignments.
+metadata/assignment-provenance/historical_assignment_gap_localities.csv,assignment-provenance,,,csv,365,47768,1ed2ed1d79b25fc0a20de3b0902b9eac293d59c9849f4cb7673aa722ed25cf9f,"Unresolved assignment totals by election, reason, and locality."
+metadata/assignment-provenance/historical_assignment_gap_rows.csv,assignment-provenance,,,csv,5549,2865508,a545ad886e5a753727ac66800e85fa029a3c430cdbb83b78f9e5c364254837ed,Every unresolved ballot row with a machine-readable reason.
+metadata/assignment-provenance/historical_assignment_gap_summary.csv,assignment-provenance,,,csv,35,3302,e51498dc2a41f28a534fa8316a032b0374283bf198e7a45b978da98635bbbe7b,Unresolved assignment totals by election and reason.
+metadata/assignment-provenance/historical_assignment_gap_summary.json,assignment-provenance,,,json,,12314,457c5f279cc3a0678db4d2d9b5838836380af08b4e379efff9c2c2bde2f2308a,Machine-readable summary for the corresponding assignment audit.
 metadata/assignment-provenance/historical_composite_ballot_components.csv,assignment-provenance,,,csv,22,5406,aadb0ebdaaf1019d56127ee218fe8959d187c1c1ae9027e2f33d2e8326a89e2c,Reviewed K17/K18 polling-register ranges that identify historical composite components.
-metadata/assignment-provenance/historical_crosswalk_locality_omission_recurrence.csv,assignment-provenance,,,csv,35,3320,10880576a3bb0af6526e4a15d35ea70c89246a3aa8b3bdaf7d1ecadbe0f820ac,Cross-election recurrence of entire-locality omissions in official ballot crosswalks.
+metadata/assignment-provenance/historical_crosswalk_locality_omission_recurrence.csv,assignment-provenance,,,csv,36,3405,5f805bfaa65f5f2e5b8355a975abf72c7491a0000391d57ce23ab6ff761b51dc,Cross-election recurrence of entire-locality omissions in official ballot crosswalks.
 metadata/assignment-provenance/historical_geography_build_summary.json,assignment-provenance,,,json,,36243,486b32db1a4e417e6b339506adcd3d22e10ae390a81f8834610ef3ce0b95df7a,Machine-readable summary for the corresponding assignment audit.
-metadata/assignment-provenance/historical_municipality_display_fallbacks.csv,assignment-provenance,,,csv,308,58546,51e46d8c699a406a2b220d117024df0dbbfda89da5ba3765b336b05a66a7fc66,Display-only municipality totals used when no ballot has a supported statistical-area assignment.
-metadata/assignment-provenance/historical_polygon_assignment_persistence.csv,assignment-provenance,,,csv,8806,1399613,ef0b66f1d036d6091e26f0e31a6997beaf675a5f36d811d3fb0e5da86eae83c1,Cross-election assignment presence for each compatible historical polygon.
-metadata/assignment-provenance/historical_polygon_coverage.csv,assignment-provenance,,,csv,27496,11050031,a8e4f7d1d2e245af5124870608cd88f73b008e6fd31eb5437193f4d6a5be40d8,"Election-by-polygon assignment, source-comparison, and population-proxy audit."
-metadata/assignment-provenance/historical_polygon_coverage_summary.csv,assignment-provenance,,,csv,9,920,6af1fd09dc1e1e93d1e396b4f237354492fd043964171b672a1960c4082177bd,Per-election historical polygon coverage summary.
+metadata/assignment-provenance/historical_municipality_display_fallbacks.csv,assignment-provenance,,,csv,314,60161,7cfc866074358be7d789a59fe62b110569db33f65fc8bda48c427fc51765633b,Display-only municipality or reviewed-component totals used when no ballot has a supported statistical-area assignment.
+metadata/assignment-provenance/historical_polygon_assignment_persistence.csv,assignment-provenance,,,csv,8806,1399572,7ecc102b6242e3d204b275e85d93d4355050281c4aa0f5edd474f8996b86e804,Cross-election assignment presence for each compatible historical polygon.
+metadata/assignment-provenance/historical_polygon_coverage.csv,assignment-provenance,,,csv,27496,11050065,db446ad178fa5d081dcece289ac530e2b4e9e489994f6e0cd44d70505586dbc1,"Election-by-polygon assignment, source-comparison, and population-proxy audit."
+metadata/assignment-provenance/historical_polygon_coverage_summary.csv,assignment-provenance,,,csv,9,920,751b6f1c9a45ca8d93162354a1f80fec6674ec6ce54a031a984012011d5de564,Per-election historical polygon coverage summary.
 metadata/assignment-provenance/historical_stat_area_overrides.csv,assignment-provenance,,,csv,5,1850,5835231e5a1ff84f9481f47d31bcf1ff69b00f2550ff4e7850f2304edd16fd1f,Reviewed replacements for contradicted direct crosswalk rows.
 metadata/assignment-provenance/k23_cec_ags_assignment_candidates.csv,assignment-provenance,,,csv,74,11078,1dc815825cdd4fedd143e7aa67437bea1b9c67b636edc5f29bb275ca018a5e30,Missing K23 crosswalk rows recovered from the official CEC AGS field.
 metadata/assignment-provenance/k23_cec_ags_assignment_summary.json,assignment-provenance,,,json,,753,345842a71bc6c96ec6920000c78aefe39651d1c509bb89f0b50c520faf17c579,Machine-readable summary for the corresponding assignment audit.
@@ -97,7 +97,7 @@ metadata/assignment-provenance/stable_ballot_assignment_candidates.csv,assignmen
 metadata/assignment-provenance/stable_ballot_assignment_conflicts.csv,assignment-provenance,,,csv,106,18791,ec226158c54826613e43ca5ec561a514a9e53a668b5ff48b646d4e2e04e36ece,Stable-ballot links withheld because authoritative areas conflict.
 metadata/assignment-provenance/stable_ballot_assignment_summary.json,assignment-provenance,,,json,,1477,3f84e3f4176997e376b9215cc2f92d9d2d030b4e026e8d9da931c33de7777fa2,Machine-readable summary for the corresponding assignment audit.
 metadata/assignment-provenance/stable_ballot_transition_audit.csv,assignment-provenance,,,csv,7822,1007241,77c67a54f99ddf5f3bf6addc858f8b3be2c07be2cad96ef1e2993b9409c4d775,K18-to-K19 stability checks against the official 2008/2011 transition keys.
-metadata/coverage.csv,metadata,,,csv,9,2404,86a6e8364456a7950743c825bcb018c19e8aed750a199a6948a8a137acc95d9a,Per-election statistical and locality mapping coverage.
+metadata/coverage.csv,metadata,,,csv,9,2404,5780c77b56a7688506e2150d6589d9ce78efe9c1ff171f0cb60c0b98188ba6a2,Per-election statistical and locality mapping coverage.
 metadata/elections.csv,metadata,,,csv,9,1511,50a458587a5de8941d14a899b58ce2cabc4bbcc974366c2296c39ade0588624a,"Election years, active statistical-area vintages, and principal download paths."
 metadata/geographies.csv,metadata,,,csv,14237,3407435,a90bb3ead232c72bab8c0553de5c0914fda4d72da93c89c28cd62d701886b6f6,Combined lookup for every published geography ID and package.
 metadata/parties.csv,metadata,,,csv,309,151867,289ea41e0e5d343a139eaebe03f90cfbba43fe64a6d0fcf58ca4bb93c7e9f0be,Election-specific party/list lookup keyed by election and source_column; no map colors.

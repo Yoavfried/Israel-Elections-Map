@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { ControlPanel } from './components/ControlPanel'
+import { CoalitionPanel } from './components/CoalitionPanel'
 import { DetailsPanel } from './components/DetailsPanel'
 import { EnvelopeSummary } from './components/EnvelopeSummary'
 import { GeographySearch } from './components/GeographySearch'
@@ -17,6 +18,8 @@ import {
   resolveDataUrl,
 } from './data/client'
 import type { AddressSearchMatch } from './domain/addressSearch'
+import { coalitionDefinition } from './config/coalitions'
+import { coalitionVoteShareUpperBound } from './domain/coalitionMap'
 import type {
   AppCatalog,
   ElectionResults,
@@ -26,7 +29,12 @@ import type {
   Language,
   NationalResults,
 } from './domain/schemas'
-import { partyVoteShareUpperBound, rankPartiesForMap } from './domain/partyMap'
+import {
+  partyVoteCountUpperBound,
+  partyVoteShareUpperBound,
+  rankPartiesForMap,
+} from './domain/partyMap'
+import type { PartyMapDisplayMode } from './domain/partyMap'
 import { translate } from './i18n/translations'
 import { loadPreferences, savePreferences } from './state/preferences'
 
@@ -53,6 +61,8 @@ export default function App() {
   })
   const [activeView, setActiveView] = useState<AppView>('map')
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null)
+  const [partyMapDisplayMode, setPartyMapDisplayMode] =
+    useState<PartyMapDisplayMode>('areas')
   const [comparisonPartyIds, setComparisonPartyIds] = useState<
     [string | null, string | null]
   >([null, null])
@@ -70,7 +80,8 @@ export default function App() {
   const isGeographicView =
     activeView === 'map' ||
     activeView === 'party-map' ||
-    activeView === 'party-comparison'
+    activeView === 'party-comparison' ||
+    activeView === 'coalition'
 
   useEffect(() => {
     let active = true
@@ -134,7 +145,10 @@ export default function App() {
   }, [geographyMode, isGeographicView, selectedElection])
 
   useEffect(() => {
-    if (!selectedElection || activeView !== 'national') {
+    if (
+      !selectedElection ||
+      (activeView !== 'national' && activeView !== 'coalition')
+    ) {
       return
     }
     let active = true
@@ -203,6 +217,28 @@ export default function App() {
     searchState.status === 'ready' && searchState.data.electionId === electionId
       ? searchState.data
       : null
+  const selectableMapGeographyIds = useMemo(
+    () =>
+      (searchIndex?.items ?? [])
+        .filter((item) => item.geographyMode === geographyMode)
+        .map((item) => item.id),
+    [geographyMode, searchIndex],
+  )
+  const partyMapPoints = useMemo(() => {
+    const resultIds = new Set(results?.records.map((record) => record.id) ?? [])
+    return (searchIndex?.items ?? [])
+      .filter(
+        (item) =>
+          item.geographyMode === geographyMode && resultIds.has(item.id),
+      )
+      .map((item) => ({
+        id: item.id,
+        coordinates: [
+          (item.bounds[0][0] + item.bounds[1][0]) / 2,
+          (item.bounds[0][1] + item.bounds[1][1]) / 2,
+        ] as [number, number],
+      }))
+  }, [geographyMode, results, searchIndex])
   const nationalResults =
     nationalResultsState.status === 'ready' &&
     nationalResultsState.data.electionId === electionId
@@ -215,6 +251,24 @@ export default function App() {
         : [],
     [language, results],
   )
+  const selectedCoalition = coalitionDefinition(electionId)
+  const coalitionParties = useMemo(() => {
+    const memberPartyIds = new Set(selectedCoalition?.memberPartyIds ?? [])
+    const nationalVotes = new Map(
+      (nationalResults?.parties ?? []).map((party) => [party.id, party.votes]),
+    )
+    return partyMapParties
+      .filter((party) => memberPartyIds.has(party.id))
+      .toSorted(
+        (left, right) =>
+          (nationalVotes.get(right.id) ?? 0) - (nationalVotes.get(left.id) ?? 0),
+      )
+  }, [nationalResults, partyMapParties, selectedCoalition])
+  const coalitionPartyIds = useMemo(
+    () => coalitionParties.map((party) => party.id),
+    [coalitionParties],
+  )
+  const coalitionAnchorParty = coalitionParties[0] ?? null
   const effectivePartyId = partyMapParties.some((party) => party.id === selectedPartyId)
     ? selectedPartyId
     : partyMapParties[0]?.id ?? null
@@ -239,6 +293,13 @@ export default function App() {
     results && effectivePartyId
       ? partyVoteShareUpperBound(results.records, effectivePartyId)
       : 0
+  const partyMapUpperBoundVotes = results
+    ? partyVoteCountUpperBound(results.records)
+    : 0
+  const coalitionUpperBoundShare =
+    results && selectedCoalition
+      ? coalitionVoteShareUpperBound(results.records, selectedCoalition.memberPartyIds)
+      : 0
   const partyMapPresentation = useMemo(
     () =>
       activeView === 'party-map' && selectedParty
@@ -246,9 +307,19 @@ export default function App() {
             partyId: selectedParty.id,
             color: selectedParty.color,
             upperBoundShare: partyMapUpperBoundShare,
+            upperBoundVotes: partyMapUpperBoundVotes,
+            displayMode: partyMapDisplayMode,
+            points: partyMapPoints,
           }
         : null,
-    [activeView, partyMapUpperBoundShare, selectedParty],
+    [
+      activeView,
+      partyMapDisplayMode,
+      partyMapPoints,
+      partyMapUpperBoundShare,
+      partyMapUpperBoundVotes,
+      selectedParty,
+    ],
   )
   const partyComparisonPresentation = useMemo(
     () =>
@@ -261,6 +332,48 @@ export default function App() {
           }
         : null,
     [activeView, comparisonFirstParty, comparisonSecondParty],
+  )
+  const coalitionPresentation = useMemo(
+    () =>
+      activeView === 'coalition' && coalitionAnchorParty && coalitionPartyIds.length > 0
+        ? {
+            partyIds: coalitionPartyIds,
+            color: coalitionAnchorParty.color,
+            upperBoundShare: coalitionUpperBoundShare,
+          }
+        : null,
+    [
+      activeView,
+      coalitionAnchorParty,
+      coalitionPartyIds,
+      coalitionUpperBoundShare,
+    ],
+  )
+
+  const highlightedPartyIds =
+    activeView === 'party-comparison' &&
+    effectiveComparisonFirstId &&
+    effectiveComparisonSecondId
+      ? [effectiveComparisonFirstId, effectiveComparisonSecondId]
+      : activeView === 'coalition'
+        ? coalitionPartyIds
+        : []
+  const highlightedPartiesLabel =
+    activeView === 'coalition'
+      ? translate(language, 'coalitionDetails')
+      : translate(language, 'partyComparisonDetails')
+  const highlightedPartyTotalLabel =
+    activeView === 'coalition' ? translate(language, 'coalitionTotal') : undefined
+  const highlightedPartyNotes = useMemo(
+    () =>
+      activeView === 'coalition'
+        ? Object.fromEntries(
+            Object.entries(selectedCoalition?.partialMembership ?? {}).map(
+              ([partyId, note]) => [partyId, note[language]],
+            ),
+          )
+        : {},
+    [activeView, language, selectedCoalition],
   )
 
   const updatePreferences = (nextPreferences: typeof preferences) => {
@@ -321,7 +434,13 @@ export default function App() {
   }
   const handleMapSelect = (id: string | null) => {
     setSelectedId(id)
-    setSelectedSearchItem(null)
+    setSelectedSearchItem(
+      id
+        ? searchIndex?.items.find(
+            (item) => item.id === id && item.geographyMode === geographyMode,
+          ) ?? null
+        : null,
+    )
     setSelectedAddress(null)
     setFocusRequest(null)
   }
@@ -418,6 +537,7 @@ export default function App() {
                 records={results.records}
                 parties={results.parties}
                 hiddenGeographyIds={results.hiddenGeographyIds}
+                selectableGeographyIds={selectableMapGeographyIds}
                 selectedId={selectedId}
                 focusRequest={focusRequest}
                 addressMarker={
@@ -430,8 +550,10 @@ export default function App() {
                 }
                 partyMap={partyMapPresentation}
                 partyComparison={partyComparisonPresentation}
+                coalition={coalitionPresentation}
                 basemapMode={basemapMode}
                 onBasemapModeChange={handleBasemapChange}
+                onPartyMapDisplayModeChange={setPartyMapDisplayMode}
                 onSelect={handleMapSelect}
               />
             </Suspense>
@@ -460,6 +582,8 @@ export default function App() {
                 parties={partyMapParties}
                 selectedPartyId={effectivePartyId}
                 upperBoundShare={partyMapUpperBoundShare}
+                upperBoundVotes={partyMapUpperBoundVotes}
+                displayMode={partyMapDisplayMode}
                 onPartyChange={setSelectedPartyId}
               />
             ) : null}
@@ -471,6 +595,13 @@ export default function App() {
                 secondPartyId={effectiveComparisonSecondId}
                 onFirstPartyChange={handleComparisonFirstChange}
                 onSecondPartyChange={handleComparisonSecondChange}
+              />
+            ) : null}
+            {activeView === 'coalition' && selectedCoalition ? (
+              <CoalitionPanel
+                language={language}
+                anchorParty={coalitionAnchorParty}
+                upperBoundShare={coalitionUpperBoundShare}
               />
             ) : null}
             <GeographySearch
@@ -506,13 +637,10 @@ export default function App() {
                   : null
               }
               parties={results?.parties ?? []}
-              highlightedPartyIds={
-                activeView === 'party-comparison' &&
-                effectiveComparisonFirstId &&
-                effectiveComparisonSecondId
-                  ? [effectiveComparisonFirstId, effectiveComparisonSecondId]
-                  : []
-              }
+              highlightedPartyIds={highlightedPartyIds}
+              highlightedPartiesLabel={highlightedPartiesLabel}
+              highlightedPartyTotalLabel={highlightedPartyTotalLabel}
+              highlightedPartyNotes={highlightedPartyNotes}
             />
           </div>
         </div>

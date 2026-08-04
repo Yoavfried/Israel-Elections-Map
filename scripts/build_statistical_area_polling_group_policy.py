@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import sys
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,10 @@ from build_statistical_area_result_aggregates import (
 )
 from polling_group_flow import analyze_exact_flow
 from polling_group_ownership import solve_polling_group_ownership
+from polling_group_partition import (
+    PartitionUnit,
+    solve_polling_group_partition,
+)
 
 
 AUDIT_DIR = ROOT / "data" / "processed" / "audits"
@@ -80,6 +85,16 @@ EXACT_NETWORK_BALANCES = {
     "within_3",
     "within_half_percent",
 }
+FALLBACK_FIELDS = [
+    "display_geography_id",
+    "elections",
+    "component_stat_area_ids",
+    "aggregation_method",
+    "evidence_group_id",
+    "evidence_class",
+    "review_status",
+    "note",
+]
 
 
 def clean(value: Any) -> str:
@@ -136,6 +151,44 @@ def solve_ownership(
         geometry_by_id,
         metric_crs=METRIC_CRS,
         tolerance_meters=ADJACENCY_TOLERANCE_METERS,
+    )
+
+
+def solve_partition(
+    area_ids: list[str],
+    groups: dict[str, dict[str, Any]],
+    geometry_by_id: dict[str, Any],
+) -> dict[str, Any]:
+    return solve_polling_group_partition(
+        area_ids,
+        groups,
+        geometry_by_id,
+        metric_crs=METRIC_CRS,
+        tolerance_meters=ADJACENCY_TOLERANCE_METERS,
+    )
+
+
+def serialize_partition_units(units: list[PartitionUnit]) -> str:
+    return json.dumps(
+        [
+            {
+                "group_ids": list(unit.group_ids),
+                "area_ids": list(unit.area_ids),
+                "score": round(unit.score, 8),
+                "exact": unit.exact,
+                "precision_by_model": {
+                    key: round(value, 8)
+                    for key, value in unit.precision_by_model.items()
+                },
+                "recall_by_model": {
+                    key: round(value, 8)
+                    for key, value in unit.recall_by_model.items()
+                },
+            }
+            for unit in units
+        ],
+        ensure_ascii=False,
+        separators=(",", ":"),
     )
 
 
@@ -274,17 +327,193 @@ def build_exact_closed_units(
     }
 
 
-def continuity_identity(site: dict[str, Any]) -> tuple[str, str, str]:
+def continuity_identity(site: dict[str, Any]) -> tuple[str, str]:
     return (
         clean(site["locality_code"]),
         clean(site["planned_site_ids"]),
-        clean(site["site_labels"]),
+    )
+
+
+def continuity_label_keys(site: dict[str, Any]) -> set[str]:
+    return {
+        "".join(
+            character
+            for character in unicodedata.normalize("NFKC", label).casefold()
+            if character.isalnum()
+        )
+        for label in split_pipe(site["site_labels"])
+        if label
+    } - {""}
+
+
+def shared_prefix_length(left: str, right: str) -> int:
+    for index, (left_character, right_character) in enumerate(zip(left, right)):
+        if left_character != right_character:
+            return index
+    return min(len(left), len(right))
+
+
+def site_labels_overlap(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    left_labels = continuity_label_keys(left)
+    right_labels = continuity_label_keys(right)
+    return bool(left_labels & right_labels) or any(
+        (
+            len(shorter) >= 8
+            and len(shorter) / len(longer) >= 0.45
+            and shorter in longer
+        )
+        or (
+            shared_prefix_length(left_label, right_label) >= 8
+            and shared_prefix_length(left_label, right_label) / len(shorter)
+            >= 0.35
+        )
+        for left_label in left_labels
+        for right_label in right_labels
+        for shorter, longer in [
+            (
+                (left_label, right_label)
+                if len(left_label) <= len(right_label)
+                else (right_label, left_label)
+            )
+        ]
+    )
+
+
+def continuity_sites_match(
+    left: dict[str, Any], right: dict[str, Any]
+) -> bool:
+    return (
+        continuity_identity(left) == continuity_identity(right)
+        and site_labels_overlap(left, right)
+    )
+
+
+def reconcile_planned_only_sites(
+    source_sites: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    """Fold uniquely identifiable planned-only sites into final-result sites.
+
+    A match must agree on polling-place text, overlap in candidate areas, and
+    explain the target site's positive eligible-voter surplus within 2% or 50
+    voters. This recovers final-site consolidations without guessing from
+    geography alone.
+    """
+
+    active_sites = [
+        dict(site)
+        for site in source_sites
+        if split_pipe(site["residual_final_ballots"])
+    ]
+    omitted_sites = [
+        site
+        for site in source_sites
+        if not split_pipe(site["residual_final_ballots"])
+    ]
+    active_by_id = {
+        clean(site["site_audit_id"]): site for site in active_sites
+    }
+    claimed_targets: set[str] = set()
+    reconciliations: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+
+    for omitted in sorted(
+        omitted_sites, key=lambda site: clean(site["site_audit_id"])
+    ):
+        omitted_id = clean(omitted["site_audit_id"])
+        omitted_planned = integer(omitted["planned_residual_eligible"])
+        omitted_areas = set(split_pipe(omitted["residual_area_ids"]))
+        tolerance = max(50, round(omitted_planned * 0.02))
+        candidates: list[tuple[int, str]] = []
+        for active in active_sites:
+            active_id = clean(active["site_audit_id"])
+            if active_id in claimed_targets:
+                continue
+            active_areas = set(split_pipe(active["residual_area_ids"]))
+            active_surplus = (
+                integer(active["final_residual_eligible"])
+                - integer(active["planned_residual_eligible"])
+            )
+            delta = abs(active_surplus - omitted_planned)
+            if (
+                omitted_planned > 0
+                and active_surplus > 0
+                and delta <= tolerance
+                and omitted_areas & active_areas
+                and site_labels_overlap(omitted, active)
+            ):
+                candidates.append((delta, active_id))
+
+        if len(candidates) != 1:
+            unresolved.append(omitted_id)
+            continue
+
+        delta, target_id = candidates[0]
+        target = active_by_id[target_id]
+        shared_area_ids = sorted(
+            omitted_areas & set(split_pipe(target["residual_area_ids"]))
+        )
+        combined_weights = read_area_weights(
+            target["residual_area_planned_eligible"]
+        )
+        for area_id, value in read_area_weights(
+            omitted["residual_area_planned_eligible"]
+        ).items():
+            combined_weights[area_id] = combined_weights.get(area_id, 0) + value
+
+        target["residual_area_ids"] = "|".join(sorted(combined_weights))
+        target["residual_area_planned_eligible"] = json.dumps(
+            combined_weights,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        target["planned_residual_eligible"] = sum(combined_weights.values())
+        target["eligible_difference"] = (
+            integer(target["final_residual_eligible"])
+            - integer(target["planned_residual_eligible"])
+        )
+        for field in (
+            "planned_site_ids",
+            "site_labels",
+            "planned_ballots",
+            "residual_planned_ballots",
+        ):
+            target[field] = "|".join(
+                sorted(set(split_pipe(target[field])) | set(split_pipe(omitted[field])))
+            )
+        target.setdefault("reconciled_omitted_site_audit_ids", [])
+        target["reconciled_omitted_site_audit_ids"].append(omitted_id)
+        claimed_targets.add(target_id)
+        reconciliations.append(
+            {
+                "omitted_site_audit_id": omitted_id,
+                "target_site_audit_id": target_id,
+                "omitted_planned_eligible": omitted_planned,
+                "target_surplus_before_reconciliation": (
+                    omitted_planned + (
+                        integer(target["final_residual_eligible"])
+                        - integer(target["planned_residual_eligible"])
+                    )
+                ),
+                "eligible_delta": delta,
+                "shared_stat_area_ids": shared_area_ids,
+            }
+        )
+
+    return active_sites, reconciliations, sorted(unresolved)
+
+
+def is_consolidated_subdivision_group(ballots: list[str]) -> bool:
+    return (
+        len(ballots) > 1
+        and len({ballot_base(ballot) for ballot in ballots}) == 1
+        and all("." in ballot for ballot in ballots)
     )
 
 
 def build_continuity_candidates(
     sites: pd.DataFrame,
     geometry_by_id: dict[str, Any],
+    existing_policy_rows: list[dict[str, Any]],
 ) -> tuple[
     list[dict[str, Any]],
     list[dict[str, Any]],
@@ -297,13 +526,28 @@ def build_continuity_candidates(
         and len(split_pipe(row["residual_area_ids"])) > 1
         and split_pipe(row["residual_final_ballots"])
     ]
-    references_by_identity: dict[
-        tuple[str, str, str], list[dict[str, Any]]
-    ] = defaultdict(list)
+    references_by_identity: dict[tuple[str, str], list[dict[str, Any]]] = (
+        defaultdict(list)
+    )
     for site in direct_sites:
         identity = continuity_identity(site)
-        if identity[1] and identity[2]:
+        if identity[1] and continuity_label_keys(site):
             references_by_identity[identity].append(site)
+
+    occupied_ballots = {
+        (
+            clean(row["election"]),
+            clean(row["locality_code"]),
+            ballot,
+        )
+        for row in existing_policy_rows
+        for ballot in split_pipe(row["ambiguous_final_ballots"])
+    }
+    occupied_areas = {
+        (clean(row["election"]), area_id)
+        for row in existing_policy_rows
+        for area_id in split_pipe(row["owned_stat_area_ids"])
+    }
 
     assignments = pd.read_csv(
         ASSIGNMENTS_PATH,
@@ -313,7 +557,7 @@ def build_continuity_candidates(
     assignment_lookup = assignments.set_index("source_row_uid")[
         "stat_area_id"
     ].to_dict()
-    target_elections = ("K20", "K22", "K23")
+    target_elections = ("K20", "K21", "K22", "K23")
     target_results: dict[str, pd.DataFrame] = {}
     for election in target_elections:
         frame = pd.read_csv(
@@ -325,6 +569,7 @@ def build_continuity_candidates(
         frame["source_locality_code"] = frame["source_locality_code"].map(clean)
         frame["ballot_base"] = frame["source_kalpi"].map(ballot_base)
         frame["eligible_voters"] = frame["eligible_voters"].map(integer)
+        frame["actual_voters"] = frame["actual_voters"].map(integer)
         frame["stat_area_id"] = frame["source_row_uid"].map(
             assignment_lookup
         ).fillna("")
@@ -332,30 +577,173 @@ def build_continuity_candidates(
 
     candidate_groups: list[dict[str, Any]] = []
     used_target_ballots: set[tuple[str, str, str]] = set()
-    post_balance_sites = [
+    continuity_target_sites = [
         row
         for row in sites.to_dict("records")
-        if clean(row["election"]) in target_elections
-        and clean(row["source_evidence"]).startswith(
-            "official_post_balance_register"
+        if (
+            clean(row["election"]) in {"K20", "K22", "K23"}
+            and clean(row["source_evidence"]).startswith(
+                "official_post_balance_register"
+            )
+        )
+        or (
+            clean(row["election"]) == "K21"
+            and split_pipe(row["residual_final_ballots"])
         )
     ]
-    for target_site in post_balance_sites:
+    for target_site in continuity_target_sites:
         election = clean(target_site["election"])
         locality_code = clean(target_site["locality_code"])
         identity = continuity_identity(target_site)
-        references = references_by_identity.get(identity, [])
+        references = [
+            reference
+            for reference in references_by_identity.get(identity, [])
+            if clean(reference["election"]) != election
+            and continuity_sites_match(target_site, reference)
+        ]
         if not references:
             continue
-        target_ballots = split_pipe(target_site["planned_ballots"])
-        target_bases = sorted(
-            {ballot_base(value) for value in target_ballots}
-            - {"", "990"}
+        is_post_balance_target = clean(target_site["source_evidence"]).startswith(
+            "official_post_balance_register"
         )
+        target_ballots = split_pipe(
+            target_site[
+                "planned_ballots"
+                if is_post_balance_target
+                else "residual_final_ballots"
+            ]
+        )
+        if not target_ballots:
+            continue
         results = target_results[election]
         locality_results = results.loc[
             results["source_locality_code"].eq(locality_code)
         ]
+
+        # A final register can replace every planned ballot at a multi-area site
+        # with subdivisions of one new base number. In that case the base number
+        # is only a container for the whole site and must not inherit one area's
+        # crosswalk row. Require two other official elections to agree on the
+        # exact site-area set before reconstructing that group.
+        if is_consolidated_subdivision_group(target_ballots):
+            references_by_area_set: dict[
+                tuple[str, ...], list[dict[str, Any]]
+            ] = defaultdict(list)
+            for reference in references:
+                area_set = tuple(split_pipe(reference["residual_area_ids"]))
+                if len(area_set) > 1:
+                    references_by_area_set[area_set].append(reference)
+            consensus_sets = [
+                (area_set, area_references)
+                for area_set, area_references in references_by_area_set.items()
+                if len(
+                    {
+                        clean(reference["election"])
+                        for reference in area_references
+                    }
+                )
+                >= 2
+            ]
+            if len(consensus_sets) == 1:
+                candidate_area_tuple, site_references = consensus_sets[0]
+                candidate_area_ids = list(candidate_area_tuple)
+                source_ballots = target_ballots
+                result_rows = locality_results.loc[
+                    locality_results["source_kalpi"].isin(source_ballots)
+                ].copy()
+                result_hosts = sorted(
+                    set(result_rows["stat_area_id"]) - {""}
+                )
+                target_keys = {
+                    (election, locality_code, source_ballot)
+                    for source_ballot in source_ballots
+                }
+                area_keys = {
+                    (election, area_id) for area_id in candidate_area_ids
+                }
+                if (
+                    sorted(set(result_rows["source_kalpi"])) == source_ballots
+                    and result_hosts
+                    and set(result_hosts).issubset(candidate_area_ids)
+                    and not target_keys & occupied_ballots
+                    and not target_keys & used_target_ballots
+                    and not area_keys & occupied_areas
+                    and not any(
+                        area_id not in geometry_by_id
+                        for area_id in candidate_area_ids
+                    )
+                ):
+                    reference_weights = {
+                        area_id: sum(
+                            read_area_weights(
+                                reference[
+                                    "residual_area_planned_eligible"
+                                ]
+                            ).get(area_id, 0)
+                            for reference in site_references
+                        )
+                        for area_id in candidate_area_ids
+                    }
+                    planned_reference_total = sum(reference_weights.values())
+                    if planned_reference_total > 0:
+                        used_target_ballots.update(target_keys)
+                        candidate_groups.append(
+                            {
+                                "group_id": (
+                                    f"continuity:{election}:{locality_code}:"
+                                    f"{clean(target_site['site_audit_id']).rsplit(':', 1)[-1]}:site"
+                                ),
+                                "election": election,
+                                "locality_code": locality_code,
+                                "locality_name": clean(
+                                    target_site["locality_name"]
+                                ),
+                                "source_site_audit_id": clean(
+                                    target_site["site_audit_id"]
+                                ),
+                                "source_site_ids": clean(
+                                    target_site["planned_site_ids"]
+                                ),
+                                "final_site_ids": clean(
+                                    target_site["final_site_ids"]
+                                ),
+                                "area_ids": set(candidate_area_ids),
+                                "weights": reference_weights,
+                                "planned": planned_reference_total,
+                                "source_ballots": source_ballots,
+                                "final_eligible": int(
+                                    result_rows["eligible_voters"].sum()
+                                ),
+                                "actual_voters": int(
+                                    result_rows["actual_voters"].sum()
+                                ),
+                                "reference_elections": sorted(
+                                    {
+                                        clean(reference["election"])
+                                        for reference in site_references
+                                    }
+                                ),
+                                "reference_site_audit_ids": sorted(
+                                    {
+                                        clean(reference["site_audit_id"])
+                                        for reference in site_references
+                                    }
+                                ),
+                                "reference_area_sets_differ": False,
+                                "continuity_basis": (
+                                    "stable_site_area_set_for_consolidated_"
+                                    "subdivisions"
+                                ),
+                            }
+                        )
+                        continue
+
+        if not is_post_balance_target:
+            continue
+        target_bases = sorted(
+            {ballot_base(value) for value in target_ballots}
+            - {"", "990"}
+        )
 
         for base in target_bases:
             base_references = [
@@ -390,6 +778,11 @@ def build_continuity_candidates(
                 for area_id in candidate_area_ids
             ):
                 continue
+            if any(
+                (election, area_id) in occupied_areas
+                for area_id in candidate_area_ids
+            ):
+                continue
 
             source_ballots = sorted(
                 value
@@ -413,6 +806,8 @@ def build_continuity_candidates(
                 for source_ballot in source_ballots
             }
             if target_keys & used_target_ballots:
+                continue
+            if target_keys & occupied_ballots:
                 continue
             used_target_ballots.update(target_keys)
 
@@ -451,6 +846,9 @@ def build_continuity_candidates(
                     "final_eligible": int(
                         result_rows["eligible_voters"].sum()
                     ),
+                    "actual_voters": int(
+                        result_rows["actual_voters"].sum()
+                    ),
                     "reference_elections": reference_elections,
                     "reference_site_audit_ids": sorted(
                         {
@@ -467,6 +865,7 @@ def build_continuity_candidates(
                         )
                         > 1
                     ),
+                    "continuity_basis": "stable_site_and_ballot_base",
                 }
             )
 
@@ -528,20 +927,43 @@ def build_continuity_candidates(
                     *(group["area_ids"] for group in groups_in_component)
                 )
             )
-            ownership_groups = {
+            partition_groups = {
                 clean(group["group_id"]): {
-                    "area_ids": set(group["area_ids"]),
-                    "planned": integer(group["planned"]),
                     "weights": dict(group["weights"]),
+                    "actual_voters": integer(group["actual_voters"]),
+                    "final_eligible": integer(group["final_eligible"]),
                 }
                 for group in groups_in_component
             }
-            ownership_result = solve_ownership(
+            partition_result = solve_partition(
                 area_ids,
-                ownership_groups,
+                partition_groups,
                 geometry_by_id,
             )
-            status = clean(ownership_result["status"])
+            partition_status = clean(partition_result["status"])
+            selected_units: list[PartitionUnit] = []
+            if partition_status in {
+                "robust_partition",
+                "robust_partition_disconnected",
+            }:
+                selected_units = list(partition_result["units"])
+                status = (
+                    "cross_election_robust_partition"
+                    if partition_status == "robust_partition"
+                    else "cross_election_robust_partition_disconnected"
+                )
+            elif partition_status == "exact_component":
+                initial_units = list(
+                    partition_result.get("initial_units", [])
+                )
+                selected_units = (
+                    initial_units
+                    if len(initial_units) > 1
+                    else list(partition_result["units"])
+                )
+                status = "cross_election_detail_preserved"
+            else:
+                status = partition_status
             references = sorted(
                 {
                     election_id
@@ -586,98 +1008,152 @@ def build_continuity_candidates(
                     ),
                     "network_supported": True,
                     "ownership_status": status,
-                    "minimum_represented_share": ownership_result.get(
-                        "minimum_represented_share", ""
-                    ),
-                    "mean_represented_share": ownership_result.get(
-                        "mean_represented_share", ""
-                    ),
-                    "total_represented_planned_eligible": (
-                        ownership_result.get(
-                            "total_represented_planned_eligible", ""
-                        )
-                    ),
-                    "representative_ownership": json.dumps(
-                        ownership_result.get("ownership", {}),
-                        ensure_ascii=False,
-                        separators=(",", ":"),
-                    ),
-                    "represented_share_by_group": json.dumps(
-                        ownership_result.get("represented_shares", {}),
-                        ensure_ascii=False,
-                        separators=(",", ":"),
-                    ),
-                    "ownership_search_nodes": (
-                        ownership_result["search"].visited_nodes
-                        if "search" in ownership_result
+                    "minimum_represented_share": (
+                        min(unit.score for unit in selected_units)
+                        if selected_units
                         else ""
                     ),
-                    "ownership_search_limited": (
-                        ownership_result["search"].search_limit_reached
-                        if "search" in ownership_result
+                    "mean_represented_share": (
+                        sum(unit.score for unit in selected_units)
+                        / len(selected_units)
+                        if selected_units
                         else ""
+                    ),
+                    "total_represented_planned_eligible": "",
+                    "representative_ownership": serialize_partition_units(
+                        selected_units
+                    ),
+                    "represented_share_by_group": "",
+                    "ownership_search_nodes": "",
+                    "ownership_search_limited": False,
+                    "ambiguous_actual_voters": sum(
+                        integer(group["actual_voters"])
+                        for group in groups_in_component
+                    ),
+                    "direct_actual_voters": "",
+                    "ambiguous_actual_share": "",
+                    "partition_status": partition_status,
+                    "partition_strategy": status,
+                    "partition_unit_count": len(selected_units),
+                    "partition_minimum_score": (
+                        min(unit.score for unit in selected_units)
+                        if selected_units
+                        else ""
+                    ),
+                    "partition_units": serialize_partition_units(
+                        selected_units
+                    ),
+                    "partition_merge_steps": json.dumps(
+                        partition_result.get("merge_steps", []),
+                        ensure_ascii=False,
+                        separators=(",", ":"),
                     ),
                     "current_display_status": (
-                        "generated_representative_units"
-                        if status in REPRESENTATIVE_STATUSES
-                        else "generated_exact_network_fallback"
-                        if status in FALLBACK_STATUSES
+                        "generated_partition_units"
+                        if selected_units
                         else "not_generated"
                     ),
                 }
             )
 
-            if status in REPRESENTATIVE_STATUSES:
-                ownership = ownership_result["ownership"]
-                shares = ownership_result["represented_shares"]
+            if selected_units:
                 by_id = {
                     clean(group["group_id"]): group
                     for group in groups_in_component
                 }
-                for group_id in sorted(by_id):
-                    group = by_id[group_id]
-                    owned_ids = list(ownership[group_id])
+                for unit_number, unit in enumerate(selected_units, start=1):
+                    unit_groups = [
+                        by_id[group_id] for group_id in unit.group_ids
+                    ]
+                    owned_ids = list(unit.area_ids)
+                    planned_ids = sorted(
+                        set().union(
+                            *(group["area_ids"] for group in unit_groups)
+                        )
+                    )
                     represented = sum(
                         group["weights"].get(area_id, 0)
+                        for group in unit_groups
                         for area_id in owned_ids
                     )
                     warnings = ["cross_election_continuity"]
-                    if group["reference_area_sets_differ"]:
+                    if any(
+                        group["reference_area_sets_differ"]
+                        for group in unit_groups
+                    ):
                         warnings.append(
                             "reference_area_sets_intersected"
                         )
+                    source_ballots = sorted(
+                        {
+                            ballot
+                            for group in unit_groups
+                            for ballot in group["source_ballots"]
+                        }
+                    )
+                    unit_references = sorted(
+                        {
+                            reference
+                            for group in unit_groups
+                            for reference in group["reference_elections"]
+                        }
+                    )
                     policy_rows.append(
                         {
                             "display_geography_id": (
-                                f"display:polling-group:{group_id}"
+                                "display:polling-continuity-partition:"
+                                f"{component_id}:{unit_number}"
                             ),
                             "election": election,
                             "locality_code": locality_code,
-                            "locality_name": clean(group["locality_name"]),
+                            "locality_name": clean(
+                                unit_groups[0]["locality_name"]
+                            ),
                             "evidence_group_id": component_id,
-                            "source_site_audit_id": clean(
-                                group["source_site_audit_id"]
+                            "source_site_audit_id": "|".join(
+                                sorted(
+                                    clean(group["source_site_audit_id"])
+                                    for group in unit_groups
+                                )
                             ),
-                            "source_site_ids": clean(
-                                group["source_site_ids"]
+                            "source_site_ids": "|".join(
+                                sorted(
+                                    {
+                                        site_id
+                                        for group in unit_groups
+                                        for site_id in split_pipe(
+                                            group["source_site_ids"]
+                                        )
+                                    }
+                                )
                             ),
-                            "final_site_ids": clean(group["final_site_ids"]),
+                            "final_site_ids": "|".join(
+                                sorted(
+                                    {
+                                        site_id
+                                        for group in unit_groups
+                                        for site_id in split_pipe(
+                                            group["final_site_ids"]
+                                        )
+                                    }
+                                )
+                            ),
                             "owned_stat_area_ids": "|".join(owned_ids),
-                            "planned_stat_area_ids": "|".join(
-                                sorted(group["area_ids"])
-                            ),
+                            "planned_stat_area_ids": "|".join(planned_ids),
                             "ambiguous_final_ballots": "|".join(
-                                group["source_ballots"]
+                                source_ballots
                             ),
-                            "planned_eligible_voters": integer(
-                                group["planned"]
+                            "planned_eligible_voters": sum(
+                                integer(group["planned"])
+                                for group in unit_groups
                             ),
                             "represented_planned_eligible_voters": represented,
                             "represented_planned_share": round(
-                                float(shares[group_id]), 8
+                                unit.precision_by_model["planned"], 8
                             ),
-                            "final_eligible_voters": integer(
-                                group["final_eligible"]
+                            "final_eligible_voters": sum(
+                                integer(group["final_eligible"])
+                                for group in unit_groups
                             ),
                             "component_network_balance": (
                                 "not_comparable_cross_election"
@@ -687,57 +1163,51 @@ def build_continuity_candidates(
                                 "official_cross_election_polling_site_continuity"
                             ),
                             "continuity_reference_elections": "|".join(
-                                group["reference_elections"]
+                                unit_references
                             ),
                             "continuity_reference_site_audit_ids": "|".join(
-                                group["reference_site_audit_ids"]
+                                sorted(
+                                    {
+                                        site_id
+                                        for group in unit_groups
+                                        for site_id in group[
+                                            "reference_site_audit_ids"
+                                        ]
+                                    }
+                                )
                             ),
                             "evidence_warnings": "|".join(warnings),
                             "ownership_status": status,
                             "ownership_policy": (
-                                "maximize_minimum_represented_share_then_total_"
-                                "with_unique_polygon_ownership"
+                                "mutual_majority_partition_across_planned_"
+                                "final_actual_and_final_eligible_models"
                             ),
                             "review_status": "approved-rule-generated",
                             "note": (
                                 "Exact target-election polling-group totals; "
-                                f"candidate areas are the consensus intersection "
-                                f"of exact site/base matches in "
-                                f"{', '.join(group['reference_elections'])}."
+                                "candidate areas come from stable official "
+                                "polling-site evidence in "
+                                f"{', '.join(unit_references)}."
                             ),
                         }
                     )
-            elif status in FALLBACK_STATUSES:
-                fallback_rows.append(
-                    {
-                        "display_geography_id": (
-                            f"display:polling-network-fallback:"
-                            f"{component_id}"
-                        ),
-                        "elections": election,
-                        "component_stat_area_ids": "|".join(area_ids),
-                        "aggregation_method": "sum-components",
-                        "evidence_group_id": component_id,
-                        "evidence_class": (
-                            "representative_ownership_impossible"
-                        ),
-                        "review_status": "approved-rule-fallback",
-                        "note": (
-                            "Cross-election consensus network retained as an "
-                            f"exact aggregate because {status.replace('_', ' ')}."
-                        ),
-                    }
-                )
 
     return policy_rows, fallback_rows, audit_rows
 
 
-def write_rows(path: Path, rows: list[dict[str, Any]]) -> None:
-    if not rows:
+def write_rows(
+    path: Path,
+    rows: list[dict[str, Any]],
+    fieldnames: list[str] | None = None,
+) -> None:
+    if not rows and not fieldnames:
         raise ValueError(f"Cannot write empty polling-group output: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=fieldnames or list(rows[0]),
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -833,6 +1303,33 @@ def main() -> None:
     geometry = geometry.to_crs("EPSG:4326")
     geometry_by_id = geometry.set_index("stat_area_id").geometry.to_dict()
 
+    assignments = pd.read_csv(
+        ASSIGNMENTS_PATH,
+        dtype=str,
+        encoding="utf-8-sig",
+    ).fillna("")
+    assignment_lookup = assignments.set_index("source_row_uid")[
+        "stat_area_id"
+    ].to_dict()
+    results_by_election: dict[str, pd.DataFrame] = {}
+    for election in sorted(set(components["election"])):
+        result_frame = pd.read_csv(
+            RESULTS_DIR / f"{election.lower()}_ballot_votes.csv",
+            dtype=str,
+            encoding="utf-8-sig",
+        ).fillna("")
+        result_frame["source_kalpi"] = result_frame["source_kalpi"].map(clean)
+        result_frame["source_locality_code"] = result_frame[
+            "source_locality_code"
+        ].map(clean)
+        result_frame["actual_voters"] = result_frame["actual_voters"].map(
+            integer
+        )
+        result_frame["stat_area_id"] = result_frame["source_row_uid"].map(
+            assignment_lookup
+        ).fillna("")
+        results_by_election[election] = result_frame
+
     sites_by_id = {
         clean(row["site_audit_id"]): row
         for row in sites.to_dict("records")
@@ -849,16 +1346,9 @@ def main() -> None:
             continue
         source_area_ids = split_pipe(component["stat_area_ids"])
         source_component_sites = [sites_by_id[site_id] for site_id in site_ids]
-        omitted_site_ids = sorted(
-            clean(site["site_audit_id"])
-            for site in source_component_sites
-            if not split_pipe(site["residual_final_ballots"])
+        component_sites, reconciliations, omitted_site_ids = (
+            reconcile_planned_only_sites(source_component_sites)
         )
-        component_sites = [
-            site
-            for site in source_component_sites
-            if split_pipe(site["residual_final_ballots"])
-        ]
         if not component_sites:
             continue
         site_ids = sorted(
@@ -903,6 +1393,10 @@ def main() -> None:
             evidence_warnings.append(
                 "planned_groups_without_final_results_omitted"
             )
+        if reconciliations:
+            evidence_warnings.append(
+                "planned_groups_reconciled_to_final_sites"
+            )
         if source_evidence and any(
             evidence not in TESTABLE_EVIDENCE for evidence in source_evidence
         ):
@@ -945,7 +1439,43 @@ def main() -> None:
         )
         exact_units: list[dict[str, Any]] = []
         exact_diagnostics: dict[str, Any] = {}
+        partition_result: dict[str, Any] = {}
+        partition_units: list[PartitionUnit] = []
+        partition_strategy = ""
+        partition_exact = False
         ownership_result: dict[str, Any] = {"status": "not_tested"}
+
+        election = clean(component["election"])
+        locality_code = clean(component["locality_code"])
+        ambiguous_ballots = {
+            ballot
+            for site in component_sites
+            for ballot in split_pipe(site["residual_final_ballots"])
+        }
+        locality_results = results_by_election[election].loc[
+            results_by_election[election]["source_locality_code"].eq(
+                locality_code
+            )
+        ]
+        ambiguous_actual = int(
+            locality_results.loc[
+                locality_results["source_kalpi"].isin(ambiguous_ballots),
+                "actual_voters",
+            ].sum()
+        )
+        direct_actual = int(
+            locality_results.loc[
+                locality_results["stat_area_id"].isin(area_ids)
+                & ~locality_results["source_kalpi"].isin(ambiguous_ballots),
+                "actual_voters",
+            ].sum()
+        )
+        ambiguous_actual_share = (
+            ambiguous_actual / (ambiguous_actual + direct_actual)
+            if ambiguous_actual + direct_actual
+            else 0.0
+        )
+
         if exact_closed_candidate:
             exact_units, exact_diagnostics = build_exact_closed_units(
                 component_id,
@@ -964,25 +1494,85 @@ def main() -> None:
                 )
             }
         elif network_supported:
-            ownership_sites = {
+            partition_groups = {
                 clean(site["site_audit_id"]): {
-                    "area_ids": set(split_pipe(site["residual_area_ids"])),
-                    "planned": integer(site["planned_residual_eligible"]),
                     "weights": read_area_weights(
                         site["residual_area_planned_eligible"]
+                    ),
+                    "actual_voters": integer(
+                        site["residual_actual_voters"]
+                    ),
+                    "final_eligible": integer(
+                        site["final_residual_eligible"]
                     ),
                 }
                 for site in component_sites
             }
-            ownership_result = solve_ownership(
+            partition_result = solve_partition(
                 area_ids,
-                ownership_sites,
+                partition_groups,
                 geometry_by_id,
             )
+            partition_status = clean(partition_result["status"])
+            if partition_status in {
+                "robust_partition",
+                "robust_partition_disconnected",
+            }:
+                partition_units = list(partition_result["units"])
+                partition_strategy = (
+                    "robust_mutual_majority_partition"
+                    if partition_status == "robust_partition"
+                    else "robust_mutual_majority_partition_disconnected"
+                )
+            elif partition_status == "exact_component":
+                initial_units = list(
+                    partition_result.get("initial_units", [])
+                )
+                exact_merge_supported = (
+                    len(initial_units) == 1
+                    or (
+                        len(area_ids) <= 4
+                        and ambiguous_actual_share >= 0.5
+                        and integer(component["current_empty_area_count"]) > 0
+                    )
+                )
+                if exact_merge_supported:
+                    partition_units = list(partition_result["units"])
+                    partition_strategy = "exact_topological_component"
+                    partition_exact = True
+                elif initial_units:
+                    partition_units = initial_units
+                    partition_strategy = "best_effort_detail_preserved"
+
+            if partition_units:
+                ownership_result = {
+                    "status": partition_strategy,
+                    "minimum_represented_share": min(
+                        unit.score for unit in partition_units
+                    ),
+                }
+            else:
+                ownership_sites = {
+                    group_id: {
+                        "area_ids": set(group["weights"]),
+                        "planned": sum(group["weights"].values()),
+                        "weights": dict(group["weights"]),
+                    }
+                    for group_id, group in partition_groups.items()
+                }
+                ownership_result = solve_ownership(
+                    area_ids,
+                    ownership_sites,
+                    geometry_by_id,
+                )
 
         ownership_status = clean(ownership_result["status"])
         if exact_closed_candidate:
             current_display_status = "generated_exact_closed_units"
+        elif partition_units and partition_exact:
+            current_display_status = "generated_exact_topological_component"
+        elif partition_units:
+            current_display_status = "generated_partition_units"
         elif network_supported and ownership_status in REPRESENTATIVE_STATUSES:
             current_display_status = "generated_representative_units"
         elif network_supported and ownership_status in FALLBACK_STATUSES:
@@ -999,6 +1589,15 @@ def main() -> None:
             "source_component_stat_area_ids": "|".join(source_area_ids),
             "omitted_planned_polling_group_ids": "|".join(
                 omitted_site_ids
+            ),
+            "reconciled_planned_polling_group_ids": "|".join(
+                reconciliation["omitted_site_audit_id"]
+                for reconciliation in reconciliations
+            ),
+            "planned_group_reconciliations": json.dumps(
+                reconciliations,
+                ensure_ascii=False,
+                separators=(",", ":"),
             ),
             "area_count": len(area_ids),
             "polling_group_count": len(site_ids),
@@ -1056,6 +1655,23 @@ def main() -> None:
             ),
             "forced_zero_edge_count": len(
                 exact_diagnostics.get("forced_zero_edges", [])
+            ),
+            "ambiguous_actual_voters": ambiguous_actual,
+            "direct_actual_voters": direct_actual,
+            "ambiguous_actual_share": round(ambiguous_actual_share, 8),
+            "partition_status": clean(partition_result.get("status", "")),
+            "partition_strategy": partition_strategy,
+            "partition_unit_count": len(partition_units),
+            "partition_minimum_score": (
+                round(min(unit.score for unit in partition_units), 8)
+                if partition_units
+                else ""
+            ),
+            "partition_units": serialize_partition_units(partition_units),
+            "partition_merge_steps": json.dumps(
+                partition_result.get("merge_steps", []),
+                ensure_ascii=False,
+                separators=(",", ":"),
             ),
             "current_display_status": current_display_status,
         }
@@ -1163,6 +1779,172 @@ def main() -> None:
                         "review_status": "approved-exact-closed",
                     }
                 )
+        elif partition_units:
+            election = clean(component["election"])
+            locality_code = clean(component["locality_code"])
+            locality_name = clean(component["locality_name"])
+            component_sites_by_id = {
+                clean(site["site_audit_id"]): site
+                for site in component_sites
+            }
+            for unit_number, unit in enumerate(partition_units, start=1):
+                unit_site_ids = list(unit.group_ids)
+                unit_sites = [
+                    component_sites_by_id[site_id]
+                    for site_id in unit_site_ids
+                ]
+                owned_ids = list(unit.area_ids)
+                planned_ids = sorted(
+                    {
+                        area_id
+                        for site in unit_sites
+                        for area_id in split_pipe(site["residual_area_ids"])
+                    }
+                )
+                source_ballots = sorted(
+                    {
+                        ballot
+                        for site in unit_sites
+                        for ballot in split_pipe(
+                            site["residual_final_ballots"]
+                        )
+                    }
+                )
+                planned_eligible = sum(
+                    sum(
+                        read_area_weights(
+                            site["residual_area_planned_eligible"]
+                        ).values()
+                    )
+                    for site in unit_sites
+                )
+                represented_eligible = sum(
+                    read_area_weights(
+                        site["residual_area_planned_eligible"]
+                    ).get(area_id, 0)
+                    for site in unit_sites
+                    for area_id in owned_ids
+                )
+                final_eligible = sum(
+                    integer(site["final_residual_eligible"])
+                    for site in unit_sites
+                )
+                is_exact_unit = partition_exact and unit.exact
+                display_id = (
+                    f"display:polling-topology:{component_id}:{unit_number}"
+                    if is_exact_unit
+                    else f"display:polling-partition:{component_id}:{unit_number}"
+                )
+                review_status = (
+                    "approved-exact-closed"
+                    if is_exact_unit
+                    else "approved-rule-generated"
+                )
+                policy_rows.append(
+                    {
+                        "display_geography_id": display_id,
+                        "election": election,
+                        "locality_code": locality_code,
+                        "locality_name": locality_name,
+                        "evidence_group_id": component_id,
+                        "source_site_audit_id": "|".join(unit_site_ids),
+                        "source_site_ids": "|".join(
+                            sorted(
+                                {
+                                    source_site_id
+                                    for site in unit_sites
+                                    for source_site_id in split_pipe(
+                                        site["planned_site_ids"]
+                                    )
+                                }
+                            )
+                        ),
+                        "final_site_ids": "|".join(
+                            sorted(
+                                {
+                                    final_site_id
+                                    for site in unit_sites
+                                    for final_site_id in split_pipe(
+                                        site["final_site_ids"]
+                                    )
+                                }
+                            )
+                        ),
+                        "owned_stat_area_ids": "|".join(owned_ids),
+                        "planned_stat_area_ids": "|".join(planned_ids),
+                        "ambiguous_final_ballots": "|".join(
+                            source_ballots
+                        ),
+                        "planned_eligible_voters": planned_eligible,
+                        "represented_planned_eligible_voters": (
+                            represented_eligible
+                        ),
+                        "represented_planned_share": round(
+                            unit.precision_by_model["planned"], 8
+                        ),
+                        "final_eligible_voters": final_eligible,
+                        "component_network_balance": network_balance,
+                        "component_eligible_difference": difference,
+                        "source_evidence": "|".join(
+                            sorted(
+                                {
+                                    clean(site["source_evidence"])
+                                    for site in unit_sites
+                                }
+                            )
+                        ),
+                        "continuity_reference_elections": "",
+                        "continuity_reference_site_audit_ids": "",
+                        "evidence_warnings": "|".join(
+                            sorted(set(evidence_warnings))
+                        ),
+                        "ownership_status": partition_strategy,
+                        "ownership_policy": (
+                            "mutual_majority_partition_across_planned_"
+                            "final_actual_and_final_eligible_models_without_"
+                            "geometry_forced_merges"
+                        ),
+                        "review_status": review_status,
+                        "note": (
+                            ""
+                            if is_exact_unit
+                            else "Exact final polling-group totals; grouped "
+                            "polygon ownership passed mutual-majority stress "
+                            "tests but does not split votes by area."
+                        ),
+                    }
+                )
+                if is_exact_unit:
+                    exact_group_rows.append(
+                        {
+                            "display_geography_id": display_id,
+                            "election": election,
+                            "locality_code": locality_code,
+                            "locality_name": locality_name,
+                            "evidence_group_id": component_id,
+                            "original_component_classification": (
+                                component_classification
+                            ),
+                            "exactness_basis": (
+                                "closed_ballot_area_topology"
+                            ),
+                            "stat_area_count": len(owned_ids),
+                            "stat_area_ids": "|".join(owned_ids),
+                            "polling_group_count": len(unit_site_ids),
+                            "polling_group_ids": "|".join(unit_site_ids),
+                            "final_ballot_count": len(source_ballots),
+                            "final_ballots": "|".join(source_ballots),
+                            "planned_eligible_voters": planned_eligible,
+                            "final_eligible_voters": final_eligible,
+                            "eligible_difference": (
+                                final_eligible - planned_eligible
+                            ),
+                            "network_balance": network_balance,
+                            "forced_zero_edges": "",
+                            "flow_edge_bounds": "{}",
+                            "review_status": "approved-exact-closed",
+                        }
+                    )
         elif network_supported and ownership_status in REPRESENTATIVE_STATUSES:
             ownership = ownership_result["ownership"]
             represented_shares = ownership_result["represented_shares"]
@@ -1245,7 +2027,7 @@ def main() -> None:
             )
 
     continuity_policy, continuity_fallbacks, continuity_audit = (
-        build_continuity_candidates(sites, geometry_by_id)
+        build_continuity_candidates(sites, geometry_by_id, policy_rows)
     )
     policy_rows.extend(continuity_policy)
     fallback_rows.extend(continuity_fallbacks)
@@ -1255,7 +2037,7 @@ def main() -> None:
 
     write_rows(OUTPUT_PATH, output_rows)
     write_rows(POLICY_PATH, policy_rows)
-    write_rows(FALLBACK_PATH, fallback_rows)
+    write_rows(FALLBACK_PATH, fallback_rows, FALLBACK_FIELDS)
     write_rows(EXACT_GROUP_PATH, exact_group_rows)
     frame = pd.DataFrame(output_rows)
     supported = frame.loc[frame["network_supported"].eq(True)].copy()
@@ -1265,8 +2047,10 @@ def main() -> None:
         ~policy_frame["review_status"].eq("approved-exact-closed")
     ].copy()
     representative_scope_counts = []
-    for election in sorted(set(policy_frame["election"])):
-        election_rows = policy_frame.loc[policy_frame["election"].eq(election)]
+    for election in sorted(set(representative_frame["election"])):
+        election_rows = representative_frame.loc[
+            representative_frame["election"].eq(election)
+        ]
         representative_scope_counts.append(
             {
                 "election": election,
@@ -1282,20 +2066,28 @@ def main() -> None:
         "scope": (
             "All testable statistical-area polling networks: direct official "
             "pre-election evidence in K21, K24, and K25; strict two-reference "
-            "continuity in K22 and K23"
+            "site continuity for consolidated subdivisions in K21-K23; "
+            "site-and-ballot continuity for remaining K22-K23 groups"
         ),
         "candidate_rule": (
-            "Final polling-group identity and source coverage must be closed at "
-            "the network boundary. Planned/final electorate differences are "
-            "published as evidence warnings, never used to alter exact votes. "
-            "Closed official networks are exact combined displays. When their "
-            "eligible-voter totals balance exactly, transport-flow bounds remove "
-            "impossible area-to-group edges and split the network into the "
-            "smallest provably closed units. "
-            "Every polling group must own at least one planned polygon; connected "
-            "ownership maximizes the weakest represented planned-electorate share, "
-            "then total represented electorate, with a stable tie-break only for "
-            "the remaining representative displays."
+            "Exact election-specific ballot-to-area rows are removed before "
+            "polling-site linkage, and base or location links are accepted only "
+            "when unique. Final polling groups and candidate areas then form a "
+            "bipartite graph. Planned eligible counts are edge proportions, not "
+            "conserved final totals. Exactly balanced networks still use transport "
+            "bounds; structurally closed one-unit networks may use their exact "
+            "combined result despite planned/final count drift. Remaining networks "
+            "merge only when needed to reach at least 50% precision and recall "
+            "under planned, final-actual, and final-eligible weighting; disconnected "
+            "geometry alone never causes a merge. Planned-only sites may be folded "
+            "into one final-result site only when candidate areas overlap, polling-"
+            "place text matches, and the eligible-voter surplus agrees uniquely "
+            "within 2% or 50 voters. "
+            "When that threshold cannot be reached without collapsing a larger "
+            "network, the most detailed initial ownership is retained with "
+            "directional uncertainty notices. Consolidated K21-K23 subdivisions "
+            "still require stable official site identity and agreement in at least "
+            "two direct-evidence elections."
         ),
         "multi_site_components_reviewed": len(frame),
         "network_supported_components": len(supported),
@@ -1374,10 +2166,12 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    by_election = {
-        row["election"]: row["count"]
-        for row in summary["representative_display_units_by_evidence"]
-    }
+    by_election = (
+        representative_frame.groupby("election")
+        .size()
+        .astype(int)
+        .to_dict()
+    )
     print(
         "generated "
         f"{len(exact_group_rows)} exact closed units and "

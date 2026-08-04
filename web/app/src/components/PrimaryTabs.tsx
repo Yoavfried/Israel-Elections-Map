@@ -1,8 +1,8 @@
-import { BarChart3, Map, Scale, Target } from 'lucide-react'
+import { BarChart3, Handshake, Map, Scale, Target } from 'lucide-react'
 import type { Language } from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
-export type AppView = 'map' | 'party-map' | 'party-comparison' | 'national'
+export type AppView = 'map' | 'party-map' | 'party-comparison' | 'coalition' | 'national'
 
 interface PrimaryTabsProps {
   activeView: AppView
@@ -61,6 +61,21 @@ export function PrimaryTabs({ activeView, language, onChange }: PrimaryTabsProps
         </span>
         <span className="primary-tab__label-short" aria-hidden="true">
           {translate(language, 'partyComparisonViewShort')}
+        </span>
+      </button>
+      <button
+        type="button"
+        className={
+          activeView === 'coalition' ? 'primary-tab primary-tab--active' : 'primary-tab'
+        }
+        aria-label={translate(language, 'coalitionView')}
+        aria-current={activeView === 'coalition' ? 'page' : undefined}
+        onClick={() => onChange('coalition')}
+      >
+        <Handshake size={17} strokeWidth={2} aria-hidden="true" />
+        <span className="primary-tab__label">{translate(language, 'coalitionView')}</span>
+        <span className="primary-tab__label-short" aria-hidden="true">
+          {translate(language, 'coalitionViewShort')}
         </span>
       </button>
       <button

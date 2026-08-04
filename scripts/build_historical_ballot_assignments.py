@@ -15,12 +15,22 @@ if LOCAL_AUDIT_PYTHON.exists():
 
 import pandas as pd
 
-from pipeline_common import PROCESSED_DIR, RAW_DIR, int_value, write_csv, write_json
+from pipeline_common import (
+    MANUAL_DIR,
+    PROCESSED_DIR,
+    RAW_DIR,
+    int_value,
+    write_csv,
+    write_json,
+)
 
 
 SOURCE_DIR = RAW_DIR / "cbs_historical_geography"
 WIDE_DIR = PROCESSED_DIR / "normalized" / "ballot_votes_wide"
 ASSIGNMENT_PLAN = PROCESSED_DIR / "assignments" / "ballot_assignment_plan.csv"
+SINGLE_STAT_FALLBACK_EXCLUSIONS = (
+    MANUAL_DIR / "historical_single_stat_fallback_exclusions.csv"
+)
 OUT_DIR = PROCESSED_DIR / "assignments"
 
 ELECTION_VINTAGES = {
@@ -87,6 +97,38 @@ def normalize_name(value: Any) -> str:
     text = re.sub(r"\s*-\s*", "-", text)
     text = re.sub(r"[^\w\- ]", "", text, flags=re.UNICODE)
     return re.sub(r"\s+", " ", text).strip()
+
+
+def read_single_stat_fallback_exclusions() -> list[dict[str, Any]]:
+    frame = pd.read_csv(
+        SINGLE_STAT_FALLBACK_EXCLUSIONS,
+        dtype=str,
+        encoding="utf-8-sig",
+    ).fillna("")
+    output: list[dict[str, Any]] = []
+    for index, row in frame.iterrows():
+        election = str(row["election"]).strip()
+        locality_code = normalize_code(row["source_locality_code"])
+        locality_name_key = normalize_name(row["source_locality_name"])
+        expected_rows = int_value(row["expected_rows"])
+        if not election or not expected_rows or (
+            not locality_code and not locality_name_key
+        ):
+            raise ValueError(
+                "Invalid historical single-stat fallback exclusion at row "
+                f"{index + 2}"
+            )
+        output.append(
+            {
+                **row.to_dict(),
+                "_rule_id": f"{election}:{locality_code}:{locality_name_key}",
+                "election": election,
+                "source_locality_code": locality_code,
+                "source_locality_name_key": locality_name_key,
+                "expected_rows": expected_rows,
+            }
+        )
+    return output
 
 
 def ballot_base(election: str, value: Any) -> str:
@@ -271,6 +313,8 @@ def main() -> None:
             "custom_geography_id",
         ]
     ]
+    single_stat_fallback_exclusions = read_single_stat_fallback_exclusions()
+    exclusion_match_counts: Counter[str] = Counter()
 
     crosswalks = {election: read_crosswalk(election) for election in ELECTION_VINTAGES}
     for election, crosswalk in crosswalks.items():
@@ -332,6 +376,8 @@ def main() -> None:
         crosswalk_by_name = unique_lookup(
             crosswalk, ["locality_name_key", "ballot_number"]
         )
+        crosswalk_locality_codes = set(crosswalk["locality_code"])
+        crosswalk_locality_names = set(crosswalk["locality_name_key"])
 
         stats_by_code = {
             code: group.to_dict("records")
@@ -341,6 +387,7 @@ def main() -> None:
         for name, group in metadata.groupby("locality_name_key"):
             if group["locality_code"].nunique() == 1:
                 stats_by_name[name] = group.to_dict("records")
+        metadata_locality_names = set(metadata["locality_name_key"])
 
         election_output: list[dict[str, Any]] = []
         for _, row in wide.iterrows():
@@ -371,11 +418,28 @@ def main() -> None:
                 )
                 continue
 
-            candidate_codes = split_codes(row.get("source_locality_code", ""))
-            for code in split_codes(row.get("target_locality_code", "")):
-                if code not in candidate_codes:
-                    candidate_codes.append(code)
+            source_codes = split_codes(row.get("source_locality_code", ""))
+            target_codes = split_codes(row.get("target_locality_code", ""))
             source_name_key = normalize_name(row.get("source_locality_name", ""))
+
+            # Composite result units use the reviewed component identity. Otherwise,
+            # a historical source locality takes precedence over a modern merger or
+            # rename target. This prevents identical ballot numbers in the successor
+            # municipality from creating a false historical crosswalk match.
+            if row.get("assignment_source", "") == "reviewed_composite_component_evidence":
+                candidate_codes = target_codes
+            else:
+                source_identity_exists = any(
+                    code in stats_by_code or code in crosswalk_locality_codes
+                    for code in source_codes
+                ) or source_name_key in (
+                    metadata_locality_names | crosswalk_locality_names
+                )
+                candidate_codes = list(source_codes)
+                if not source_identity_exists:
+                    for code in target_codes:
+                        if code not in candidate_codes:
+                            candidate_codes.append(code)
 
             crosswalk_match: dict[str, Any] | None = None
             match_method = ""
@@ -417,6 +481,40 @@ def main() -> None:
                             f"official crosswalk area {crosswalk_match['stat_area_id']} is absent from the CBS geometry",
                         )
                     )
+                continue
+
+            fallback_exclusion = next(
+                (
+                    exclusion
+                    for exclusion in single_stat_fallback_exclusions
+                    if exclusion["election"] == election
+                    and (
+                        not exclusion["source_locality_code"]
+                        or exclusion["source_locality_code"] in candidate_codes
+                    )
+                    and (
+                        not exclusion["source_locality_name_key"]
+                        or exclusion["source_locality_name_key"] == source_name_key
+                    )
+                ),
+                None,
+            )
+            if fallback_exclusion:
+                exclusion_match_counts[fallback_exclusion["_rule_id"]] += 1
+                excluded = unresolved_output(
+                    row,
+                    vintage,
+                    base,
+                    "no_direct_historical_assignment",
+                    fallback_exclusion["note"],
+                )
+                excluded["historical_assignment_method"] = (
+                    "reviewed_single_stat_fallback_exclusion"
+                )
+                excluded["historical_assignment_source"] = (
+                    "data/manual/historical_single_stat_fallback_exclusions.csv"
+                )
+                election_output.append(excluded)
                 continue
 
             single_stat: dict[str, Any] | None = None
@@ -483,6 +581,15 @@ def main() -> None:
                 "non_geographic_rows": statuses["not_applicable_non_geographic"],
             }
         )
+
+    for exclusion in single_stat_fallback_exclusions:
+        observed = exclusion_match_counts[exclusion["_rule_id"]]
+        expected = exclusion["expected_rows"]
+        if observed != expected:
+            raise ValueError(
+                "Historical single-stat fallback exclusion count changed for "
+                f"{exclusion['_rule_id']}: expected {expected}, observed {observed}"
+            )
 
     fields = [
         "source_row_uid",

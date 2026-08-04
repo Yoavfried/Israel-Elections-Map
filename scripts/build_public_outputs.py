@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +13,7 @@ from pipeline_common import ELECTIONS, PROCESSED_DIR, ensure_dir, write_csv, wri
 
 
 ASSIGNMENTS = PROCESSED_DIR / "assignments" / "ballot_geography_assignments.csv"
+ASSIGNMENT_PLAN = PROCESSED_DIR / "assignments" / "ballot_assignment_plan.csv"
 WIDE_DIR = PROCESSED_DIR / "normalized" / "ballot_votes_wide"
 OUT_DIR = PROCESSED_DIR / "public"
 
@@ -127,12 +129,53 @@ def read_wide(election: str) -> pd.DataFrame:
     return pd.read_csv(path, dtype=str, encoding="utf-8-sig").fillna("")
 
 
+def add_fallback_metadata(
+    rows: pd.DataFrame,
+    stat_area_vintage: int,
+    id_prefix: str,
+    fallback_reason: str,
+    boundary_source: str | Callable[[str], str],
+) -> pd.DataFrame:
+    output = rows.copy()
+    output.insert(
+        1,
+        "fallback_geography_id",
+        output["locality_id"].map(
+            lambda locality_id: f"{id_prefix}:{stat_area_vintage}:{locality_id}"
+        ),
+    )
+    output.insert(2, "stat_area_vintage", stat_area_vintage)
+    output.insert(3, "fallback_reason", fallback_reason)
+    if callable(boundary_source):
+        values = output["locality_id"].map(boundary_source)
+    else:
+        values = boundary_source
+    output.insert(4, "boundary_source", values)
+    return output
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
     parser.parse_args()
 
     assignments = pd.read_csv(ASSIGNMENTS, dtype=str, encoding="utf-8-sig").fillna("")
+    component_plan = pd.read_csv(
+        ASSIGNMENT_PLAN, dtype=str, encoding="utf-8-sig"
+    ).fillna("")[
+        [
+            "source_row_uid",
+            "target_locality_code",
+            "target_locality_name",
+            "assignment_source",
+        ]
+    ].rename(
+        columns={
+            "target_locality_code": "component_locality_code",
+            "target_locality_name": "component_locality_name",
+            "assignment_source": "plan_assignment_source",
+        }
+    )
     assignment_columns = [
         "source_row_uid",
         "geography_assignment_status",
@@ -169,7 +212,9 @@ def main() -> None:
         election = ELECTIONS[election_number]["key"]
         wide = read_wide(election)
         parties = party_columns(wide)
-        merged = wide.merge(assignments[assignment_columns], on="source_row_uid", how="left")
+        merged = wide.merge(
+            assignments[assignment_columns], on="source_row_uid", how="left"
+        ).merge(component_plan, on="source_row_uid", how="left", validate="one_to_one")
         merged = numeric(merged, NUMERIC_CORE + parties)
         mapped = bool_series(merged["is_mapped"])
         locality_mapped = bool_series(merged["is_locality_mapped"])
@@ -238,42 +283,95 @@ def main() -> None:
             ["election", "locality_id", "locality_code", "locality_name"],
             parties,
         )
+        component_rows = merged[
+            merged["plan_assignment_source"]
+            == "reviewed_composite_component_evidence"
+        ].copy()
+        component_fallback_agg = locality_agg.iloc[0:0].copy()
+        fully_covered_component_sources: set[str] = set()
+        if not component_rows.empty:
+            component_rows["_is_stat_mapped"] = bool_series(
+                component_rows["is_mapped"]
+            ).astype("int64")
+            component_group_columns = [
+                "locality_geography_id",
+                "component_locality_code",
+                "component_locality_name",
+            ]
+            component_coverage = (
+                component_rows.groupby(component_group_columns, dropna=False)
+                .agg(
+                    component_rows=("source_row_uid", "size"),
+                    mapped_rows=("_is_stat_mapped", "sum"),
+                )
+                .reset_index()
+            )
+            component_coverage["is_fully_covered"] = (
+                component_coverage["mapped_rows"]
+                == component_coverage["component_rows"]
+            ) | (component_coverage["mapped_rows"] == 0)
+            source_coverage = component_coverage.groupby(
+                "locality_geography_id", dropna=False
+            )["is_fully_covered"].all()
+            fully_covered_component_sources = set(
+                source_coverage[source_coverage].index.astype(str)
+            )
+
+            fallback_components = component_coverage[
+                component_coverage["mapped_rows"] == 0
+            ][component_group_columns]
+            if not fallback_components.empty:
+                component_fallback_rows = component_rows.merge(
+                    fallback_components,
+                    on=component_group_columns,
+                    how="inner",
+                    validate="many_to_one",
+                )
+                component_fallback_rows["locality_id"] = (
+                    "loc:" + component_fallback_rows["component_locality_code"]
+                )
+                component_fallback_rows["locality_code"] = component_fallback_rows[
+                    "component_locality_code"
+                ]
+                component_fallback_rows["locality_name"] = component_fallback_rows[
+                    "component_locality_name"
+                ]
+                component_fallback_agg = aggregate(
+                    component_fallback_rows,
+                    ["election", "locality_id", "locality_code", "locality_name"],
+                    parties,
+                )
+
         mapped_locality_geography_ids = set(
             geographic_rows["locality_geography_id"].astype(str)
-        )
-        municipality_fallback_agg = locality_agg[
+        ) | fully_covered_component_sources
+        whole_locality_fallback_agg = locality_agg[
             ~locality_agg["locality_id"].isin(mapped_locality_geography_ids)
         ].copy()
         stat_area_vintage = STAT_AREA_VINTAGE_BY_ELECTION[election]
+        whole_locality_fallback_agg = add_fallback_metadata(
+            whole_locality_fallback_agg,
+            stat_area_vintage,
+            "municipality-fallback",
+            "no_ballot_has_a_supported_statistical_area_assignment",
+            lambda locality_id: (
+                "reviewed_historical_composite_geometry"
+                if str(locality_id).startswith("composite:")
+                else "cbs_2022_locality_geometry_display_only"
+            ),
+        )
+        component_fallback_agg = add_fallback_metadata(
+            component_fallback_agg,
+            stat_area_vintage,
+            "municipality-component-fallback",
+            "no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component",
+            "cbs_2022_component_locality_geometry_display_only",
+        )
+        municipality_fallback_agg = pd.concat(
+            [whole_locality_fallback_agg, component_fallback_agg],
+            ignore_index=True,
+        )
         if not municipality_fallback_agg.empty:
-            municipality_fallback_agg.insert(
-                1,
-                "fallback_geography_id",
-                municipality_fallback_agg["locality_id"].map(
-                    lambda locality_id: (
-                        f"municipality-fallback:{stat_area_vintage}:{locality_id}"
-                    )
-                ),
-            )
-            municipality_fallback_agg.insert(
-                2, "stat_area_vintage", stat_area_vintage
-            )
-            municipality_fallback_agg.insert(
-                3,
-                "fallback_reason",
-                "no_ballot_has_a_supported_statistical_area_assignment",
-            )
-            municipality_fallback_agg.insert(
-                4,
-                "boundary_source",
-                municipality_fallback_agg["locality_id"].map(
-                    lambda locality_id: (
-                        "reviewed_historical_composite_geometry"
-                        if str(locality_id).startswith("composite:")
-                        else "cbs_2022_locality_geometry_display_only"
-                    )
-                ),
-            )
             municipality_fallback_audit_rows.extend(
                 municipality_fallback_agg[
                     [

@@ -261,7 +261,7 @@ PROVENANCE_TABLES = [
     (
         AUDIT_DIR / "historical_municipality_display_fallbacks.csv",
         "historical_municipality_display_fallbacks.csv",
-        "Display-only municipality totals used when no ballot has a supported statistical-area assignment.",
+        "Display-only municipality or reviewed-component totals used when no ballot has a supported statistical-area assignment.",
     ),
 ]
 

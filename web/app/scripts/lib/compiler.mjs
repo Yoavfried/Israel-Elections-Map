@@ -17,6 +17,14 @@ const MUNICIPALITY_FALLBACK_NOTICE = {
   he: 'אין נתוני שיוך של קלפיות לאזורים סטטיסטיים ביישוב זה בבחירות האלה. מוצגת תוצאת היישוב כולו כאזור אחד.',
   en: 'No ballot-to-statistical-area assignments are available for this locality in this election. The whole-locality result is shown as one area.',
 }
+const HISTORICAL_GEOMETRY_PROXY_NOTICE = {
+  he: 'היישוב אינו מופיע כאזור נפרד במפת האזורים הסטטיסטיים ההיסטורית. תוצאת היישוב מוצגת על גבול יישוב עדכני.',
+  en: 'This locality does not appear as a separate area in the historical statistical-area map. Its result is shown on a current locality boundary.',
+}
+const SINGLE_AREA_FALLBACK_NOTICE = {
+  he: 'היישוב מופיע כאזור סטטיסטי היסטורי יחיד, אך אין שיוך ישיר של הקלפי אליו. תוצאת היישוב מוצגת כיחידה אחת.',
+  en: 'The locality has one historical statistical area, but the ballot is not directly assigned to it. The whole-locality result is shown as one unit.',
+}
 
 export function parseCsv(text, sourceName = 'CSV input') {
   const parsed = Papa.parse(text, {
@@ -317,14 +325,25 @@ export function buildCustomMetadataIndex(featureCollection) {
     }
     const noticeHe = String(properties.notice_he ?? '').trim()
     const noticeEn = String(properties.notice_en ?? '').trim()
+    const nameHe = properties.name_he || id
+    const nameEn = properties.name_en || properties.name_he || id
+    const includedNames = {
+      he: splitPipeValues(properties.component_locality_names_he).filter(
+        (name) => name !== nameHe,
+      ),
+      en: splitPipeValues(properties.component_locality_names_en).filter(
+        (name) => name !== nameEn,
+      ),
+    }
     if ((noticeHe && !noticeEn) || (!noticeHe && noticeEn)) {
       throw new Error(`${id} must provide both Hebrew and English notices`)
     }
     index.set(id, {
       id,
       customKey: properties.custom_key || id,
-      nameHe: properties.name_he || id,
-      nameEn: properties.name_en || properties.name_he || id,
+      nameHe,
+      nameEn,
+      includedNames,
       note: properties.note || '',
       ...(noticeHe && noticeEn ? { notice: { he: noticeHe, en: noticeEn } } : {}),
     })
@@ -539,11 +558,25 @@ export function buildMunicipalityFallbackDisplay({
       ? localityProperties.componentLocalityIds ?? []
       : [localityId]
     const componentIdSet = new Set(componentLocalityIds)
-    for (const feature of statisticalFeatures) {
-      if (componentIdSet.has(feature.properties?.localityId)) {
-        hiddenGeographyIds.add(feature.id)
-      }
+    const matchingStatisticalFeatures = statisticalFeatures.filter((feature) =>
+      componentIdSet.has(feature.properties?.localityId),
+    )
+    for (const feature of matchingStatisticalFeatures) {
+      hiddenGeographyIds.add(feature.id)
     }
+
+    const notice =
+      matchingStatisticalFeatures.length === 0
+        ? HISTORICAL_GEOMETRY_PROXY_NOTICE
+        : matchingStatisticalFeatures.length === 1
+          ? undefined
+          : MUNICIPALITY_FALLBACK_NOTICE
+    const fallbackNoticeType =
+      matchingStatisticalFeatures.length === 0
+        ? 'historical-geometry-proxy'
+        : matchingStatisticalFeatures.length === 1
+          ? 'single-historical-area-exact'
+          : 'multi-area-unsplit'
 
     const nameHe = String(row.locality_name || localityProperties.nameHe || localityId).trim()
     const nameEn = String(localityProperties.nameEn || nameHe).trim()
@@ -558,7 +591,8 @@ export function buildMunicipalityFallbackDisplay({
       nameHe,
       nameEn,
       includedNames,
-      notice: MUNICIPALITY_FALLBACK_NOTICE,
+      ...(notice ? { notice } : {}),
+      fallbackNoticeType,
     })
     displayRows.push({
       ...row,
@@ -579,6 +613,7 @@ export function buildMunicipalityFallbackDisplay({
         nameEn,
         displayMode: 'polygon',
         fallbackReason: String(row.fallback_reason ?? '').trim(),
+        fallbackNoticeType,
         boundarySource: String(row.boundary_source ?? '').trim(),
       },
       geometry: roundGeometry(localityFeature.geometry),
@@ -857,7 +892,7 @@ export function buildGeographySearchIndex({ electionId, modes }) {
   }
 
   const items = []
-  for (const { geographyMode, geography, results } of modes) {
+  for (const { geographyMode, geography, results, metadataById } of modes) {
     assertFeatureCollection(geography, `${electionId} ${geographyMode} search geography`)
     if (results?.electionId !== electionId || results?.geographyMode !== geographyMode) {
       throw new Error(`${electionId} ${geographyMode} search results do not match the index`)
@@ -918,6 +953,7 @@ export function buildGeographySearchIndex({ electionId, modes }) {
             ? id.split(':').at(-1)
             : properties.localityCode ?? ''),
       ).trim()
+      const notice = record?.notice ?? metadataById?.get(id)?.notice
       items.push({
         id,
         geographyMode,
@@ -929,6 +965,7 @@ export function buildGeographySearchIndex({ electionId, modes }) {
         code: rawCode.includes(':') ? '' : rawCode,
         hasResults: Boolean(record),
         bounds: geometryBounds(feature.geometry),
+        ...(notice?.he && notice?.en ? { notice } : {}),
       })
     }
   }

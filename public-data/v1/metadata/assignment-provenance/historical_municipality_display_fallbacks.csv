@@ -225,9 +225,6 @@ K19,2011,municipality-fallback:2011:loc:654,loc:654,654,כפר קרע,16,16,1048
 K19,2011,municipality-fallback:2011:loc:7500,loc:7500,7500,סח'נין,27,27,17493,13347,13248,99,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K19,2011,municipality-fallback:2011:loc:8800,loc:8800,8800,שפרעם,37,37,24165,13071,12883,188,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K19,2011,municipality-fallback:2011:loc:8900,loc:8900,8900,טמרה,28,28,18512,13021,12928,93,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K18,2008,municipality-fallback:2008:composite:baqa-jatt,composite:baqa-jatt,6000,באקה-ג'ת,30,30,19505,9704,9550,154,no_ballot_has_a_supported_statistical_area_assignment,reviewed_historical_composite_geometry
-K18,2008,municipality-fallback:2008:composite:ir-carmel,composite:ir-carmel,494,עיר כרמל,27,27,17253,7735,7630,105,no_ballot_has_a_supported_statistical_area_assignment,reviewed_historical_composite_geometry
-K18,2008,municipality-fallback:2008:composite:shaghur,composite:shaghur,516,שגור,27,27,17413,12834,12748,86,no_ballot_has_a_supported_statistical_area_assignment,reviewed_historical_composite_geometry
 K18,2008,municipality-fallback:2008:loc:1054,loc:1054,1054,תל שבע,9,9,5808,2155,2068,87,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K18,2008,municipality-fallback:2008:loc:1292,loc:1292,1292,ג'דיידה-מכר,15,15,10566,5118,5047,71,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K18,2008,municipality-fallback:2008:loc:1327,loc:1327,1327,מעלה עירון,11,11,6907,3103,3056,47,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
@@ -257,11 +254,18 @@ K18,2008,municipality-fallback:2008:loc:654,loc:654,654,כפר קרע,14,14,9150
 K18,2008,municipality-fallback:2008:loc:7500,loc:7500,7500,סח'נין,24,24,15519,12763,12736,27,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K18,2008,municipality-fallback:2008:loc:8800,loc:8800,8800,שפרעם,32,32,21599,10509,10296,213,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K18,2008,municipality-fallback:2008:loc:8900,loc:8900,8900,טמרה,25,25,16498,9607,9540,67,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:483,loc:483,483,בענה,6,6,4039,2976,2956,20,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:490,loc:490,490,דייר אל-אסד,9,9,5920,4405,4382,23,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:494,loc:494,494,דאלית אל-כרמל,16,16,10240,4469,4399,70,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:516,loc:516,516,מג'ד אל-כרום,12,12,7454,5453,5410,43,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:534,loc:534,534,עספיא,11,11,7013,3266,3231,35,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:6000,loc:6000,6000,באקה אל-גרביה,21,21,13662,6848,6728,120,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K18,2008,municipality-component-fallback:2008:loc:628,loc:628,628,ג'ת,9,9,5843,2856,2822,34,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1137,loc:1137,1137,קריית יערים,2,2,1514,1062,1061,1,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1140,loc:1140,1140,מדרשת בן גוריון,1,1,546,395,394,1,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1167,loc:1167,1167,קיסריה,5,5,3022,1926,1914,12,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1195,loc:1195,1195,ניצנה (קהילת חינוך),1,1,341,153,151,2,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K17,1995,municipality-fallback:1995:loc:1243,loc:1243,1243,קציר,2,2,1532,1017,1005,12,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
+K17,1995,municipality-fallback:1995:loc:1200,loc:1200,1200,מודיעין-מכבים-רעות*,53,53,34829,25732,25562,170,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1287,loc:1287,1287,שני,1,1,345,171,169,2,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1292,loc:1292,1292,ג'דיידה-מכר,13,13,9829,4963,4850,113,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1311,loc:1311,1311,אבשלום,1,1,131,80,73,7,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
@@ -273,7 +277,7 @@ K17,1995,municipality-fallback:1995:loc:1321,loc:1321,1321,ח'ואלד,1,1,183,1
 K17,1995,municipality-fallback:1995:loc:1323,loc:1323,1323,בת הדר,1,1,214,139,137,2,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1326,loc:1326,1326,"בסמ""ה",6,6,4013,1834,1743,91,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1330,loc:1330,1330,אחוזת ברק,1,1,718,510,504,6,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K17,1995,municipality-fallback:1995:loc:1331,loc:1331,1331,כמאנה,2,1,703,433,425,8,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
+K17,1995,municipality-fallback:1995:loc:1331,loc:1331,1331,כמאנה,2,2,703,433,425,8,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1332,loc:1332,1332,חוסנייה,1,1,283,118,112,6,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1333,loc:1333,1333,נוף איילון,2,2,1027,922,919,3,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:1334,loc:1334,1334,ראס אל-עין,1,1,135,82,80,2,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
@@ -307,3 +311,5 @@ K17,1995,municipality-fallback:1995:loc:8900,loc:8900,8900,טמרה,24,24,15119,
 K17,1995,municipality-fallback:1995:loc:926,loc:926,926,נווה אבות,1,1,115,10,10,0,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:942,loc:942,942,סואעד (חמרייה)*,1,1,93,33,32,1,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K17,1995,municipality-fallback:1995:loc:990,loc:990,990,ראס עלי,1,1,246,196,0,196,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
+K17,1995,municipality-component-fallback:1995:loc:494,loc:494,494,דאלית אל-כרמל,12,12,9444,4512,4416,96,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only
+K17,1995,municipality-component-fallback:1995:loc:6000,loc:6000,6000,באקה אל-גרביה,19,19,12666,5500,5336,164,no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component,cbs_2022_component_locality_geometry_display_only

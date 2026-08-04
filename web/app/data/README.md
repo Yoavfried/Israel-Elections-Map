@@ -22,3 +22,9 @@ West Bank and Lebanon boundary geometry was retrieved from OpenStreetMap
 through Nominatim on 2026-08-02. OpenStreetMap data is available under the Open
 Database License; see `THIRD_PARTY_NOTICES.md` and
 <https://www.openstreetmap.org/copyright>.
+
+The OpenStreetMap-derived database portions and the project-authored combined
+database arrangement are distributed under ODbL 1.0. Reusers must preserve
+OpenStreetMap attribution and the ODbL notice, and must offer a distributed
+adapted database under ODbL. This database licence does not apply to the web
+application code, visual design, or election-result presentation.

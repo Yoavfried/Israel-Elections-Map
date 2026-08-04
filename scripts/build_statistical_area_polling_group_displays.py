@@ -35,6 +35,12 @@ CONFIG_PATH = (
     / "audits"
     / "statistical_area_polling_group_policy.csv"
 )
+REVIEW_CONFIG_PATH = (
+    ROOT
+    / "data"
+    / "manual"
+    / "statistical_area_polling_group_display_reviews.csv"
+)
 SOURCE_GEOMETRY_PATH = (
     ROOT
     / "data"
@@ -82,6 +88,129 @@ def clean(value: object) -> str:
 
 def split_pipe(value: object) -> list[str]:
     return [part.strip() for part in str(value or "").split("|") if part.strip()]
+
+
+def append_pipe(value: object, addition: str) -> str:
+    parts = split_pipe(value)
+    if addition not in parts:
+        parts.append(addition)
+    return "|".join(parts)
+
+
+def apply_reviewed_display_groups(
+    configured_groups: list[dict[str, str]],
+    review_groups: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    """Apply explicit presentation reviews without changing ballot assignments."""
+    adjusted = [dict(row) for row in configured_groups]
+    for review in review_groups:
+        display_id = clean(review.get("display_geography_id", ""))
+        election = clean(review.get("election", ""))
+        locality_code = clean(review.get("locality_code", ""))
+        owned_ids = split_pipe(review.get("owned_stat_area_ids", ""))
+        planned_ids = split_pipe(review.get("planned_stat_area_ids", ""))
+        source_ballots = split_pipe(review.get("ambiguous_final_ballots", ""))
+        released_ballots = split_pipe(review.get("released_final_ballots", ""))
+        claimed_ballots = set(source_ballots) | set(released_ballots)
+        if not display_id or not election or not locality_code:
+            raise ValueError("Reviewed polling display has a blank identity field")
+        if not owned_ids or not source_ballots:
+            raise ValueError(f"{display_id} lacks reviewed areas or final ballots")
+        if not set(owned_ids).issubset(planned_ids):
+            raise ValueError(f"{display_id} owns areas outside its reviewed set")
+
+        revised_rows: list[dict[str, str]] = []
+        for row in adjusted:
+            same_scope = (
+                clean(row.get("election", "")) == election
+                and clean(row.get("locality_code", "")) == locality_code
+            )
+            if not same_scope:
+                revised_rows.append(row)
+                continue
+
+            remaining_owned = [
+                area_id
+                for area_id in split_pipe(row.get("owned_stat_area_ids", ""))
+                if area_id not in set(owned_ids)
+            ]
+            remaining_ballots = [
+                ballot
+                for ballot in split_pipe(row.get("ambiguous_final_ballots", ""))
+                if ballot not in claimed_ballots
+            ]
+            changed = (
+                remaining_owned
+                != split_pipe(row.get("owned_stat_area_ids", ""))
+                or remaining_ballots
+                != split_pipe(row.get("ambiguous_final_ballots", ""))
+            )
+            if not changed:
+                revised_rows.append(row)
+                continue
+            if not remaining_owned or not remaining_ballots:
+                continue
+
+            revised = dict(row)
+            revised["owned_stat_area_ids"] = "|".join(remaining_owned)
+            revised["ambiguous_final_ballots"] = "|".join(remaining_ballots)
+            revised["planned_eligible_voters"] = "0"
+            revised["represented_planned_eligible_voters"] = "0"
+            revised["represented_planned_share"] = "0"
+            revised["component_network_balance"] = "reviewed_display_override"
+            revised["component_eligible_difference"] = ""
+            revised["evidence_warnings"] = append_pipe(
+                revised.get("evidence_warnings", ""),
+                "reviewed_display_override",
+            )
+            revised["ownership_status"] = "best_effort_detail_preserved"
+            revised["ownership_policy"] = "reviewed_display_override_remainder"
+            revised["review_status"] = "approved-rule-generated"
+            revised_rows.append(revised)
+
+        revised_rows.append(
+            {
+                "display_geography_id": display_id,
+                "election": election,
+                "locality_code": locality_code,
+                "locality_name": clean(review.get("locality_name", "")),
+                "evidence_group_id": f"reviewed:{election}:{locality_code}:{display_id}",
+                "source_site_audit_id": clean(
+                    review.get("source_site_audit_id", "")
+                ),
+                "source_site_ids": clean(review.get("source_site_ids", "")),
+                "final_site_ids": clean(review.get("final_site_ids", "")),
+                "owned_stat_area_ids": "|".join(owned_ids),
+                "planned_stat_area_ids": "|".join(planned_ids),
+                "ambiguous_final_ballots": "|".join(source_ballots),
+                "planned_eligible_voters": "0",
+                "represented_planned_eligible_voters": "0",
+                "represented_planned_share": "0",
+                "final_eligible_voters": "0",
+                "component_network_balance": "not_comparable_reviewed_display",
+                "component_eligible_difference": "",
+                "source_evidence": clean(review.get("source_evidence", "")),
+                "continuity_reference_elections": clean(
+                    review.get("continuity_reference_elections", "")
+                ),
+                "continuity_reference_site_audit_ids": clean(
+                    review.get("continuity_reference_site_audit_ids", "")
+                ),
+                "evidence_warnings": clean(review.get("evidence_warnings", "")),
+                "ownership_status": clean(
+                    review.get("ownership_status", "best_effort_detail_preserved")
+                ),
+                "ownership_policy": clean(
+                    review.get("ownership_policy", "reviewed_set_level_merge")
+                ),
+                "review_status": clean(
+                    review.get("review_status", "approved-rule-generated")
+                ),
+                "note": clean(review.get("note", "")),
+            }
+        )
+        adjusted = revised_rows
+    return adjusted
 
 
 def dissolved_component_geometry(geometries: list[object]) -> dict[str, object]:
@@ -249,13 +378,24 @@ def build_election(
         display_geometry = dissolved_component_geometry(geometries)
         connected = is_connected(geometries, ADJACENCY_TOLERANCE_METERS)
         ownership_status = clean(row["ownership_status"])
-        if ownership_status == "connected_solution" and not connected:
+        if ownership_status in {
+            "connected_solution",
+            "robust_mutual_majority_partition",
+            "cross_election_robust_partition",
+        } and not connected:
             raise ValueError(f"{display_id} ownership geometry is disconnected")
         if ownership_status not in {
             "connected_solution",
             "solution_requires_disconnected_geometry",
             "exact_closed_flow_group",
             "exact_closed_network",
+            "exact_topological_component",
+            "robust_mutual_majority_partition",
+            "robust_mutual_majority_partition_disconnected",
+            "best_effort_detail_preserved",
+            "cross_election_robust_partition",
+            "cross_election_robust_partition_disconnected",
+            "cross_election_detail_preserved",
         }:
             raise ValueError(
                 f"{display_id} has unsupported ownership status {ownership_status!r}"
@@ -560,6 +700,13 @@ def main() -> None:
         configured_groups = list(csv.DictReader(handle))
     if not configured_groups:
         raise SystemExit(f"No polling-group display policy found in {CONFIG_PATH}")
+    if REVIEW_CONFIG_PATH.exists():
+        with REVIEW_CONFIG_PATH.open(encoding="utf-8-sig", newline="") as handle:
+            review_groups = list(csv.DictReader(handle))
+        configured_groups = apply_reviewed_display_groups(
+            configured_groups,
+            review_groups,
+        )
 
     display_ids = [clean(row["display_geography_id"]) for row in configured_groups]
     duplicates = sorted(

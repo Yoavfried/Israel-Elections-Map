@@ -11,6 +11,7 @@ if LOCAL_PYTHON.exists():
     sys.path.insert(0, str(LOCAL_PYTHON))
 
 import geopandas as gpd
+import pandas as pd
 from shapely.geometry import mapping
 from shapely.ops import unary_union
 
@@ -23,13 +24,20 @@ GENERATED_FALLBACK_PATH = (
     / "audits"
     / "statistical_area_polling_group_fallbacks.csv"
 )
-SOURCE_PATH = (
+MANUAL_REVIEW_PATH = (
+    ROOT
+    / "data"
+    / "manual"
+    / "statistical_area_result_display_reviews.csv"
+)
+SOURCE_PATHS = [
     ROOT
     / "data"
     / "processed"
     / "geographies"
-    / "statistical_areas_2011.display.simplified.geojson"
-)
+    / f"statistical_areas_{vintage}.display.simplified.geojson"
+    for vintage in (2008, 2011)
+]
 OUTPUT_PATH = (
     ROOT
     / "data"
@@ -46,10 +54,35 @@ METADATA_PATH = (
 )
 METRIC_CRS = "EPSG:2039"
 ADJACENCY_TOLERANCE_METERS = 1.0
+METADATA_FIELDS = [
+    "display_geography_id",
+    "election",
+    "elections",
+    "locality_code",
+    "locality_name_he",
+    "locality_name_en",
+    "component_locality_codes",
+    "component_locality_names_he",
+    "component_locality_names_en",
+    "component_count",
+    "component_stat_area_ids",
+    "component_stat_area_numbers",
+    "component_adjacency",
+    "geometry_part_count",
+    "aggregation_method",
+    "evidence_group_id",
+    "evidence_class",
+    "review_status",
+    "note",
+]
 
 
 def split_pipe(value: str) -> list[str]:
     return [part.strip() for part in str(value or "").split("|") if part.strip()]
+
+
+def optional_value(row: dict[str, str], field: str) -> str:
+    return str(row.get(field) or "").strip()
 
 
 def is_connected(geometries: list, tolerance_meters: float) -> bool:
@@ -87,10 +120,17 @@ def dissolved_component_geometry(geometries: list[object]) -> dict[str, object]:
     return mapping(dissolved)
 
 
-def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
+def write_csv(
+    path: Path,
+    rows: list[dict[str, object]],
+    fieldnames: list[str] | None = None,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=fieldnames or list(rows[0]),
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -100,16 +140,40 @@ def main() -> None:
         encoding="utf-8-sig", newline=""
     ) as handle:
         configured_groups = list(csv.DictReader(handle))
+    if MANUAL_REVIEW_PATH.exists():
+        with MANUAL_REVIEW_PATH.open(
+            encoding="utf-8-sig", newline=""
+        ) as handle:
+            configured_groups.extend(csv.DictReader(handle))
     if not configured_groups:
-        raise SystemExit(
-            "No generated statistical-area result fallbacks found in "
-            f"{GENERATED_FALLBACK_PATH}"
+        OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        OUTPUT_PATH.write_text(
+            json.dumps(
+                {
+                    "type": "FeatureCollection",
+                    "name": "statistical_area_result_aggregates",
+                    "features": [],
+                },
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+            encoding="utf-8",
         )
+        write_csv(METADATA_PATH, [], METADATA_FIELDS)
+        print("generated 0 statistical-area result fallbacks")
+        return
 
-    source = gpd.read_file(SOURCE_PATH, engine="pyogrio")
-    if source.crs is None:
-        source = source.set_crs("EPSG:4326")
-    source = source.to_crs("EPSG:4326")
+    source_frames: list[gpd.GeoDataFrame] = []
+    for source_path in SOURCE_PATHS:
+        source_frame = gpd.read_file(source_path, engine="pyogrio")
+        if source_frame.crs is None:
+            source_frame = source_frame.set_crs("EPSG:4326")
+        source_frames.append(source_frame.to_crs("EPSG:4326"))
+    source = gpd.GeoDataFrame(
+        pd.concat(source_frames, ignore_index=True),
+        geometry="geometry",
+        crs="EPSG:4326",
+    )
     source_by_id = source.set_index("stat_area_id", drop=False)
 
     features: list[dict[str, object]] = []
@@ -150,8 +214,14 @@ def main() -> None:
                 raise ValueError(f"{display_id} references unavailable area {component_id}")
 
         components = source_by_id.loc[component_ids]
+        evidence_class = str(row["evidence_class"]).strip()
         locality_codes = {str(value) for value in components["locality_code"]}
-        if len(locality_codes) != 1:
+        allow_cross_locality = evidence_class in {
+            "official_register_attachment_exact",
+            "official_register_attachment_representative",
+            "reviewed_cross_election_polling_network",
+        }
+        if len(locality_codes) != 1 and not allow_cross_locality:
             raise ValueError(f"{display_id} crosses locality codes: {sorted(locality_codes)}")
 
         geometries = list(components.geometry)
@@ -168,15 +238,36 @@ def main() -> None:
         )
 
         first = components.iloc[0]
-        locality_code = str(first["locality_code"])
-        locality_name_he = str(first["locality_name_he"]).strip()
-        locality_name_en = str(first["locality_name_en"]).strip()
+        locality_code = optional_value(row, "display_locality_code") or str(
+            first["locality_code"]
+        )
+        locality_name_he = optional_value(row, "display_locality_name_he") or str(
+            first["locality_name_he"]
+        ).strip()
+        locality_name_en = optional_value(row, "display_locality_name_en") or str(
+            first["locality_name_en"]
+        ).strip()
         area_numbers = [str(int(value)) for value in components["stat_area_number"]]
         area_label = ", ".join(area_numbers)
-        name_he = f"{locality_name_he} · {area_label}"
-        name_en = f"{locality_name_en} · {area_label}"
-        evidence_class = str(row["evidence_class"]).strip()
-        if evidence_class == "reviewed_polling_network_residual":
+        name_he = optional_value(row, "display_name_he") or (
+            f"{locality_name_he} · {area_label}"
+        )
+        name_en = optional_value(row, "display_name_en") or (
+            f"{locality_name_en} · {area_label}"
+        )
+        if evidence_class == "official_register_attachment_exact":
+            notice_he = ""
+            notice_en = ""
+        elif evidence_class == "official_register_attachment_representative":
+            notice_he = (
+                "לא ניתן לשייך את הקולות לאזורים אלה בנפרד. "
+                "התוצאה מוצגת על קבוצה מצומצמת לפי צירופי הקלפיות ברשימה הרשמית."
+            )
+            notice_en = (
+                "Votes cannot be split between these areas. The result is shown on a "
+                "compact group using the official polling-register attachments."
+            )
+        elif evidence_class == "reviewed_polling_network_residual":
             notice_he = (
                 f"תוצאות האזורים הסטטיסטיים {area_label} מוצגות יחד. "
                 "רשימות הקלפיות הרשמיות לפני ואחרי האיזון מקשרות את הקלפיות "
@@ -240,7 +331,13 @@ def main() -> None:
                 "The official sources place the polling group within these areas collectively, "
                 "but do not support a reliable split between them."
             )
-        if adjacency == "disconnected":
+        configured_notice_he = optional_value(row, "notice_he")
+        configured_notice_en = optional_value(row, "notice_en")
+        if configured_notice_he:
+            notice_he = configured_notice_he
+        if configured_notice_en:
+            notice_en = configured_notice_en
+        if adjacency == "disconnected" and (notice_he or notice_en):
             notice_he += " הפוליגונים המרכיבים אינם צמודים זה לזה."
             notice_en += " The component polygons are not adjacent."
 
@@ -248,6 +345,15 @@ def main() -> None:
             evidence_class
             if evidence_class.startswith("reviewed_")
             else f"reviewed_{evidence_class}"
+        )
+        component_locality_codes = "|".join(
+            dict.fromkeys(str(value) for value in components["locality_code"])
+        )
+        component_locality_names_he = "|".join(
+            dict.fromkeys(str(value).strip() for value in components["locality_name_he"])
+        )
+        component_locality_names_en = "|".join(
+            dict.fromkeys(str(value).strip() for value in components["locality_name_en"])
         )
         properties = {
             "custom_id": display_id,
@@ -258,6 +364,9 @@ def main() -> None:
             "geometry_source": geometry_source,
             "elections": election_id,
             "locality_code": locality_code,
+            "component_locality_codes": component_locality_codes,
+            "component_locality_names_he": component_locality_names_he,
+            "component_locality_names_en": component_locality_names_en,
             "component_stat_area_ids": "|".join(component_ids),
             "component_stat_area_numbers": "|".join(area_numbers),
             "component_adjacency": adjacency,
@@ -286,6 +395,9 @@ def main() -> None:
                 "locality_code": locality_code,
                 "locality_name_he": locality_name_he,
                 "locality_name_en": locality_name_en,
+                "component_locality_codes": component_locality_codes,
+                "component_locality_names_he": component_locality_names_he,
+                "component_locality_names_en": component_locality_names_en,
                 "component_count": len(component_ids),
                 "component_stat_area_ids": "|".join(component_ids),
                 "component_stat_area_numbers": "|".join(area_numbers),

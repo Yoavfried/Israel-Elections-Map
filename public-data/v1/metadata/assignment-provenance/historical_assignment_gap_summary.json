@@ -4,14 +4,14 @@
   "central_ballot_990_rows": 70,
   "crosswalk_localities_omitted_in_all_nine_elections": 16,
   "crosswalk_omission_context": "CBS methodology documents incomplete residential address anchoring in 36 of 38 Arab and Druze statistical-area localities. The recurrence table is an observed source-coverage audit, not an ethnicity classifier.",
-  "pending_actual_voters": 2055696,
-  "pending_eligible_voters": 3524158,
-  "pending_rows": 5498,
+  "pending_actual_voters": 2080411,
+  "pending_eligible_voters": 3557455,
+  "pending_rows": 5549,
   "polygon_persistence_status_counts": {
-    "assigned_in_every_supported_election": 7408,
+    "assigned_in_every_supported_election": 7412,
     "intermittently_unassigned": 355,
     "never_assigned_with_positive_population_proxy": 278,
-    "never_assigned_without_positive_population_proxy": 765
+    "never_assigned_without_positive_population_proxy": 761
   },
   "polygon_summary": [
     {
@@ -20,12 +20,12 @@
       "arcgis_polygons_matching_special_non_geographic_rows": 0,
       "assigned_polygons_in_localities_with_pending_ballots": 0,
       "election": "K17",
-      "polygons_requiring_assignment_followup": 86,
-      "polygons_with_assigned_ballots": 2367,
-      "polygons_without_assigned_ballots": 294,
+      "polygons_requiring_assignment_followup": 87,
+      "polygons_with_assigned_ballots": 2371,
+      "polygons_without_assigned_ballots": 290,
       "stat_area_vintage": "1995",
       "statistical_area_polygons": 2661,
-      "unassigned_polygons_in_localities_with_pending_ballots": 86,
+      "unassigned_polygons_in_localities_with_pending_ballots": 87,
       "unassigned_polygons_with_official_arcgis_electorate": 0,
       "unassigned_polygons_with_positive_population_proxy": 0
     },
@@ -167,18 +167,18 @@
       "rows": 31
     },
     {
-      "actual_voters": 110281,
+      "actual_voters": 136013,
       "election": "K17",
-      "eligible_voters": 181127,
+      "eligible_voters": 215956,
       "gap_reason_code": "entire_locality_omitted_from_official_crosswalk",
-      "rows": 259
+      "rows": 312
     },
     {
-      "actual_voters": 15901,
+      "actual_voters": 14884,
       "election": "K17",
-      "eligible_voters": 23948,
+      "eligible_voters": 22416,
       "gap_reason_code": "locality_identity_absent_from_active_historical_vintage",
-      "rows": 54
+      "rows": 52
     },
     {
       "actual_voters": 290,

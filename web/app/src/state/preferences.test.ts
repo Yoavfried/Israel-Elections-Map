@@ -35,6 +35,18 @@ describe('preferences', () => {
     })
   })
 
+  it('falls back from the removed satellite preference to the vector map', () => {
+    const storage = new MemoryStorage()
+    storage.value = JSON.stringify({
+      language: 'en',
+      electionId: 'K25',
+      geographyMode: 'statistical-area',
+      basemapMode: 'satellite',
+    })
+
+    expect(loadPreferences(storage, 'en').basemapMode).toBe('vector')
+  })
+
   it('falls back safely when storage contains invalid JSON', () => {
     const storage = new MemoryStorage()
     storage.value = '{not-json'

@@ -12,10 +12,18 @@ locally against the selected election's visible statistical geometry. A
 separate single-party view colors those same geographies by
 the selected list's local vote share while retaining the complete area result
 on selection. A two-party comparison view adds a diverging head-to-head balance
-without changing the underlying election or geography data.
+without changing the underlying election or geography data. A coalition view
+uses a reviewed election-specific member list to map the combined local vote
+share of the first coalition, or the outgoing transitional coalition when no
+government was formed.
 The geographic views can place those election layers over a localized,
 OSM-derived vector street map, with the original neutral background retained
-as a persisted offline-friendly fallback.
+as a persisted offline-friendly fallback. Single-party mode can switch from
+area fills to vote circles: color represents local vote share and circle area
+represents absolute party votes. Color is capped at the positive-share 95th
+percentile; circle size uses one party-independent scale capped at the 99th
+percentile of each area's leading-party vote total and a smaller maximum radius
+to avoid dense oversized clusters.
 
 The repository contains a Python data pipeline, a React/TypeScript/MapLibre
 client, and a committed public-data release. Statistical results use direct CBS
@@ -49,10 +57,13 @@ confidence, source, and synthetic-link flag are published on every row.
 
 - [Complete download index and polygon packages](public-data/README.md)
 - [Data dictionary and join examples](public-data/DATA_DICTIONARY.md)
+- [Exact assignment and validation methodology](public-data/METHODOLOGY.md)
 - [Machine-readable manifest and checksums](public-data/v1/manifest.csv?raw=1)
 
-Map colors, UI labels, and interaction settings remain presentation
-configuration under `web/app/`; they are not part of the reusable data tables.
+Map colors, UI labels, web-only polygon transformations, and interaction
+settings remain protected presentation configuration under `web/app/` and the
+explicit display-control exceptions in `data/manual/`; they are not part of the
+reusable data tables.
 
 ## Geographic Assignment
 
@@ -131,6 +142,8 @@ then writes validated assets under `web/app/public/data/v2/`.
   stage order and outputs.
 - [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) inventories election,
   geography, and party sources.
+- [`docs/COMMERCIAL_USE_AUDIT.md`](docs/COMMERCIAL_USE_AUDIT.md) records
+  explicitly published commercial-use permissions and obligations.
 - [`web/app/docs/ARCHITECTURE.md`](web/app/docs/ARCHITECTURE.md) defines the
   frontend data contract and product boundary.
 
@@ -150,19 +163,25 @@ then writes validated assets under `web/app/public/data/v2/`.
 This is a source-visible, split-license repository. It is not licensed as a
 whole under MIT.
 
-- The project-authored portions of `public-data/` and `data/manual/` are
-  available under the [MIT Data License](LICENSE-DATA), so the reusable tables,
-  metadata, provenance, and polygon packages can be used freely.
+- The project-authored portions of `public-data/` and the non-presentation
+  evidence tables under `data/manual/` are available under the
+  [MIT Data License](LICENSE-DATA), so the reusable tables, metadata,
+  provenance, methodology, and canonical polygon packages can be used freely.
 - The website, pipeline and build source, tests, visual design, map
-  presentation, party-color configuration, copy, and project documentation are
-  protected under the [Website and Project Materials Notice](LICENSE-WEBSITE).
+  presentation, web-only polygon unions and fallbacks, party-color
+  configuration, copy, and project documentation are protected under the
+  [Website and Project Materials Notice](LICENSE-WEBSITE).
   They may be inspected in this public repository but are not licensed for
   reuse, redistribution, modification, deployment, or derivative works.
 - Official and third-party source material remains subject to its source terms;
   see [Third-Party Data Notices](THIRD_PARTY_NOTICES.md).
+- The OSM-derived map-context database is separately available under ODbL 1.0
+  as documented in [`web/app/data/README.md`](web/app/data/README.md).
 
 The complete path-level boundary and the treatment of versions previously
-published under MIT are recorded in the root [license notice](LICENSE).
+published under MIT are recorded in the root [license notice](LICENSE). See the
+[commercial-use audit](docs/COMMERCIAL_USE_AUDIT.md) for explicitly published
+third-party reuse terms relevant to a commercial deployment.
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing reviewed data or a
 generated release. Do not commit credentials, machine-specific paths,

@@ -1,6 +1,6 @@
 # Product Feature Plan
 
-Last updated: 2026-08-02
+Last updated: 2026-08-03
 
 This document records the intended design and delivery order for future map
 features. It is not a completion tracker. Actual complete/in-progress state is
@@ -12,10 +12,9 @@ Search and the Wikipedia-link audit are complete. Statistical assignment work
 continues in parallel; closing a source gap never means forcing a ballot onto a
 polygon.
 
-Current priority:
-
-1. optional close-zoom 3D buildings on the delivered OSM vector basemap;
-2. satellite imagery after the vector/3D implementation is stable.
+Current priority is the map-first mobile rewrite plus continuing desktop UX,
+accessibility, performance, and regression work. Satellite imagery and 3D
+buildings are not planned product modes.
 
 The national-results baseline is implemented as a primary top-bar view and
 remains the reference surface for the completed party-name, color, and
@@ -104,10 +103,13 @@ Implemented behavior:
 - selecting a polygon still opens the complete area result;
 - zero, missing, and statistically unresolved results remain distinguishable.
 
-Optional extension:
-
-- a circle mode where circle size represents that party's vote count and color
-  represents its vote share.
+The delivered display toggle also provides vote circles. Circle color uses the
+same vote-share scale, circle area represents absolute votes, and the 99th
+percentile of each area's leading-party vote total caps one shared,
+party-independent size scale. A smaller maximum radius and a minimum visible
+party tint prevent dense fields of oversized white circles.
+Circles retain the result IDs and full click-through details of their source
+areas.
 
 ### 4. Two-Party Comparison (Delivered Baseline)
 
@@ -126,7 +128,26 @@ Implemented behavior:
 - ties, zero votes for both parties, and missing results have explicit neutral
   states.
 
-### 5. OSM Vector Basemap (Delivered Baseline)
+### 5. Coalition Results (Delivered Baseline)
+
+The coalition view uses a reviewed election-specific list of ballot IDs. It
+shows the first coalition formed after each election, or the outgoing
+transitional coalition when that Knesset did not form a government.
+
+Implemented behavior:
+
+- K21 and K22 are explicitly labeled as transitional-coalition results;
+- the map sums all configured member lists and uses a white-to-color scale
+  capped at the 95th percentile of positive coalition shares;
+- the scale uses the reviewed color of the coalition member with the largest
+  national vote total in that election;
+- selecting a polygon shows a coalition total and emphasizes every coalition
+  list in the complete result breakdown;
+- K21-K23 disclose joint-list limitations wherever only some ballot components
+  were represented in the outgoing or first government; K23 excludes Yamina
+  and retains Labor-Gesher-Meretz with the reviewed member-level caveat.
+
+### 6. OSM Vector Basemap (Delivered Baseline)
 
 Geographic views now use OpenFreeMap's light OSM-derived vector style by
 default, with the original neutral map retained in a persisted selector and
@@ -151,43 +172,12 @@ Self-hosted regional PMTiles remain the stronger long-term control option.
 Do not treat the community `tile.openstreetmap.org` or
 `vector.openstreetmap.org` servers as an unlimited production backend.
 
-### 6. Optional 3D Buildings
-
-Add a close-zoom mode using MapLibre `fill-extrusion` and available building
-height/min-height attributes.
-
-Required behavior:
-
-- pitch/bearing controls appear only when 3D mode is active;
-- election polygons and click targets remain visually dominant;
-- reduced-motion and low-performance fallbacks disable unnecessary extrusion;
-- missing building heights do not create misleading geometry.
-
-### 7. Satellite Basemap
-
-Add a basemap selector with the existing neutral/vector maps and a satellite
-option. Election polygons remain an interactive overlay rather than becoming
-part of the imagery.
-
-Required behavior:
-
-- configurable raster-tile source rather than a hard-coded provider URL;
-- visible provider/data attribution;
-- polygon fill-opacity control so imagery remains inspectable;
-- labels and boundaries remain legible over bright and dark imagery;
-- provider terms, API-key handling, cost, caching, and Israel coverage reviewed
-  before selection.
-
-No satellite provider is selected yet. Esri/other commercial imagery must not
-be used merely because an unauthenticated tile URL happens to work.
-
 ## Technical Sequence
 
-1. Delivered: replaceable neutral/vector styles without changing result IDs.
-2. Add close-zoom 3D, then a reviewed satellite provider and overlay-opacity
-   control.
-3. Continue desktop/mobile, Hebrew/English, keyboard, performance, attribution, and
-   result-click regression tests for every stage.
+1. Preserve replaceable neutral/vector styles without changing result IDs.
+2. Build the map-first mobile shell without constraining the desktop layout.
+3. Continue Hebrew/English, keyboard, performance, attribution, and result-click
+   regression tests for every stage.
 
 ## Reference Policies And Capabilities
 
@@ -197,7 +187,5 @@ be used merely because an unauthenticated tile URL happens to work.
   https://operations.osmfoundation.org/policies/vector/
 - OpenFreeMap MapLibre quick start:
   https://openfreemap.org/quick_start/
-- MapLibre layer/style specification, including raster and fill extrusion:
+- MapLibre layer/style specification:
   https://maplibre.org/maplibre-style-spec/layers/
-- Esri attribution requirements:
-  https://developers.arcgis.com/documentation/glossary/data-attribution/

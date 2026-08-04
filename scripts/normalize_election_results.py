@@ -64,7 +64,7 @@ def party_columns(columns: list[str]) -> list[str]:
 
 
 def normalize_resource(
-    resource: dict, k17_eligible_overrides: dict[str, tuple[int, int]]
+    resource: dict, k17_eligible_overrides: dict[str, dict[str, Any]]
 ) -> tuple[list[dict], list[dict], list[dict]]:
     election = resource["election"]
     election_number = int(resource["election_number"])
@@ -97,7 +97,9 @@ def normalize_resource(
         if election == "K17" and not envelope:
             if source_row_uid not in k17_eligible_overrides:
                 raise ValueError(f"Missing K17 eligible-voter override for {source_row_uid}")
-            eligible, expected_actual = k17_eligible_overrides[source_row_uid]
+            override = k17_eligible_overrides[source_row_uid]
+            eligible = override["eligible_voters"]
+            expected_actual = override["actual_voters"]
             if expected_actual != actual:
                 raise ValueError(
                     f"{source_row_uid} has {actual} actual voters in the result row but "
@@ -107,6 +109,11 @@ def normalize_resource(
                 raise ValueError(
                     f"{source_row_uid} has {eligible} eligible voters but {actual} actual voters"
                 )
+            if override["source_locality_name"] != locality_name or override["source_kalpi"] != kalpi:
+                raise ValueError(
+                    f"{source_row_uid} K17 scan identity no longer matches the result row"
+                )
+            locality_code = override["scan_locality_code"]
 
         core = {
             "source_row_uid": source_row_uid,
@@ -221,33 +228,51 @@ def main() -> None:
         )
 
 
-def load_k17_eligible_overrides() -> dict[str, tuple[int, int]]:
+def load_k17_eligible_overrides() -> dict[str, dict[str, Any]]:
     df = pd.read_csv(K17_ELIGIBLE_OVERRIDES, dtype=str, encoding="utf-8-sig").fillna("")
-    required = {"source_row_uid", "eligible_voters", "actual_voters"}
+    required = {
+        "source_row_uid",
+        "eligible_voters",
+        "actual_voters",
+        "scan_locality_code",
+        "source_locality_name",
+        "source_kalpi",
+    }
     missing_columns = required - set(df.columns)
     if missing_columns:
         raise ValueError(
             f"{K17_ELIGIBLE_OVERRIDES} is missing columns: {sorted(missing_columns)}"
         )
 
-    overrides: dict[str, tuple[int, int]] = {}
+    overrides: dict[str, dict[str, Any]] = {}
     for _, row in df.iterrows():
         source_row_uid = normalize_spaces(row["source_row_uid"])
         eligible = int_value(row["eligible_voters"])
         actual = int_value(row["actual_voters"])
+        scan_locality_code = normalize_code(row["scan_locality_code"])
+        source_locality_name = normalize_spaces(row["source_locality_name"])
+        source_kalpi = normalize_kalpi(row["source_kalpi"])
         if not source_row_uid.startswith("K17:"):
             raise ValueError(f"Invalid K17 eligibility key: {source_row_uid}")
         if source_row_uid in overrides:
             raise ValueError(f"Duplicate K17 eligibility key: {source_row_uid}")
+        if not scan_locality_code or not source_locality_name or not source_kalpi:
+            raise ValueError(f"Incomplete K17 scan identity: {source_row_uid}")
         if eligible < actual:
             raise ValueError(
                 f"{source_row_uid} has {eligible} eligible voters but {actual} actual voters"
             )
-        overrides[source_row_uid] = (eligible, actual)
+        overrides[source_row_uid] = {
+            "eligible_voters": eligible,
+            "actual_voters": actual,
+            "scan_locality_code": scan_locality_code,
+            "source_locality_name": source_locality_name,
+            "source_kalpi": source_kalpi,
+        }
 
     if len(overrides) != 8_277:
         raise ValueError(f"Expected 8,277 K17 eligibility overrides, found {len(overrides)}")
-    total = sum(eligible for eligible, _ in overrides.values())
+    total = sum(row["eligible_voters"] for row in overrides.values())
     if total != K17_ORDINARY_ELIGIBLE_TOTAL:
         raise ValueError(
             f"K17 ordinary eligible-voter total is {total}, expected {K17_ORDINARY_ELIGIBLE_TOTAL}"

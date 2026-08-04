@@ -79,6 +79,26 @@ describe('DetailsPanel', () => {
     expect(html).toContain('<strong>3</strong><span>6.7%</span>')
   })
 
+  it('summarizes and highlights every coalition member', () => {
+    const html = renderToStaticMarkup(
+      <DetailsPanel
+        language="en"
+        record={record}
+        parties={parties}
+        highlightedPartyIds={['P1', 'P2', 'P3']}
+        highlightedPartiesLabel="Coalition parties"
+        highlightedPartyTotalLabel="Coalition total"
+        highlightedPartyNotes={{ P2: 'Only some members joined.' }}
+      />,
+    )
+
+    expect(html).toContain('aria-label="Coalition parties"')
+    expect(html).toContain('<span>Coalition total</span><strong>24 · 53.3%</strong>')
+    expect(html.match(/class="party-breakdown__highlighted"/g)).toHaveLength(3)
+    expect(html).toContain('<strong>7</strong><span>15.6%</span>')
+    expect(html).toContain('aria-label="Only some members joined."')
+  })
+
   it('shows attached locality names through a bilingual info tooltip', () => {
     const joinedRecord: ResultRecord = {
       ...record,
@@ -148,6 +168,10 @@ describe('DetailsPanel', () => {
           aliases: { en: [], he: [] },
           code: '1001',
           hasResults: false,
+          notice: {
+            en: 'This area is part of an unresolved polling group.',
+            he: 'אזור זה הוא חלק מקבוצת קלפיות שטרם נפתרה.',
+          },
           bounds: [
             [35.2, 31.7],
             [35.21, 31.71],
@@ -161,6 +185,8 @@ describe('DetailsPanel', () => {
     expect(html).toContain(
       'No mapped result is available for this geography in the selected election.',
     )
+    expect(html).toContain('This area is part of an unresolved polling group.')
+    expect(html).toContain('class="details-notice"')
     expect(html).not.toContain('Select an area')
   })
 
