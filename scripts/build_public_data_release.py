@@ -159,6 +159,11 @@ PROVENANCE_TABLES = [
         "Approved high-confidence synthetic links reconstructed from cross-election polling-register continuity.",
     ),
     (
+        MANUAL_DIR / "omitted_ordinary_ballot_reviews.csv",
+        "omitted_ordinary_ballot_reviews.csv",
+        "Reviewed row-level, set-level, and unresolved outcomes for ordinary ballots omitted from official crosswalks.",
+    ),
+    (
         ARCGIS_RECONSTRUCTION_REVIEWS,
         "arcgis_reconstruction_reviews.csv",
         "Reviewed locality-election decisions for ArcGIS residual reconstruction.",

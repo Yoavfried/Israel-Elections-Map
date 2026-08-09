@@ -51,7 +51,10 @@ Production stages:
 - `build_geographies.py` builds 2022 statistical/locality geometry, composites,
   custom geometry, display replacements, and the neutral land backdrop.
 - `build_historical_geographies.py` builds canonical and display geometry for
-  the 1995, 2008, and 2011 vintages.
+  the 1995, 2008, and 2011 vintages. Reviewed current-locality cutouts remove
+  fallback overlap from historical hosts; the reverse-priority operation emits
+  an election-vintage fallback geometry when an official historical polygon
+  must remain intact inside a newer locality boundary.
 - `normalize_election_results.py` normalizes official ballot rows and party
   columns.
 - `build_assignment_plan.py` applies envelope handling, locality identities,
@@ -88,11 +91,39 @@ Production stages:
 - `build_statistical_area_result_aggregates.py` and
   `build_statistical_area_polling_group_displays.py` generate exact closed and
   representative presentation layers without changing row-level assignments.
+  `build_reviewed_locality_statistical_displays.py` first audits every reviewed
+  joined locality and historical merger against the active election vintage.
+  It emits an exact display union only when a one-area host contains the full
+  locality result, every attached polygon lacks an independent result, and no
+  other display policy owns a component. Multi-area hosts remain audit rows so
+  supported internal detail is never discarded automatically. A relationship
+  reviewed in another election is emitted only as a continuity review
+  candidate. `audit_joined_locality_continuity.py` then tests those candidates
+  against the official K18/K19 register extracts and complete K20-K25 polling
+  workbooks. Direct attachments and unique exact arithmetic can be confirmed;
+  continuity must be bracketed by matching direct host evidence or supported
+  backward by the first two adjacent later direct-evidence elections. The
+  script records every decision and supports an idempotent `--apply` for only
+  conflict-free approvals. The current run retains all 180 cases in the audit,
+  with 38 applied and 142 covered, contradicted, or insufficient.
   Reviewed set-level display corrections are sourced from
   `data/manual/statistical_area_polling_group_display_reviews.csv`; they may
   replace generated polygon ownership but never rewrite the ballot table.
-  The aggregate builder emits an empty artifact when no broad fallback is
-  required, preventing stale fallback geometry from surviving a rebuild.
+  The display builder reads the final provenance table so reviewed synthetic
+  row assignments are retained when their polygons enter a joined display.
+  The aggregate builder always rewrites its artifact from the current reviewed
+  and generated policies, preventing stale geometry from surviving a rebuild.
+- `audit_statistical_display_ownership.py` combines result-aggregate, polling-
+  group, and manual display claims and fails the pipeline if any statistical
+  area is owned by more than one displayed result in the same election.
+- `audit_display_contributor_capacity.py` checks each rendered unit against
+  final eligible voters assigned to all possible contributor polygons and,
+  separately, against a lenient 125% total-population proxy. Pre-election area
+  weights are retained as diagnostic evidence but are not treated as hard
+  final capacities. `review_display_contributor_capacity_flags.py` adds
+  adjacency, polling-site, final-ballot, and cross-election context. Human
+  decisions are recorded in
+  `data/manual/display_contributor_capacity_reviews.csv`.
 - `build_public_data_release.py` publishes `public-data/v1` ballot CSVs,
   aggregate tables, full-resolution geography ZIPs, metadata, checksums, and
   release validation.
@@ -108,3 +139,5 @@ CSV files. `--skip-geographies` still validates every expected geometry asset.
 The approved cross-election links are maintained in
 `data/manual/cross_election_stat_area_reviews.csv`; the generated public copy
 and each ballot row preserve their synthetic-link provenance.
+The complete review of the thirteen specific ordinary crosswalk omissions is
+recorded in `data/manual/omitted_ordinary_ballot_reviews.csv`.

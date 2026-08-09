@@ -93,10 +93,12 @@ polling-place addresses. Source inventories, recurring-omission tables, and
 component-locality evidence are included under
 `public-data/v1/metadata/assignment-provenance/`.
 
-When an election/locality has no supported ballot-to-area assignment at all,
-the web map shows its whole locality total on a display-only locality boundary
-with an explanatory info icon. This does not assign those ballots, change the
-downloadable tables, or increase the reported statistical-area coverage.
+When an election/locality or reviewed K17/K18 historical component has no
+supported ballot-to-area assignment at all, the web map shows its total on a
+display-only reviewed boundary with an explanatory info icon. Component shapes
+retain the election-era composite's outer footprint. This does not assign those
+ballots, change the downloadable tables, or increase the reported
+statistical-area coverage.
 
 ## Run Locally
 

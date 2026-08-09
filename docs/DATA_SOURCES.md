@@ -170,10 +170,10 @@ evidence. Consolidated final subdivisions in K21-K23 are accepted only when
 locality, official site ID, and normalized site text remain continuous and at
 least two direct-evidence elections agree on the exact multi-area set. Other
 K22/K23 groups retain the stricter site-and-ballot-base continuity rule. The
-policy produces 517 exact closed units and 1,757 representative units over
-4,691 polygon-election memberships, with no remaining broad fallback. Exact
-units pair 1,249 polygon memberships with 646 final polling groups and have no
-uncertainty notice. Bilingual notices remain on representative placements.
+policy produces 525 exact closed units and 1,750 representative units over
+4,706 polygon-election memberships, with no remaining broad fallback. Exact
+units cover 1,282 polygon memberships and have no uncertainty notice.
+Bilingual notices remain on representative placements.
 Disconnected geometry is disclosed rather than used to force larger groups.
 Twelve K25 planned-only sites are reconciled to unique final-result sites using
 overlapping candidate areas, polling-place identity, and eligible-voter balance.
@@ -261,6 +261,13 @@ in K17-K20, matching its historical municipal status before its 2016
 [independence](https://www.cbs.gov.il/he/mediarelease/DocLib/2016/304/01_16_304b.pdf);
 the separate statistical-area display proxy is hidden in K19 and K20 without
 deleting its canonical geometry.
+
+`scripts/audit_joined_locality_continuity.py` checks recurring joined-locality
+relationships against the extracted official K18/K19 registers and the full
+official K20-K25 polling-place workbooks. It accepts explicit attachment fields,
+unique exact eligible-voter reconciliation, or strictly bounded continuity;
+address geolocation is never used. Its 180-row evidence table records 38 active
+automatic approvals and 142 covered, contradicted, or insufficient cases.
 
 ## Locality Classification Evidence
 

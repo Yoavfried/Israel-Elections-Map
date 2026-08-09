@@ -24,8 +24,13 @@ STAGES = [
     ["scripts/build_public_outputs.py"],
     ["scripts/audit_statistical_area_polling_group_evidence.py"],
     ["scripts/build_statistical_area_polling_group_policy.py"],
+    ["scripts/build_reviewed_locality_statistical_displays.py"],
+    ["scripts/audit_joined_locality_continuity.py"],
     ["scripts/build_statistical_area_result_aggregates.py"],
     ["scripts/build_statistical_area_polling_group_displays.py"],
+    ["scripts/audit_statistical_display_ownership.py"],
+    ["scripts/audit_display_contributor_capacity.py"],
+    ["scripts/review_display_contributor_capacity_flags.py"],
     ["scripts/build_public_data_release.py"],
 ]
 
@@ -48,6 +53,18 @@ GEOGRAPHY_OUTPUTS = [
     PROCESSED_DIR / "geographies" / "statistical_areas_1995.aliases.csv",
     PROCESSED_DIR / "geographies" / "statistical_areas_2008.aliases.csv",
     PROCESSED_DIR / "geographies" / "statistical_areas_2011.aliases.csv",
+    PROCESSED_DIR
+    / "geographies"
+    / "historical_composite_component_display_geometries.geojson",
+    PROCESSED_DIR
+    / "geographies"
+    / "historical_composite_component_display_geometries.metadata.csv",
+    PROCESSED_DIR
+    / "geographies"
+    / "historical_locality_fallback_display_geometries.geojson",
+    PROCESSED_DIR
+    / "geographies"
+    / "historical_locality_fallback_display_geometries.metadata.csv",
     PROCESSED_DIR / "geographies" / "statistical_area_result_aggregates.geojson",
     PROCESSED_DIR / "geographies" / "statistical_area_result_aggregates.metadata.csv",
     PROCESSED_DIR / "geographies" / "statistical_area_polling_group_displays.geojson",

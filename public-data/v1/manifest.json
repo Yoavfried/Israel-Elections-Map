@@ -344,7 +344,7 @@
       "format": "csv",
       "rows_or_features": 2707,
       "bytes": 573525,
-      "sha256": "690f763b6bc0c4a867f6462e7dd537a3a6bc37eeb0edf40d332e08d00a4e2302",
+      "sha256": "122ff39facc51fa82e9593c26418d01e4dba48c778652bf373dfb36603712414",
       "description": "K20 statistical-areas aggregate or review table."
     },
     {
@@ -354,8 +354,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 2664,
-      "bytes": 653234,
-      "sha256": "63e2d30bbcc61806e1fbed5fca9485d1c1c9f86a521b6d15767555ef451f32d4",
+      "bytes": 653236,
+      "sha256": "14a4df520891a1a3887866973780fd55e57adbd52c4577fdf77ee97c68f1a458",
       "description": "K21 statistical-areas aggregate or review table."
     },
     {
@@ -365,8 +365,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 2656,
-      "bytes": 589216,
-      "sha256": "930c4f5dc3adb2988279e224350df34a152a95336cdcd212973a7c09e78bfb61",
+      "bytes": 589218,
+      "sha256": "ef4c04b7eea3f8ca7f9471d2df21b96fcc4b2837d1b96fcee7896f41e0dd17b8",
       "description": "K22 statistical-areas aggregate or review table."
     },
     {
@@ -376,8 +376,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 2659,
-      "bytes": 576179,
-      "sha256": "37f8da2e46623b6ed20bcc069b636afe66e5f5aa78528966dee692e91ba33241",
+      "bytes": 576178,
+      "sha256": "187eb53d8432aaee6d53a582ebb167b686cb330ed0a511188d284945100d3a45",
       "description": "K23 statistical-areas aggregate or review table."
     },
     {
@@ -441,9 +441,9 @@
       "election": "K20",
       "stat_area_vintage": 2011,
       "format": "csv",
-      "rows_or_features": 869,
-      "bytes": 281863,
-      "sha256": "e12f922ab9d02bc6aa8d119ef8e8652f3add9c4145ffbb9c10ecb3761fd75981",
+      "rows_or_features": 868,
+      "bytes": 281538,
+      "sha256": "e0b1cfd4cf502f2a61664c3d9b6e53bc226ab246d3db499b0c79ea1bb663a59d",
       "description": "K20 unresolved aggregate or review table."
     },
     {
@@ -452,9 +452,9 @@
       "election": "K21",
       "stat_area_vintage": 2011,
       "format": "csv",
-      "rows_or_features": 910,
-      "bytes": 327946,
-      "sha256": "84dadb22a99b83df3d2e4c8198def0a326df663f92dcd7b2f69df0bde9601eed",
+      "rows_or_features": 909,
+      "bytes": 327586,
+      "sha256": "1c047b25d1f835cfff04f462ab6f8c047005cb7988935209e450c57a5355417f",
       "description": "K21 unresolved aggregate or review table."
     },
     {
@@ -463,9 +463,9 @@
       "election": "K22",
       "stat_area_vintage": 2011,
       "format": "csv",
-      "rows_or_features": 979,
-      "bytes": 328206,
-      "sha256": "c71a9a62307f2ecc6eb1387b967e4608bb886ce62d069e3f4ef49c096b9674d3",
+      "rows_or_features": 978,
+      "bytes": 327869,
+      "sha256": "ce8976852842f0c280921d6b5999744e746d88175aa6ed35982eb631faeb5aa4",
       "description": "K22 unresolved aggregate or review table."
     },
     {
@@ -474,9 +474,9 @@
       "election": "K23",
       "stat_area_vintage": 2011,
       "format": "csv",
-      "rows_or_features": 1173,
-      "bytes": 382923,
-      "sha256": "cab4ee6acda1dc292121689ee9920d283b04856981e605e56c8d975c42c467a8",
+      "rows_or_features": 1172,
+      "bytes": 382590,
+      "sha256": "6391cc104037e038c9cf6a5468d24944f0abb6d326d08e5206eedcf93cbb7cb3",
       "description": "K23 unresolved aggregate or review table."
     },
     {
@@ -541,8 +541,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 10414,
-      "bytes": 4591300,
-      "sha256": "2239fe42a9c69cd94a7465dff26fa8989d44e46bb25a19eba104419642df4534",
+      "bytes": 4591404,
+      "sha256": "dbf36bfca6e26a7ec12054b309b355374d32497defe71b360e320037cc038897",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -552,8 +552,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 10765,
-      "bytes": 5146916,
-      "sha256": "cf36fd15ad9193b1d338456f19a5d7630779fda14a0c185d893d121d29b2da44",
+      "bytes": 5147020,
+      "sha256": "f6f32621e6489dfdc56732bb5d0d5f3a80f7eaa540d0d05c30c61876f6151003",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -563,8 +563,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 10901,
-      "bytes": 4966730,
-      "sha256": "9acc4ede920ecaf4b237c43e3176e1c9ed611cf7f16c75d3f48d18e645cd1862",
+      "bytes": 4966834,
+      "sha256": "44382a740fa7287a053ba5ace65a6f0b2061eab79c263e5d24b4dcc03e7eacfa",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -574,8 +574,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 11179,
-      "bytes": 5039792,
-      "sha256": "ba65be74d4ed9e23136d3772ff9fdd0a62e9aadb5f7385979bac7bd5d5c61f10",
+      "bytes": 5039896,
+      "sha256": "2317ff287e2dcbbc9cb2d468e6ae0d5aa9809d519ec80b0113e220ebad35749d",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -606,9 +606,9 @@
       "election": "",
       "stat_area_vintage": "reviewed",
       "format": "csv",
-      "rows_or_features": 185,
-      "bytes": 73356,
-      "sha256": "21d2d306c9db9089dc01ce49d6de42172cbf26159479587b56dd378a4bcf0698",
+      "rows_or_features": 230,
+      "bytes": 92665,
+      "sha256": "61ea0e3111942961857cd9832d9e68b711bbccc4fbcbbbc216db39d6ccb7c7c3",
       "description": "Feature metadata and join IDs for composite_localities."
     },
     {
@@ -617,9 +617,9 @@
       "election": "",
       "stat_area_vintage": "reviewed",
       "format": "zip",
-      "rows_or_features": 185,
-      "bytes": 2061267,
-      "sha256": "d28e4fd30cbc622d00ec105190a3c1de019990f157a527aa8f4d360ddedac73f",
+      "rows_or_features": 230,
+      "bytes": 2266154,
+      "sha256": "ff0b25e1cbd94a8c4f0dc4cd1c6494ca52b1bda9817fd43d85b06fef5de6f102",
       "description": "Full-resolution GeoJSON and metadata for composite_localities."
     },
     {
@@ -804,9 +804,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 50,
-      "bytes": 15813,
-      "sha256": "862decdda6393d30f83bab8994a1cd496b46ca20049076a967775d1e848d9fcd",
+      "rows_or_features": 54,
+      "bytes": 17293,
+      "sha256": "011fd5c2b5fab2255222749ce11ca3c0b53400013e4bdbe7715770b7078f0c8c",
       "description": "Approved high-confidence synthetic links reconstructed from cross-election polling-register continuity."
     },
     {
@@ -839,7 +839,7 @@
       "format": "csv",
       "rows_or_features": 9,
       "bytes": 1427,
-      "sha256": "c59d23694c8bddc8cc6078757ea41328f38a57a8403736fe35ea13790e14acc8",
+      "sha256": "19d2099286b44cb3eaecc24ba1170b20507790444bc6561e85d9f3b2290d761f",
       "description": "Per-election row and voter coverage for final geography assignments."
     },
     {
@@ -848,9 +848,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 365,
-      "bytes": 47768,
-      "sha256": "1ed2ed1d79b25fc0a20de3b0902b9eac293d59c9849f4cb7673aa722ed25cf9f",
+      "rows_or_features": 361,
+      "bytes": 47244,
+      "sha256": "2ed28ad04f2afa08f2d85e746aa29c92db6ac2de8a4c1b2a920c6a887c209c0f",
       "description": "Unresolved assignment totals by election, reason, and locality."
     },
     {
@@ -859,9 +859,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 5549,
-      "bytes": 2865508,
-      "sha256": "a545ad886e5a753727ac66800e85fa029a3c430cdbb83b78f9e5c364254837ed",
+      "rows_or_features": 5545,
+      "bytes": 2863574,
+      "sha256": "12d26839902a2af72a22965adf5966c33333c2ed8aeb641ba71ad38eee7c035a",
       "description": "Every unresolved ballot row with a machine-readable reason."
     },
     {
@@ -870,9 +870,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 35,
-      "bytes": 3302,
-      "sha256": "e51498dc2a41f28a534fa8316a032b0374283bf198e7a45b978da98635bbbe7b",
+      "rows_or_features": 31,
+      "bytes": 2894,
+      "sha256": "47f7cbcaa17ae2417585b2ce8c70d4a2640c17bb082c5544d35974a88adbe13e",
       "description": "Unresolved assignment totals by election and reason."
     },
     {
@@ -882,8 +882,8 @@
       "stat_area_vintage": "",
       "format": "json",
       "rows_or_features": "",
-      "bytes": 12314,
-      "sha256": "457c5f279cc3a0678db4d2d9b5838836380af08b4e379efff9c2c2bde2f2308a",
+      "bytes": 11558,
+      "sha256": "da91e780633d70117fede6d18bbcb3fa8ca9ffece778e6e4a8a3f2e77bf4aa86",
       "description": "Machine-readable summary for the corresponding assignment audit."
     },
     {
@@ -915,8 +915,8 @@
       "stat_area_vintage": "",
       "format": "json",
       "rows_or_features": "",
-      "bytes": 36243,
-      "sha256": "486b32db1a4e417e6b339506adcd3d22e10ae390a81f8834610ef3ce0b95df7a",
+      "bytes": 45597,
+      "sha256": "d87f32ad5b8020fca6a071aac7d1f6fa64d24d841fce08c3fcdee4682bfc69aa",
       "description": "Machine-readable summary for the corresponding assignment audit."
     },
     {
@@ -926,8 +926,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 314,
-      "bytes": 60161,
-      "sha256": "7cfc866074358be7d789a59fe62b110569db33f65fc8bda48c427fc51765633b",
+      "bytes": 60224,
+      "sha256": "f199bdfca7d2615a904f98b8a3b99ab3bf189673152a6dad73b062b552cde2fe",
       "description": "Display-only municipality or reviewed-component totals used when no ballot has a supported statistical-area assignment."
     },
     {
@@ -937,8 +937,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 8806,
-      "bytes": 1399572,
-      "sha256": "7ecc102b6242e3d204b275e85d93d4355050281c4aa0f5edd474f8996b86e804",
+      "bytes": 1399302,
+      "sha256": "89f9416311dc0c3d7f17c0b5c8b76b0cda3f2825af6483ca620ba363c948b8af",
       "description": "Cross-election assignment presence for each compatible historical polygon."
     },
     {
@@ -948,8 +948,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 27496,
-      "bytes": 11050065,
-      "sha256": "db446ad178fa5d081dcece289ac530e2b4e9e489994f6e0cd44d70505586dbc1",
+      "bytes": 11036937,
+      "sha256": "3566654cb5e22205e59150a8eec28c20222fca1ce9ad34a20908f0ca24fe79c7",
       "description": "Election-by-polygon assignment, source-comparison, and population-proxy audit."
     },
     {
@@ -959,8 +959,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 9,
-      "bytes": 920,
-      "sha256": "751b6f1c9a45ca8d93162354a1f80fec6674ec6ce54a031a984012011d5de564",
+      "bytes": 916,
+      "sha256": "5a501856324423142e8f07b19810a1ab379bd2e61e8f1a54848f029da3962b86",
       "description": "Per-election historical polygon coverage summary."
     },
     {
@@ -1041,6 +1041,17 @@
       "description": "Normalized official CBS ballot-to-statistical-area crosswalk rows."
     },
     {
+      "path": "metadata/assignment-provenance/omitted_ordinary_ballot_reviews.csv",
+      "category": "assignment-provenance",
+      "election": "",
+      "stat_area_vintage": "",
+      "format": "csv",
+      "rows_or_features": 13,
+      "bytes": 4712,
+      "sha256": "95b5a567df8cdb4ca3d0c417ced3a40d71424182e0eb5c56901a8bcac7aefaf8",
+      "description": "Reviewed row-level, set-level, and unresolved outcomes for ordinary ballots omitted from official crosswalks."
+    },
+    {
       "path": "metadata/assignment-provenance/stable_ballot_assignment_candidates.csv",
       "category": "assignment-provenance",
       "election": "",
@@ -1091,8 +1102,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 9,
-      "bytes": 2404,
-      "sha256": "5780c77b56a7688506e2150d6589d9ce78efe9c1ff171f0cb60c0b98188ba6a2",
+      "bytes": 2405,
+      "sha256": "18ba7ea50ea76e7857d24831cfe35834fd093bc0916e053f7e056e8b2ec6adf1",
       "description": "Per-election statistical and locality mapping coverage."
     },
     {
@@ -1112,9 +1123,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 14237,
-      "bytes": 3407435,
-      "sha256": "a90bb3ead232c72bab8c0553de5c0914fda4d72da93c89c28cd62d701886b6f6",
+      "rows_or_features": 14282,
+      "bytes": 3427914,
+      "sha256": "7888ff8e72bc08aef24bef12e3db34dd3715e13936c14ba06b6febcd85cb0cb7",
       "description": "Combined lookup for every published geography ID and package."
     },
     {

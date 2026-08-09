@@ -520,9 +520,13 @@ export function buildMunicipalityFallbackDisplay({
   fallbackRows,
   localityGeography,
   statisticalGeography,
+  componentFallbackGeography = { type: 'FeatureCollection', features: [] },
+  localityFallbackGeography = { type: 'FeatureCollection', features: [] },
 }) {
   assertFeatureCollection(localityGeography, 'municipality fallback locality geography')
   assertFeatureCollection(statisticalGeography, 'municipality fallback statistical geography')
+  assertFeatureCollection(componentFallbackGeography, 'historical component fallback geography')
+  assertFeatureCollection(localityFallbackGeography, 'historical locality fallback geography')
 
   const localityFeaturesById = new Map(
     localityGeography.features.map((feature) => [feature.properties?.localityId || feature.id, feature]),
@@ -530,6 +534,34 @@ export function buildMunicipalityFallbackDisplay({
   const statisticalFeatures = statisticalGeography.features.filter(
     (feature) => feature.properties?.geographyType === 'statistical-area',
   )
+  const componentFallbackFeaturesById = new Map()
+  for (const feature of componentFallbackGeography.features) {
+    const id = String(feature.properties?.fallback_geography_id ?? feature.id ?? '').trim()
+    if (!id || !feature.geometry) {
+      throw new Error('Historical component fallback feature is missing its ID or geometry')
+    }
+    if (componentFallbackFeaturesById.has(id)) {
+      throw new Error(`Duplicate historical component fallback geometry: ${id}`)
+    }
+    componentFallbackFeaturesById.set(id, feature)
+  }
+  const localityFallbackFeaturesById = new Map()
+  for (const feature of localityFallbackGeography.features) {
+    const id = String(feature.properties?.fallback_geography_id ?? feature.id ?? '').trim()
+    if (!id || !feature.geometry) {
+      throw new Error('Historical locality fallback feature is missing its ID or geometry')
+    }
+    if (
+      !id.startsWith(`municipality-fallback:${vintage}:`) ||
+      numberValue(feature.properties?.stat_area_vintage, `${id}.stat_area_vintage`) !== vintage
+    ) {
+      throw new Error(`Historical locality fallback geometry has the wrong vintage: ${id}`)
+    }
+    if (localityFallbackFeaturesById.has(id)) {
+      throw new Error(`Duplicate historical locality fallback geometry: ${id}`)
+    }
+    localityFallbackFeaturesById.set(id, feature)
+  }
   const seenFallbackIds = new Set()
   const displayRows = []
   const features = []
@@ -553,6 +585,12 @@ export function buildMunicipalityFallbackDisplay({
     if (!localityFeature) {
       throw new Error(`${electionId} municipality display fallback lacks geometry: ${localityId}`)
     }
+    const isComponentFallback = id.startsWith('municipality-component-fallback:')
+    const componentFallbackFeature = componentFallbackFeaturesById.get(id)
+    const localityFallbackFeature = localityFallbackFeaturesById.get(id)
+    if (isComponentFallback && !componentFallbackFeature) {
+      throw new Error(`${electionId} component display fallback lacks reviewed geometry: ${id}`)
+    }
     const localityProperties = localityFeature.properties ?? {}
     const componentLocalityIds = localityProperties.isComposite
       ? localityProperties.componentLocalityIds ?? []
@@ -565,14 +603,16 @@ export function buildMunicipalityFallbackDisplay({
       hiddenGeographyIds.add(feature.id)
     }
 
-    const notice =
-      matchingStatisticalFeatures.length === 0
+    const notice = isComponentFallback
+      ? MUNICIPALITY_FALLBACK_NOTICE
+      : matchingStatisticalFeatures.length === 0
         ? HISTORICAL_GEOMETRY_PROXY_NOTICE
         : matchingStatisticalFeatures.length === 1
           ? undefined
           : MUNICIPALITY_FALLBACK_NOTICE
-    const fallbackNoticeType =
-      matchingStatisticalFeatures.length === 0
+    const fallbackNoticeType = isComponentFallback
+      ? 'multi-area-unsplit'
+      : matchingStatisticalFeatures.length === 0
         ? 'historical-geometry-proxy'
         : matchingStatisticalFeatures.length === 1
           ? 'single-historical-area-exact'
@@ -582,6 +622,9 @@ export function buildMunicipalityFallbackDisplay({
     const nameEn = String(localityProperties.nameEn || nameHe).trim()
     const localityCode = cleanNumericCode(row.locality_code || localityProperties.localityCode)
     const includedNames = localityProperties.includedNames
+    const boundarySource = String(
+      localityFallbackFeature?.properties?.boundary_source ?? row.boundary_source ?? '',
+    ).trim()
     metadataById.set(id, {
       id,
       geographyType: 'municipality-fallback',
@@ -614,9 +657,20 @@ export function buildMunicipalityFallbackDisplay({
         displayMode: 'polygon',
         fallbackReason: String(row.fallback_reason ?? '').trim(),
         fallbackNoticeType,
-        boundarySource: String(row.boundary_source ?? '').trim(),
+        boundarySource,
+        ...(componentFallbackFeature?.properties?.historical_footprint_locality_code
+          ? {
+              historicalFootprintLocalityCode: cleanNumericCode(
+                componentFallbackFeature.properties.historical_footprint_locality_code,
+              ),
+            }
+          : {}),
       },
-      geometry: roundGeometry(localityFeature.geometry),
+      geometry: roundGeometry(
+        componentFallbackFeature?.geometry ??
+          localityFallbackFeature?.geometry ??
+          localityFeature.geometry,
+      ),
     })
   }
 
@@ -1115,6 +1169,34 @@ export function applyStatisticalDisplayGroups({
     primaryRows: primaryRows.filter((row) => !claimedComponentIds.has(row.stat_area_id)),
     displayRows,
     hiddenGeographyIds: [...hiddenGeographyIds].toSorted(),
+  }
+}
+
+export function assertUniqueStatisticalDisplayOwnership({
+  electionId,
+  displayGroups = [],
+  pollingGroupRows = [],
+}) {
+  const ownersByComponent = new Map()
+
+  const claim = (ownerId, componentIds) => {
+    for (const componentId of componentIds) {
+      const existingOwner = ownersByComponent.get(componentId)
+      if (existingOwner && existingOwner !== ownerId) {
+        throw new Error(
+          `${electionId} statistical display component ${componentId} is reused by ${existingOwner} and ${ownerId}`,
+        )
+      }
+      ownersByComponent.set(componentId, ownerId)
+    }
+  }
+
+  for (const group of displayGroups) {
+    claim(String(group.displayGeographyId ?? '').trim(), group.componentIds ?? [])
+  }
+  for (const row of pollingGroupRows) {
+    const ownerId = String(row.custom_geography_id || row.geography_id || '').trim()
+    claim(ownerId, splitPipeValues(row.component_stat_area_ids))
   }
 }
 

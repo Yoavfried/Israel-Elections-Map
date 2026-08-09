@@ -4,9 +4,9 @@
   "central_ballot_990_rows": 70,
   "crosswalk_localities_omitted_in_all_nine_elections": 16,
   "crosswalk_omission_context": "CBS methodology documents incomplete residential address anchoring in 36 of 38 Arab and Druze statistical-area localities. The recurrence table is an observed source-coverage audit, not an ethnicity classifier.",
-  "pending_actual_voters": 2080411,
-  "pending_eligible_voters": 3557455,
-  "pending_rows": 5549,
+  "pending_actual_voters": 2079068,
+  "pending_eligible_voters": 3554675,
+  "pending_rows": 5545,
   "polygon_persistence_status_counts": {
     "assigned_in_every_supported_election": 7412,
     "intermittently_unassigned": 355,
@@ -63,9 +63,9 @@
       "arcgis_detailed_or_single_area_records": 2826,
       "arcgis_dissolved_locality_aggregate_records": 35,
       "arcgis_polygons_matching_special_non_geographic_rows": 0,
-      "assigned_polygons_in_localities_with_pending_ballots": 23,
+      "assigned_polygons_in_localities_with_pending_ballots": 5,
       "election": "K20",
-      "polygons_requiring_assignment_followup": 168,
+      "polygons_requiring_assignment_followup": 150,
       "polygons_with_assigned_ballots": 2707,
       "polygons_without_assigned_ballots": 408,
       "stat_area_vintage": "2011",
@@ -78,9 +78,9 @@
       "arcgis_detailed_or_single_area_records": 2655,
       "arcgis_dissolved_locality_aggregate_records": 34,
       "arcgis_polygons_matching_special_non_geographic_rows": 8,
-      "assigned_polygons_in_localities_with_pending_ballots": 18,
+      "assigned_polygons_in_localities_with_pending_ballots": 0,
       "election": "K21",
-      "polygons_requiring_assignment_followup": 160,
+      "polygons_requiring_assignment_followup": 142,
       "polygons_with_assigned_ballots": 2664,
       "polygons_without_assigned_ballots": 451,
       "stat_area_vintage": "2011",
@@ -93,9 +93,9 @@
       "arcgis_detailed_or_single_area_records": 0,
       "arcgis_dissolved_locality_aggregate_records": 0,
       "arcgis_polygons_matching_special_non_geographic_rows": 0,
-      "assigned_polygons_in_localities_with_pending_ballots": 18,
+      "assigned_polygons_in_localities_with_pending_ballots": 0,
       "election": "K22",
-      "polygons_requiring_assignment_followup": 160,
+      "polygons_requiring_assignment_followup": 142,
       "polygons_with_assigned_ballots": 2656,
       "polygons_without_assigned_ballots": 459,
       "stat_area_vintage": "2011",
@@ -108,9 +108,9 @@
       "arcgis_detailed_or_single_area_records": 0,
       "arcgis_dissolved_locality_aggregate_records": 0,
       "arcgis_polygons_matching_special_non_geographic_rows": 0,
-      "assigned_polygons_in_localities_with_pending_ballots": 18,
+      "assigned_polygons_in_localities_with_pending_ballots": 0,
       "election": "K23",
-      "polygons_requiring_assignment_followup": 160,
+      "polygons_requiring_assignment_followup": 142,
       "polygons_with_assigned_ballots": 2659,
       "polygons_without_assigned_ballots": 456,
       "stat_area_vintage": "2011",
@@ -230,25 +230,11 @@
       "rows": 565
     },
     {
-      "actual_voters": 324,
-      "election": "K20",
-      "eligible_voters": 629,
-      "gap_reason_code": "specific_ballot_omitted_from_official_crosswalk",
-      "rows": 1
-    },
-    {
       "actual_voters": 224699,
       "election": "K21",
       "eligible_voters": 421425,
       "gap_reason_code": "entire_locality_omitted_from_official_crosswalk",
       "rows": 596
-    },
-    {
-      "actual_voters": 226,
-      "election": "K21",
-      "eligible_voters": 703,
-      "gap_reason_code": "specific_ballot_omitted_from_official_crosswalk",
-      "rows": 1
     },
     {
       "actual_voters": 422,
@@ -265,13 +251,6 @@
       "rows": 607
     },
     {
-      "actual_voters": 363,
-      "election": "K22",
-      "eligible_voters": 717,
-      "gap_reason_code": "specific_ballot_omitted_from_official_crosswalk",
-      "rows": 1
-    },
-    {
       "actual_voters": 234,
       "election": "K23",
       "eligible_voters": 338,
@@ -284,13 +263,6 @@
       "eligible_voters": 432322,
       "gap_reason_code": "entire_locality_omitted_from_official_crosswalk",
       "rows": 615
-    },
-    {
-      "actual_voters": 430,
-      "election": "K23",
-      "eligible_voters": 731,
-      "gap_reason_code": "specific_ballot_omitted_from_official_crosswalk",
-      "rows": 1
     },
     {
       "actual_voters": 8664,

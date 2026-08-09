@@ -203,23 +203,23 @@ decoded locally. They are aggregate map layers, not hidden ballot crosswalks:
 
 | Source | Features | Unique localities | Target localities present | Exact eligible + actual totals | AGS or ballot crosswalk |
 |---|---:|---:|---:|---:|---|
-| K22 locality polygons | 1,173 | 1,173 | 3 of 3 | 1,165 of 1,172 comparable | No |
-| K23 locality polygons | 1,172 | 1,172 | 3 of 3 | 1,154 of 1,172 comparable | No |
-| K24 locality polygons | 1,214 | 1,214 | 11 of 11 | 1,203 of 1,214 comparable | No |
-| K25 locality polygons | 1,215 | 1,215 | 7 of 7 | 1,213 of 1,215 comparable | No |
-| K25 neighborhood points | 403 | 15 | 1 of 7 | 14 of 15 comparable | No |
+| K22 locality polygons | 1,173 | 1,173 | 1 of 1 | 1,165 of 1,172 comparable | No |
+| K23 locality polygons | 1,172 | 1,172 | 1 of 1 | 1,154 of 1,172 comparable | No |
+| K24 locality polygons | 1,214 | 1,214 | 10 of 10 | 1,203 of 1,214 comparable | No |
+| K25 locality polygons | 1,215 | 1,215 | 5 of 5 | 1,213 of 1,215 comparable | No |
+| K25 neighborhood points | 403 | 15 | 1 of 5 | 14 of 15 comparable | No |
 
 After the reviewed continuity approvals, the source-specific target scope
-excludes entirely unmatched municipalities and contains 53 remaining rows
-representing 14,983 actual voters:
+excludes entirely unmatched municipalities and contains 51 remaining rows
+representing 14,190 actual voters:
 
 | Election | Ballot-base 990 rows | 990 actual voters | Other rows | Other actual voters |
 |---|---:|---:|---:|---:|
-| K22 | 1 | 422 | 1 | 363 |
-| K23 | 1 | 234 | 1 | 430 |
+| K22 | 1 | 422 | 0 | 0 |
+| K23 | 1 | 234 | 0 | 0 |
 | K24 | 31 | 8,664 | 4 | 749 |
 | K25 | 9 | 2,730 | 5 | 1,391 |
-| **Total** | **42** | **12,050** | **11** | **2,933** |
+| **Total** | **42** | **12,050** | **9** | **2,140** |
 
 Each locality payload supplies only the same whole-locality total already known
 from the official ballot rows, so it provides no smaller target total for an
@@ -231,7 +231,7 @@ pending records are two ballot-base 990 rows; a point cannot prove their area.
 The audit therefore ran zero partition searches, emitted zero assignment
 candidates, and changed no published data. Small source-snapshot differences in
 turnout or valid/invalid classification remain in the reconciliation output and
-are not copied into the normalized election results. The 50 continuity
+are not copied into the normalized election results. The 54 continuity
 approvals come from independent CEC polling-register and CBS crosswalk evidence,
 not from the Kaplan payloads.
 
@@ -252,9 +252,17 @@ multiple 1995 areas. All 84 K18 rows remain unresolved because the 2008 source
 stores those component identities inside composite-municipality geometry and
 does not publish separate component area IDs. The component evidence remains
 available for a future finer source even where no area link is published now.
-For display, a component with no supported internal area assignment can use its
-own locality boundary and component total; this does not resolve any of its
-ballots to an area.
+
+Nine reviewed component totals are displayed on election-era geometry without
+turning the component identity into an area ID. The two K17 shapes are the
+complete unions of their component's 1995 areas. The seven K18 shapes partition
+the complete 2008 Carmel City, Shaghur, and Baqa-Jatt footprints using the
+current component-locality boundaries as cut lines. Historical edge pieces not
+covered by a current component boundary go to the component sharing the longest
+boundary with that piece; distance and locality code are deterministic
+tie-breakers. The build rejects a partition if its union differs from the
+historical footprint or if two component shapes overlap by more than one square
+metre. This is display geometry only and does not resolve any ballot to an area.
 
 ### Single-Area And Custom Rules
 
@@ -272,10 +280,12 @@ Hebron footprint copied from the exact 2011 area geometry.
 
 The web map uses a separate display rule when an election/locality, or a
 reviewed component of a historical composite municipality, has zero supported
-ballot-to-area assignments. It shows the corresponding aggregate on a current
-locality, component, or reviewed historical-composite boundary and adds an info
-notice stating that no area-level assignment exists. It never writes a
-`stat_area_id`, changes a ballot row, or increases statistical-area coverage.
+ballot-to-area assignments. Whole-locality cases use their reviewed fallback
+boundary. The nine K17/K18 component cases use the election-era component
+geometry described above. Every multi-area case uses the same standard notice:
+`No ballot-to-statistical-area assignments are available for this locality in
+this election. The whole-locality result is shown as one area.` It never writes
+a `stat_area_id`, changes a ballot row, or increases statistical-area coverage.
 
 | Election | Display records | Represented ballot rows | Actual voters |
 |---|---:|---:|---:|
@@ -295,7 +305,9 @@ shown. These records remain separate from the downloadable statistical-area
 aggregates. Of the 314 records, 305 cover a whole result locality and nine cover
 a reviewed historical-composite component. Available polling-register evidence
 does not publish an internal statistical-area split for these records, so the
-polling-group network method cannot subdivide them.
+polling-group network method cannot subdivide them. The component geometry
+metadata separately records the source historical footprint, current-boundary
+seed, assigned historical edge area, and coverage validation.
 
 ### Polling-Group Exact and Representative Placement
 
@@ -392,27 +404,26 @@ site ID, so it cannot satisfy either continuity rule.
 | Election | Evidence | All display units | Exact closed units | Representative units | Owned polygon memberships | Representative components | Broad fallbacks |
 |---|---|---:|---:|---:|---:|---:|---:|
 | K21 | Direct registers + two-reference site continuity | 226 | 134 | 92 | 497 | 47 | 0 |
-| K22 | Two-reference site continuity | 433 | 0 | 433 | 870 | 284 | 0 |
-| K23 | Two-reference site continuity | 430 | 0 | 430 | 870 | 280 | 0 |
-| K24 | Direct official registers | 596 | 193 | 403 | 1,252 | 119 | 0 |
-| K25 | Direct official register + final results | 589 | 190 | 399 | 1,202 | 125 | 0 |
-| **Total** |  | **2,274** | **517** | **1,757** | **4,691** | **855** | **0** |
+| K22 | Two-reference site continuity | 432 | 4 | 428 | 874 | 281 | 0 |
+| K23 | Two-reference site continuity | 430 | 2 | 428 | 873 | 279 | 0 |
+| K24 | Direct official registers | 597 | 194 | 403 | 1,254 | 119 | 0 |
+| K25 | Direct official register + final results | 590 | 191 | 399 | 1,208 | 126 | 0 |
+| **Total** |  | **2,275** | **525** | **1,750** | **4,706** | **852** | **0** |
 
 Compared with the direct statistical-area result tables, the approved policy
 recovers 846 election-specific polygon placements that would otherwise be
 blank: 80 in K21, 133 in K22, 130 in K23, 236 in K24, and 267 in K25. It does not
 color a remaining blank polygon without qualifying polling-group evidence.
 
-The 517 exact units cover 1,249 polygon-election memberships and 646 final
-polling groups. Ninety-seven exact units combine more than one polling group.
+The 525 exact units cover 1,282 polygon-election memberships. None carries an
+uncertainty notice.
 The flow audit tested ten exactly balanced closed networks; no impossible-edge
 removal divided a real network into more than one smaller closed component.
 The full reproducible edge bounds are published in
 `statistical_area_polling_group_exact_groups.csv`.
 
-Of the 855 representative components, 393 pass the mutual-majority rule and
-462 retain the most detailed available placement. Across their 1,757 displayed
-units, 1,743 are connected and 14 require disclosed disconnected placement.
+The 852 representative components produce 1,750 displayed units. Of those,
+1,736 are connected and 14 require disclosed disconnected placement.
 Strict site consolidation reconciles 12 planned-only K25 sites; remaining
 planned groups without identifiable final results are omitted.
 
@@ -444,6 +455,36 @@ under `data/processed/audits`, `data/processed/geographies`, and
 `data/processed/public`. The web compiler validates that no ballot or polygon is
 owned twice and that every displayed total reconciles to its source rows.
 
+### Contributor-capacity review
+
+The rendered-set capacity audit is a review tool, not an assignment rule. It
+compares actual voters with final eligible voters assigned to every possible
+contributor polygon. Pre-election area weights may explain a polling network,
+but they cannot cap a later final register. When election capacity is not
+informative, the audit uses a deliberately lenient threshold of 125% of the
+complete total-population proxy.
+
+The first run produced 22 review cases. All were reviewed individually:
+
+- 13 were planned-to-final register changes whose final ballots remained
+  entirely inside the documented contributor set; no geometry changed;
+- seven were demographic-proxy mismatches with direct or repeated election
+  evidence and no supported neighboring contributor; no geometry changed;
+- K22 Tel Aviv areas 313-315 were replaced by one exact closed display. The
+  same Beit Magid site covers all three areas in K21 and K23, while its K22
+  result was consolidated into ballot 139. The union has 14,024 eligible
+  voters and 8,723 actual voters;
+- K25 Safed areas 3-5 were replaced by one exact closed display. Missing
+  planned ballot 25 and the excess in final ballot 9 differ by seven eligible
+  voters, and the complete three-area network balances within two. The union
+  has 5,827 eligible voters and 3,366 actual voters.
+
+Exact closed unions carry no uncertainty notice. The remaining eight current
+signals are demographic-only checks and all have a recorded closed review;
+they are retained as inspectable evidence, not open map defects. Decisions live
+in `data/manual/display_contributor_capacity_reviews.csv`; reproducible context
+is generated by `scripts/review_display_contributor_capacity_flags.py`.
+
 ## Published Provenance Classes
 
 | Evidence class | Rows | Synthetic link |
@@ -454,10 +495,10 @@ owned twice and that every displayed total reconciles to its source rows.
 | `official_stability_inferred_link` | 134 | Yes |
 | `reviewed_exact_aggregate_inferred_link` | 9 | Yes |
 | `reviewed_cross_election_inferred_link` | 5 | Yes |
-| `reviewed_polling_register_continuity_inferred_link` | 50 | Yes |
+| `reviewed_polling_register_continuity_inferred_link` | 54 | Yes |
 | `reviewed_custom_geography` | 92 | No |
 | `non_geographic` | 3,585 | No |
-| `unresolved` | 5,549 | No |
+| `unresolved` | 5,545 | No |
 | **Total** | **96,529** | |
 
 Every public ballot row carries `assignment_evidence_class`,
@@ -476,14 +517,14 @@ denominator.
 | K17 | 1995 | 7,865 | 409 | 161,195 | 94.65% |
 | K18 | 2008 | 8,741 | 518 | 189,252 | 94.14% |
 | K19 | 2011 | 9,317 | 558 | 212,413 | 94.13% |
-| K20 | 2011 | 9,545 | 567 | 259,204 | 93.55% |
-| K21 | 2011 | 9,855 | 597 | 224,925 | 94.51% |
-| K22 | 2011 | 9,922 | 609 | 265,357 | 93.65% |
-| K23 | 2011 | 10,006 | 617 | 296,376 | 93.08% |
+| K20 | 2011 | 9,546 | 566 | 258,880 | 93.56% |
+| K21 | 2011 | 9,856 | 596 | 224,699 | 94.52% |
+| K22 | 2011 | 9,923 | 608 | 264,994 | 93.66% |
+| K23 | 2011 | 10,007 | 616 | 295,946 | 93.09% |
 | K24 | 2011 | 11,251 | 868 | 212,156 | 94.71% |
 | K25 | 2011 | 10,893 | 806 | 259,533 | 94.01% |
 
-The 5,549 pending rows are fully classified:
+The 5,545 pending rows are fully classified:
 
 - 5,298 belong to entire localities omitted from an official crosswalk;
 - 53 use an election locality identity absent from the active historical
@@ -492,7 +533,7 @@ The 5,549 pending rows are fully classified:
   areas but no component crosswalk;
 - 84 are K18 component-locality rows nested in composite 2008 geometry;
 - 70 are central ballot 990 rows intentionally retained at locality level;
-- 13 are specific ordinary ballots omitted from an otherwise present locality.
+- 9 are specific ordinary ballots omitted from an otherwise present locality.
 
 These labels describe different failures. An "entire locality omitted" row has
 usable historical geometry, but the public election crosswalk contains no
@@ -503,7 +544,9 @@ CBS-documented address-anchoring limitation in many Arab and Druze localities.
 "Identity absent" does not mean that the source file dropped a polygon. It
 means the election result uses a locality code or identity that did not exist
 as an independent area in that vintage. This covers 52 K17 rows across 34
-identities and one K18 Tzur Yitzhak row. The transition tables provide no
+source identities and one K18 Tzur Yitzhak row. The 34 K17 source identities
+resolve to 33 effective fallback polygons because source code 989 is reviewed
+as Kamane locality 1331. The transition tables provide no
 1995/2008 predecessor link for them. The K17 identities later appear as one
 2008 area except Kacir and Sansana, which first appear in 2011; K18 Tzur
 Yitzhak also first appears in 2011. Using those later boundaries as historical
@@ -511,9 +554,23 @@ areas would be an explicitly labeled proxy, not a recovered official
 assignment, so the pipeline does not do it silently.
 
 Every specific omission was checked against normalized crosswalk keys, K23 AGS,
-stable-ballot components, and applicable ArcGIS evidence. The remaining gaps
-are irreducible with the currently recovered sources. They are published, not
-estimated, in `historical_assignment_gap_rows.csv`.
+stable-ballot components, official polling registers, and applicable ArcGIS
+evidence. Four Nazareth ballot-80 rows in K20-K23 are now approved synthetic
+links to area 32: the number and exact polling place are unchanged, and both
+official K18 and K19 crosswalks assign that ballot to area 32.
+
+The nine rows still lacking a single-area ID have two different treatments.
+Eight K24/K25 Ar'ara ballot-14 subdivisions replace complete planned polling-
+site totals spanning areas 1 and 3. The final totals differ from the three
+planned ballots by only one eligible voter in each election, and cross-election
+area totals confine the missing planned ballot to that same area set. The map
+therefore shows all and only the combined areas-1-and-3 results on one dissolved
+display, while the downloadable subdivision rows remain blank rather than
+inventing an internal split. K25 Daliyat al-Karmel ballot 23 remains genuinely
+ambiguous between areas 3 and 5; the polygons are not adjacent and no source
+chooses between them, so neither a single-area assignment nor a display union is
+published. All thirteen review outcomes are recorded in
+`data/manual/omitted_ordinary_ballot_reviews.csv`.
 
 ## Geometry Provenance
 
@@ -554,9 +611,82 @@ only for one of the reviewed multi-area units described above, where the
 collective result is defensible but an internal split is not. All other empty
 polygons remain neutral.
 
-Ganei Modi'in uses its detailed footprint from K21, while its standalone proxy
-is hidden in K19/K20. Hebron's exact 2011 footprint is reused as the K17/K18
-custom display polygon without changing its reviewed custom assignment ID.
+K17 locality 978, Ka'abiyye-Tabbash-Hajajre, is one exact historical-locality
+union. Its complete election result equals the result carried by
+`stat1995:978001`, while the separate historical Hajajre polygon
+`stat1995:977001` has no independent K17 result. Statistical mode therefore
+shows the same complete locality result across the union of both polygons. No
+uncertainty notice is needed because the displayed area contains all and only
+the locality result.
+
+Ganei Modi'in uses its detailed footprint and its own ballot result from K21.
+Its standalone proxy is hidden in K19/K20, when it was still part of Modi'in
+Illit. From K21, the stale and resultless `stat2011:37970001` Modi'in Illit area
+1 polygon is hidden instead; it is almost entirely the same footprint. This
+election-specific swap removes the duplicate geometry without reallocating any
+votes. Hebron's exact 2011 footprint is reused as the K17/K18 custom display
+polygon without changing its reviewed custom assignment ID.
+
+All 33 effective K17 fallback polygons now have reviewed visual treatment. Abu
+Ghosh and Kiryat Yearim use the same later/current locality display boundaries
+used by later elections, and the obsolete 1995 Kiryat Yearim institution
+feature is suppressed. Twenty-one other fallback footprints remain unchanged
+while their exact current display shape is subtracted from every intersecting
+1995 display host:
+
+| K17 fallback | Current code | 1995 display host or hosts cut around it |
+|---|---:|---|
+| Ahuzat Barak | 1330 | `stat1995:407001` Dovrat |
+| Nof Ayalon | 1333 | `stat1995:856001` Sha'alvim |
+| Matan | 1315 | `stat1995:718001` Yarhiv |
+| Kanaf | 4028 | `stat1995:4008001` Ma'ale Gamla; `stat1995:4702001` Ramot |
+| Ras al-Ein | 1334 | `stat1995:1163001` Moran; `stat1995:1201001` Kamon |
+| Hussniyya | 1332 | `stat1995:1180001` Tzvia; `stat1995:1202001` Mikhmannim |
+| Kamane | 1331 | `stat1995:1201001` Kamon; `stat1995:1202001` Mikhmannim |
+| Khawaled | 1321 | `stat1995:254001` Kfar HaMakkabi |
+| Basma | 1326 | `stat1995:639001` Barta'a; `stat1995:643001` Mu'awiya; `stat1995:657001` Ein as-Sahla; `stat1995:1247001` Iron; `stat1995:1128001` Mei Ami; `stat1995:637001` Ar'ara |
+| Dmeide | 1317 | `stat1995:1178001` Moreshet; `stat1995:8900001` Tamra |
+| Caesarea | 1167 | `stat1995:327001` Sdot Yam; `stat1995:1020002`, `stat1995:1020003`, `stat1995:1020005` Or Akiva areas 2, 3, and 5 |
+| Midreshet Ben Gurion | 1140 | `stat1995:885001` Sde Boker |
+| Neve Avot | 926 | `stat1995:7800005`, `stat1995:7800006` Pardes Hanna-Karkur areas 5 and 6 |
+| Umm Batin | 1358 | `stat1995:666001` Omer |
+| Qasr al-Sir | 1347 | `stat1995:2200001`, `stat1995:2200012` Dimona areas 1 and 12 |
+| Ivim | 338 | `stat1995:1031004` Sderot area 4 |
+| Bat Hefer | 1319 | `stat1995:758001` Yad Hanna |
+| Bat Hadar | 1323 | `stat1995:7100033` Ashkelon area 33 |
+| Kfar Galim | 427 | `stat1995:434001` HaHotrim |
+| Kfar HaOranim | 3796 | `stat1995:1310001` Lapid |
+| Mikve Israel | 22 | `stat1995:6600135` Holon area 135 |
+
+The other 11 fallbacks have no material overlap with any visible 1995 polygon
+and are explicitly approved unchanged: Suwaed (Hamriyya), Ras Ali, Nitzana
+(Educational Community), Shani, Avshalom, Neve Ziv, Shimshit, Drijat, Eshel
+HaNasi, Sansana, and Revava.
+
+Basma is published as one K17 result. Its historical Barta'a, Mu'awiya, and Ein
+as-Sahla component polygons carry zero K17 rows and zero voters, so they are
+hidden from the K17 display and search index beneath the reviewed Basma
+fallback. All three source features remain in canonical 1995 geography.
+
+The reviewed policy records the measured share of each fallback footprint that
+intersected each original host and the build rejects any drift or residual
+overlap above one square metre. Explicit no-overlap approvals fail the same
+build if a future geometry change creates material overlap. Matan was 99.770%
+covered by Yarhiv; its small remainder was already outside every visible 1995
+polygon. These operations are display-only boundary substitutions, cutouts,
+and approvals recorded in `historical_locality_boundary_overrides.csv`. They do
+not assign a statistical area to any fallback row, alter vote totals, or change
+canonical 1995 geometry in the downloadable package.
+
+Additional approved current-boundary cutouts remove historical display overlap
+without changing any result assignment. For K17 they cover Maghar, Kfar Qasem,
+Sakhnin, Arraba, and Tamra. For K18 they cover Tzur Yitzhak, Maghar, Kfar
+Qasem, Sakhnin, Arraba, Tamra, Fureidis, and Iksal. The K18 Kfar Bara case uses
+reverse priority: its official 2008 polygon remains intact and is subtracted
+from the current-boundary Kfar Qasem fallback. Election-vintage fallback
+geometry is generated in
+`historical_locality_fallback_display_geometries.geojson`; canonical source
+geometry and ballot assignments remain unchanged.
 
 Marker assets can retain source proxies, but the web map displays a marker only
 when the selected election has a result for that exact ID. This suppresses the
@@ -601,6 +731,14 @@ Working audit outputs include:
 - `data/processed/audits/historical_crosswalk_locality_omission_recurrence.csv`
 - `data/processed/audits/historical_polygon_*`
 - `data/processed/audits/statistical_area_polling_group_*`
+- `data/processed/audits/statistical_display_component_ownership.csv`
+- `data/processed/audits/statistical_display_component_ownership_summary.json`
+- `data/processed/audits/display_contributor_capacity_*`
+- `data/processed/audits/reviewed_locality_statistical_display_audit.csv`
+- `data/processed/audits/reviewed_locality_statistical_display_audit_summary.json`
+- `data/processed/audits/reviewed_locality_statistical_displays.csv`
+- `data/processed/audits/joined_locality_continuity_evidence.csv`
+- `data/processed/audits/joined_locality_continuity_evidence_summary.json`
 - `data/processed/geographies/historical_geography_build_summary.json`
 - `data/processed/geographies/statistical_area_result_aggregates.*`
 - `data/processed/geographies/statistical_area_polling_group_displays.*`
@@ -608,6 +746,7 @@ Working audit outputs include:
 - `data/processed/assignments/ballot_geography_assignments.csv`
 - `data/processed/assignments/unresolved_statistical_area_assignment_rows.csv`
 - `data/manual/cross_election_stat_area_reviews.csv`
+- `data/manual/display_contributor_capacity_reviews.csv`
 
 Assignment provenance used by the release is committed under
 `public-data/v1/metadata/assignment-provenance/`. The Kaplan audit remains a

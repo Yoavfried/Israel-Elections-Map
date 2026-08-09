@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyStatisticalDisplayGroups,
+  assertUniqueStatisticalDisplayOwnership,
   aliasJoinedCompositeResults,
   buildCompositeMetadataIndex,
   buildDisplayMarkers,
@@ -297,6 +298,46 @@ describe('web data compiler', () => {
     ])
   })
 
+  it('rejects statistical areas reused across aggregate and polling display layers', () => {
+    expect(() =>
+      assertUniqueStatisticalDisplayOwnership({
+        electionId: 'K22',
+        displayGroups: [
+          {
+            displayGeographyId: 'display:reviewed-empty',
+            componentIds: ['stat2011:76000032', 'stat2011:76000034'],
+          },
+        ],
+        pollingGroupRows: [
+          {
+            custom_geography_id: 'display:polling-group',
+            component_stat_area_ids: 'stat2011:76000031|stat2011:76000032',
+          },
+        ],
+      }),
+    ).toThrow(
+      /K22 statistical display component stat2011:76000032 is reused by display:reviewed-empty and display:polling-group/,
+    )
+
+    expect(() =>
+      assertUniqueStatisticalDisplayOwnership({
+        electionId: 'K22',
+        displayGroups: [
+          {
+            displayGeographyId: 'display:reviewed-empty',
+            componentIds: ['stat2011:76000034'],
+          },
+        ],
+        pollingGroupRows: [
+          {
+            custom_geography_id: 'display:polling-group',
+            component_stat_area_ids: 'stat2011:76000031|stat2011:76000032',
+          },
+        ],
+      }),
+    ).not.toThrow()
+  })
+
   it('adds stable feature IDs and custom geometries', () => {
     const source = {
       type: 'FeatureCollection',
@@ -507,6 +548,140 @@ describe('web data compiler', () => {
         en: expect.stringContaining('does not appear as a separate area'),
       },
     })
+  })
+
+  it('uses reviewed geometry and the standard unsplit notice for component fallbacks', () => {
+    const localityGeography = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          id: 'loc:494',
+          properties: {
+            localityId: 'loc:494',
+            localityCode: '494',
+            nameHe: 'דאלית אל-כרמל',
+            nameEn: 'Daliyat al-Karmel',
+            isComposite: false,
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[35, 32], [35.2, 32], [35.2, 32.2], [35, 32]]],
+          },
+        },
+      ],
+    }
+    const componentFallbackGeography = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            fallback_geography_id: 'municipality-component-fallback:1995:loc:494',
+            historical_footprint_locality_code: 494,
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[35, 32], [35.1, 32], [35.1, 32.1], [35, 32]]],
+          },
+        },
+      ],
+    }
+    const display = buildMunicipalityFallbackDisplay({
+      electionId: 'K17',
+      vintage: 1995,
+      fallbackRows: [
+        {
+          election: 'K17',
+          fallback_geography_id: 'municipality-component-fallback:1995:loc:494',
+          stat_area_vintage: '1995',
+          fallback_reason:
+            'no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component',
+          boundary_source: 'reviewed_historical_composite_component_display_geometry',
+          locality_id: 'loc:494',
+          locality_code: '494',
+          locality_name: 'דאלית אל-כרמל',
+        },
+      ],
+      localityGeography,
+      statisticalGeography: { type: 'FeatureCollection', features: [] },
+      componentFallbackGeography,
+    })
+
+    const id = 'municipality-component-fallback:1995:loc:494'
+    expect(display.metadataById.get(id)).toMatchObject({
+      fallbackNoticeType: 'multi-area-unsplit',
+      notice: {
+        en: expect.stringContaining('No ballot-to-statistical-area assignments'),
+      },
+    })
+    expect(display.features[0].geometry).toEqual(componentFallbackGeography.features[0].geometry)
+    expect(display.features[0].properties.historicalFootprintLocalityCode).toBe('494')
+  })
+
+  it('uses a reviewed election-vintage geometry for an ordinary locality fallback', () => {
+    const id = 'municipality-fallback:2008:loc:634'
+    const sourceGeometry = {
+      type: 'Polygon',
+      coordinates: [[[34.9, 32], [35.1, 32], [35.1, 32.2], [34.9, 32]]],
+    }
+    const reviewedGeometry = {
+      type: 'Polygon',
+      coordinates: [[[34.9, 32], [35, 32], [35, 32.1], [34.9, 32]]],
+    }
+    const display = buildMunicipalityFallbackDisplay({
+      electionId: 'K18',
+      vintage: 2008,
+      fallbackRows: [
+        {
+          election: 'K18',
+          fallback_geography_id: id,
+          stat_area_vintage: '2008',
+          fallback_reason: 'no_ballot_has_a_supported_statistical_area_assignment',
+          boundary_source: 'cbs_2022_locality_geometry_display_only',
+          locality_id: 'loc:634',
+          locality_code: '634',
+          locality_name: 'כפר קאסם',
+        },
+      ],
+      localityGeography: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            id: 'loc:634',
+            properties: {
+              localityId: 'loc:634',
+              localityCode: '634',
+              nameHe: 'כפר קאסם',
+              nameEn: 'Kafr Qasim',
+            },
+            geometry: sourceGeometry,
+          },
+        ],
+      },
+      statisticalGeography: { type: 'FeatureCollection', features: [] },
+      localityFallbackGeography: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              fallback_geography_id: id,
+              stat_area_vintage: 2008,
+              boundary_source: 'reviewed_historical_area_cutout:stat2008:6330001',
+            },
+            geometry: reviewedGeometry,
+          },
+        ],
+      },
+    })
+
+    expect(display.features[0].geometry).toEqual(reviewedGeometry)
+    expect(display.features[0].geometry).not.toEqual(sourceGeometry)
+    expect(display.features[0].properties.boundarySource).toBe(
+      'reviewed_historical_area_cutout:stat2008:6330001',
+    )
   })
 
   it('limits fixed-size official markers to West Bank locality codes', () => {

@@ -1,0 +1,10 @@
+election,stat_area_vintage,historical_footprint_locality_code,component_locality_code,boundary_rule,note
+K17,1995,494,494,historical_locality_union,Use the complete 1995 Daliyat al-Karmel footprint for the reviewed component total.
+K17,1995,6000,6000,historical_locality_union,Use the complete 1995 Baqa al-Gharbiyye footprint for the reviewed component total.
+K18,2008,494,494,historical_composite_partition,Partition the complete 2008 Carmel City footprint using the current Daliyat al-Karmel boundary.
+K18,2008,494,534,historical_composite_partition,Partition the complete 2008 Carmel City footprint using the current Isfiya boundary.
+K18,2008,516,483,historical_composite_partition,Partition the complete 2008 Shaghur footprint using the current Bi'ina boundary.
+K18,2008,516,490,historical_composite_partition,Partition the complete 2008 Shaghur footprint using the current Deir al-Asad boundary.
+K18,2008,516,516,historical_composite_partition,Partition the complete 2008 Shaghur footprint using the current Majd al-Krum boundary.
+K18,2008,6000,6000,historical_composite_partition,Partition the complete 2008 Baqa-Jatt footprint using the current Baqa al-Gharbiyye boundary.
+K18,2008,6000,628,historical_composite_partition,Partition the complete 2008 Baqa-Jatt footprint using the current Jatt boundary.

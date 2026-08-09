@@ -39,6 +39,30 @@ const items: GeographySearchItem[] = [
       [35.1, 32.1],
     ],
   },
+  {
+    id: 'loc:1321',
+    geographyMode: 'locality',
+    names: { en: 'Khawaled', he: "ח'ואלד" },
+    aliases: { en: [], he: [] },
+    code: '1321',
+    hasResults: true,
+    bounds: [
+      [35.1, 32.7],
+      [35.2, 32.8],
+    ],
+  },
+  {
+    id: 'loc:1326',
+    geographyMode: 'locality',
+    names: { en: 'Basma', he: 'בסמ"ה' },
+    aliases: { en: [], he: [] },
+    code: '1326',
+    hasResults: true,
+    bounds: [
+      [35.1, 32.4],
+      [35.2, 32.5],
+    ],
+  },
 ]
 
 describe('geography search', () => {
@@ -58,7 +82,14 @@ describe('geography search', () => {
     )
   })
 
+  it('matches Hebrew locality names when internal quotes are omitted', () => {
+    expect(searchGeographies(items, 'חואלד', 'he', 'locality')[0].id).toBe('loc:1321')
+    expect(searchGeographies(items, 'בסמה', 'he', 'locality')[0].id).toBe('loc:1326')
+  })
+
   it('normalizes Hebrew final letters and punctuation', () => {
-    expect(normalizeSearchText("מלך-ים")).toBe('מלכ ימ')
+    expect(normalizeSearchText("מלך-ים")).toBe('מלכימ')
+    expect(normalizeSearchText("ח'ואלד")).toBe(normalizeSearchText('חואלד'))
+    expect(normalizeSearchText('בסמ"ה')).toBe(normalizeSearchText('בסמה'))
   })
 })

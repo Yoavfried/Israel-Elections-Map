@@ -24,7 +24,7 @@ explanations. The 80 partial-presence features create 227 election-specific
 missing-result cells. Of those cells, 215 now have a supported historical,
 joined-register, or reviewed-display explanation. Seventy-two of the 80
 locality histories are fully explained; 12 cells across 8 localities remain
-open.
+neutral under a closed review policy because no source supports a host.
 
 | Gap classification | Election-specific cells | Treatment |
 |---|---:|---|
@@ -32,12 +32,12 @@ open.
 | locality absent from the election-year CBS locality register | 54 | no independent locality result is expected; no host is invented |
 | election-time composite municipality | 16 | the historical municipality's component polygons are unioned |
 | reviewed hidden tribal/component footprint | 7 | represented by the reviewed aggregate geography instead |
-| CBS locality with population, but no supported result host | 7 | open; polygon remains neutral |
-| CBS place record without independent population | 3 | open; no electorate or host is asserted |
-| CBS record without a population value | 2 | open; no electorate or host is asserted |
+| CBS locality with population, but no supported result host | 7 | closed; polygon remains neutral |
+| CBS place record without independent population | 3 | closed; no electorate or host is asserted |
+| CBS record without a population value | 2 | closed; no electorate or host is asserted |
 | **Total** | **227** | |
 
-The 12 open cells are:
+The 12 closed-neutral cells are:
 
 - K17: מכחול (`1343`), תרבין א-צאנע (`1346`), and ביר הדאג' (`1348`);
 - K18: מכחול (`1343`) and כחלה (`1367`);
@@ -67,22 +67,29 @@ The locality map substitutes reviewed host-plus-attached polygon unions only in 
 
 | Election | Combined polygons | Attached 2022 polygons | Evidence |
 |---|---|---|---|
-| K17 | 34 | 37 | official polling rows, cross-election register continuity, or historical membership |
-| K18 | 28 | 32 | official polling rows, register continuity, or historical membership |
+| K17 | 45 | 49 | official polling rows, strict backward register continuity, or historical membership |
+| K18 | 44 | 49 | explicit official polling-register attachments, register continuity, or historical membership |
 | K19 | 47 | 54 | exact host-level arithmetic or historical membership |
 | K20 | 46 | 51 | official polling rows or historical membership |
-| K21 | 5 | 6 | combined-register continuity |
-| K22 | 6 | 6 | combined-register continuity |
-| K23 | 6 | 6 | combined-register continuity |
-| K24 | 3 | 3 | combined-register continuity |
-| K25 | 6 | 7 | exact arithmetic, register continuity, or reviewed under-100 host-delta inference |
+| K21 | 9 | 11 | combined-register or strictly bracketed continuity |
+| K22 | 10 | 11 | combined-register or strictly bracketed continuity |
+| K23 | 10 | 11 | combined-register or strictly bracketed continuity |
+| K24 | 7 | 8 | combined-register or strictly bracketed continuity |
+| K25 | 8 | 9 | exact arithmetic, register continuity, or reviewed under-100 host-delta inference |
+
+`scripts/audit_joined_locality_continuity.py` makes this election-specific
+review reproducible. Of 180 continuity leads, 38 pass strict direct or bounded
+continuity rules and 142 are already covered, contradicted, or insufficient.
+The machine-readable evidence remains under `data/processed/audits/`; no
+address geocoding or ballot-to-area reassignment is involved.
 
 Across elections, 33 of the 36 never-present meaningful polygons participate in at least one supported host union; the other 3 are the institution/place cases with no ordinary polling-list row. The unions also include 51 of the 80 partial-presence polygons where the source identifies their host, including Ganei Modi'in with Modi'in Illit in K17-K20.
 
 The election-year CBS locality registers explain later-established localities
 without guessing a host, while source polling rows and cross-election register
-continuity support the explicit unions. Only the 12 cells listed above remain
-without a supported explanation or host.
+continuity support the explicit unions. The 12 cells listed above remain
+without a supported host, but their neutral treatment is final unless explicit
+new source evidence appears.
 
 ## Counts
 

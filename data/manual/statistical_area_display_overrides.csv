@@ -1,6 +1,11 @@
 ﻿"stat_area_id","elections","visibility","name_he","name_en","note","notice_he","notice_en"
 "stat2011:38230001","K19|K20","hidden","","","Ganne Modi'in was still part of Modi'in Illit; suppress its separate 2011 display proxy for these elections.",,
+"stat2011:37970001","K21|K22|K23|K24|K25","hidden","","","Ganne Modi'in was independent by K21; suppress the stale, resultless Modi'in Illit area 1 source polygon beneath the reviewed Ganne Modi'in footprint.",,
 "stat1995:1062001","K17","hidden","","","Reviewed placement uses this historical component as the displayed geometry for Yehud statistical area 8; hide the duplicate source feature.",,
+"stat1995:2039001","K17","hidden","","","K17 uses the reviewed current boundaries for Abu Ghosh and Kiryat Yearim; suppress the obsolete Kiryat Yearim institution feature.",,
+"stat1995:639001","K17","hidden","","","The K17 result is published for the united Basma locality; suppress the resultless historical Barta'a component polygon beneath that fallback.",,
+"stat1995:643001","K17","hidden","","","The K17 result is published for the united Basma locality; suppress the resultless historical Mu'awiya component polygon beneath that fallback.",,
+"stat1995:657001","K17","hidden","","","The K17 result is published for the united Basma locality; suppress the resultless historical Ein as-Sahla component polygon beneath that fallback.",,
 "stat1995:9400008","K17","default","יהוד","Yehud","Reviewed 2006 display name; the canonical transition identifier and source name remain unchanged in the downloadable data.",,
 "stat1995:5405001","K17","hidden","","","Kfar Darom was evacuated before K17; retain the historical source geometry but do not display it for this election.",,
 "stat1995:5407001","K17","hidden","","","Morag was evacuated before K17; retain the historical source geometry but do not display it for this election.",,

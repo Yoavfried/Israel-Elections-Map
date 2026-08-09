@@ -365,7 +365,7 @@ def main() -> None:
             stat_area_vintage,
             "municipality-component-fallback",
             "no_ballot_has_a_supported_statistical_area_assignment_for_reviewed_composite_component",
-            "cbs_2022_component_locality_geometry_display_only",
+            "reviewed_historical_composite_component_display_geometry",
         )
         municipality_fallback_agg = pd.concat(
             [whole_locality_fallback_agg, component_fallback_agg],

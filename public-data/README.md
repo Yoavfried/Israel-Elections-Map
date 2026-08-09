@@ -128,7 +128,8 @@ assignment provenance remain available for analysis.
 
 When an election/locality or reviewed historical-composite component has no
 supported ballot-to-area assignment, the map can show its aggregate on a
-display-only locality or component boundary with an info notice. This does not
+display-only reviewed boundary with an info notice. The K17/K18 component
+shapes retain the election-era composite's outer footprint. This does not
 assign any ballot or change coverage. The 314 map substitutions and their
 represented totals are disclosed in
 [`historical_municipality_display_fallbacks.csv`](v1/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).

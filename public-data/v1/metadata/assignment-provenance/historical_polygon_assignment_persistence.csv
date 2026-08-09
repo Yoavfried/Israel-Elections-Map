@@ -8049,24 +8049,24 @@ stat2011:7260001,2011,726,הודייה,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,as
 stat2011:7270001,2011,727,תלמי יחיאל,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1021,661,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:7290001,2011,729,משמר השבעה,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1059,724,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:7300001,2011,730,אליפלט,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,639,432,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000011,2011,7300,נצרת,11,7,6,K19|K20|K21|K22|K23|K24,1,K25,,K20|K21|K22|K23,intermittently_unassigned,False,2286,1712,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000012,2011,7300,נצרת,12,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,6447,4290,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000013,2011,7300,נצרת,13,7,5,K19|K20|K21|K22|K23,2,K24|K25,,K20|K21|K22|K23,intermittently_unassigned,False,5667,3708,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000014,2011,7300,נצרת,14,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,1285,917,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000015,2011,7300,נצרת,15,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,6040,4088,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000021,2011,7300,נצרת,21,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,2159,1435,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000022,2011,7300,נצרת,22,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,3528,2504,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000023,2011,7300,נצרת,23,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,3131,2239,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000031,2011,7300,נצרת,31,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,3593,2252,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000032,2011,7300,נצרת,32,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,8582,5416,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000033,2011,7300,נצרת,33,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,3807,2438,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000034,2011,7300,נצרת,34,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,5572,3551,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000035,2011,7300,נצרת,35,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,8354,5634,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000041,2011,7300,נצרת,41,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,4923,3453,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000042,2011,7300,נצרת,42,7,5,K19|K20|K21|K22|K23,2,K24|K25,,K20|K21|K22|K23,intermittently_unassigned,False,4918,3092,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000043,2011,7300,נצרת,43,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,3097,1952,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000044,2011,7300,נצרת,44,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K20|K21|K22|K23,assigned_in_every_supported_election,False,2092,1282,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:73000045,2011,7300,נצרת,45,7,5,K19|K20|K21|K22|K23,2,K24|K25,,K20|K21|K22|K23,intermittently_unassigned,False,2311,1373,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000011,2011,7300,נצרת,11,7,6,K19|K20|K21|K22|K23|K24,1,K25,,,intermittently_unassigned,False,2286,1712,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000012,2011,7300,נצרת,12,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,6447,4290,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000013,2011,7300,נצרת,13,7,5,K19|K20|K21|K22|K23,2,K24|K25,,,intermittently_unassigned,False,5667,3708,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000014,2011,7300,נצרת,14,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1285,917,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000015,2011,7300,נצרת,15,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,6040,4088,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000021,2011,7300,נצרת,21,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,2159,1435,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000022,2011,7300,נצרת,22,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,3528,2504,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000023,2011,7300,נצרת,23,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,3131,2239,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000031,2011,7300,נצרת,31,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,3593,2252,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000032,2011,7300,נצרת,32,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,8582,5416,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000033,2011,7300,נצרת,33,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,3807,2438,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000034,2011,7300,נצרת,34,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,5572,3551,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000035,2011,7300,נצרת,35,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,8354,5634,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000041,2011,7300,נצרת,41,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,4923,3453,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000042,2011,7300,נצרת,42,7,5,K19|K20|K21|K22|K23,2,K24|K25,,,intermittently_unassigned,False,4918,3092,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000043,2011,7300,נצרת,43,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,3097,1952,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000044,2011,7300,נצרת,44,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,2092,1282,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:73000045,2011,7300,נצרת,45,7,5,K19|K20|K21|K22|K23,2,K24|K25,,,intermittently_unassigned,False,2311,1373,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:7310001,2011,731,מישר,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,807,518,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:7320001,2011,732,משמר הירדן,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,867,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:7340001,2011,734,גן יאשיה,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1008,663,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries

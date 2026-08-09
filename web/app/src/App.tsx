@@ -119,7 +119,7 @@ export default function App() {
   const selectedGeography = selectedElection?.geographiesByMode[geographyMode]
 
   useEffect(() => {
-    if (!selectedElection || !isGeographicView) {
+    if (!selectedElection) {
       return
     }
     let active = true
@@ -142,7 +142,7 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [geographyMode, isGeographicView, selectedElection])
+  }, [geographyMode, selectedElection])
 
   useEffect(() => {
     if (
@@ -170,7 +170,7 @@ export default function App() {
   }, [activeView, selectedElection])
 
   useEffect(() => {
-    if (!selectedElection || !isGeographicView) {
+    if (!selectedElection) {
       return
     }
     let active = true
@@ -189,7 +189,7 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [isGeographicView, selectedElection])
+  }, [selectedElection])
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -420,10 +420,12 @@ export default function App() {
     updatePreferences({ ...preferences, language: nextLanguage })
   }
   const handleViewChange = (nextView: AppView) => {
-    setSelectedId(null)
-    setSelectedSearchItem(null)
-    setSelectedAddress(null)
-    setFocusRequest(null)
+    if (nextView !== 'national' && activeView !== 'national') {
+      setSelectedId(null)
+      setSelectedSearchItem(null)
+      setSelectedAddress(null)
+      setFocusRequest(null)
+    }
     setActiveView(nextView)
   }
   const clearMapSelection = () => {
@@ -509,8 +511,12 @@ export default function App() {
         </button>
       </header>
 
-      {isGeographicView ? (
-        <div className="map-stage">
+      <div className="app-content">
+        <div
+          className={`map-stage${isGeographicView ? '' : ' map-stage--inactive'}`}
+          aria-hidden={!isGeographicView}
+          inert={!isGeographicView}
+        >
           {resultsState.status === 'ready' && results ? (
             <Suspense fallback={<LoadingState language={language} kind="map" />}>
               <MapCanvas
@@ -644,19 +650,20 @@ export default function App() {
             />
           </div>
         </div>
-      ) : (
-        <NationalResultsScreen
-          language={language}
-          elections={catalog.elections}
-          electionId={electionId}
-          results={nationalResults}
-          loading={nationalResultsState.status === 'loading'}
-          error={
-            nationalResultsState.status === 'error' ? nationalResultsState.message : null
-          }
-          onElectionChange={handleElectionChange}
-        />
-      )}
+        {activeView === 'national' ? (
+          <NationalResultsScreen
+            language={language}
+            elections={catalog.elections}
+            electionId={electionId}
+            results={nationalResults}
+            loading={nationalResultsState.status === 'loading'}
+            error={
+              nationalResultsState.status === 'error' ? nationalResultsState.message : null
+            }
+            onElectionChange={handleElectionChange}
+          />
+        ) : null}
+      </div>
     </main>
   )
 }

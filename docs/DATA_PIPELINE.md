@@ -53,8 +53,9 @@ python scripts/run_pipeline.py --skip-geographies
 16. reconstruct consolidated final subdivisions only from strict
     two-reference polling-site continuity, then solve representative polygon
     ownership for the remaining networks;
-17. generate exact closed, representative, and broad-fallback display layers;
-18. build the committed schema-v2 `public-data/v1` release and validation report.
+17. generate exact closed and representative display layers;
+18. audit cross-layer polygon ownership and reject duplicate election-area claims;
+19. build the committed schema-v2 `public-data/v1` release and validation report.
 
 ## Assignment Precedence
 
@@ -130,7 +131,7 @@ identity is retained without inventing an area number.
 
 ### Reviewed Cross-Election Continuity
 
-`data/manual/cross_election_stat_area_reviews.csv` contains 50 approved
+`data/manual/cross_election_stat_area_reviews.csv` contains 54 approved
 high-confidence links. Each row fingerprints the election, locality, ballot,
 eligible voters, and actual voters, and cites the official polling-register and
 crosswalk evidence. The build rejects non-approved rows, changed source
@@ -139,7 +140,7 @@ mismatch. These are labeled synthetic links; no vote value is changed.
 
 ### Gap And Polygon Audit
 
-`scripts/audit_historical_assignment_gaps.py` classifies all 5,549 pending rows,
+`scripts/audit_historical_assignment_gaps.py` classifies all 5,545 pending rows,
 compares K20/K21 detailed ArcGIS polygons where applicable, and writes
 election-level polygon coverage, recurring crosswalk-locality omission, and
 cross-election persistence tables.
@@ -156,6 +157,11 @@ dissolves the approved polygon set, and aggregates complete final ballot rows
 onto that set. Row-level assignments and downloadable ballot tables remain
 unchanged.
 
+`data/manual/omitted_ordinary_ballot_reviews.csv` records the complete review
+of the thirteen formerly open ordinary rows. Four Nazareth rows publish
+single-area synthetic links, eight Ar'ara rows publish only through exact
+areas-1-and-3 displays, and one Daliyat al-Karmel row remains unresolved.
+
 ## Historical Geometry
 
 `scripts/build_historical_geographies.py`:
@@ -169,11 +175,39 @@ unchanged.
 - adds 32 exact-ID 2011 geometry supplements from audited ArcGIS layers;
 - creates separate display geometry with detailed footprints where canonical
   shapes are schematic;
+- builds two K17 component fallback shapes from their complete 1995 footprints
+  and partitions three complete 2008 composite footprints into seven K18
+  component shapes using reviewed current-locality cut lines;
+- rejects those component partitions unless they cover the election-era outer
+  footprint without material overlap or gaps;
+- applies explicit display-only current-locality boundary operations from
+  `historical_locality_boundary_overrides.csv`: reviewed replacements can use a
+  later locality boundary and suppress an obsolete feature, while reviewed
+  cutouts subtract a fallback locality's exact current display footprint from
+  every covering historical host, reverse-priority cutouts can preserve an
+  official historical polygon by removing it from an election-specific
+  fallback footprint, and explicit no-overlap approvals retain a reviewed
+  fallback unchanged;
+- validates every cutout against its audited original-host overlap share,
+  rejects empty or invalid host remnants, and rejects residual overlap above
+  one square metre for both cutouts and no-overlap approvals; all 33 effective
+  K17 fallbacks are reviewed through one current-boundary replacement, 21
+  cutout fallbacks covering 36 host relationships, and 11 zero-overlap
+  approvals without changing assignments;
+- publishes election-vintage fallback overrides separately in
+  `historical_locality_fallback_display_geometries.geojson`; K18 Kfar Qasem is
+  the current reviewed case, with the official 2008 Kfar Bara polygon retained
+  intact;
+- hides the resultless K17 Barta'a, Mu'awiya, and Ein as-Sahla component
+  displays beneath the reviewed Basma fallback while retaining their canonical
+  1995 source features;
 - clips ordinary historical replacements against neighbors;
 - marks all derivative tribal components as non-exclusive and combines them
   into one presentation-only marker in the web map, while retaining every exact
   component ID and result in the published data tables;
-- preserves the reviewed detailed Ganei Modi'in overlay from K21;
+- preserves the reviewed detailed Ganei Modi'in overlay and its standalone
+  ballot result from K21, while suppressing the stale, resultless Modi'in Illit
+  area 1 polygon that occupies the same footprint in those elections;
 - reuses the exact detailed Hebron footprint for the K17/K18 custom target and
   renders K17 Yehud statistical area 8 on the reviewed historical Newe Efrayim
   component polygon without changing its official transition assignment ID;
@@ -201,6 +235,8 @@ package for current locality display and future direct-crosswalk elections.
 - `data/processed/audits/historical_crosswalk_locality_omission_recurrence.csv`
 - `data/processed/audits/historical_polygon_*`
 - `data/processed/audits/historical_municipality_display_fallbacks.csv`
+- `data/processed/geographies/historical_composite_component_display_geometries.geojson`
+- `data/processed/geographies/historical_composite_component_display_geometries.metadata.csv`
 - `data/processed/geographies/historical_geography_build_summary.json`
 - `data/processed/public/<mode>/*.csv`
 
@@ -244,6 +280,23 @@ Verified from the offline rebuild on 2026-08-03:
 - `data/manual/composite_localities.csv` and
   `data/manual/joined_locality_composites.csv` control election-specific
   locality display unions.
+- `scripts/build_reviewed_locality_statistical_displays.py` checks those joins
+  and accepted historical locality mergers against each election's active
+  statistical-area vintage. It creates a statistical-mode union only for an
+  exact one-area-host case: the host area equals the complete locality result,
+  attached polygons have no independent result, and no component is already
+  owned by another display rule. Multi-area hosts are reported for review and
+  retain their existing detail. `scripts/audit_joined_locality_continuity.py`
+  evaluates the 180 election-specific leads across 33 recurring
+  host/component relationships. It accepts only an explicit official register
+  attachment, unique exact eligible-voter arithmetic, continuity bracketed by
+  the same direct host before and after the election, or backward continuity
+  supported by the same host in the first two adjacent later direct-evidence
+  elections. Existing ownership and contradictory register attachments are
+  hard stops. Thirty-eight cases pass these rules and are recorded in
+  `data/manual/joined_locality_composites.csv`; 142 remain covered by another
+  rule, contradicted, or unresolved. These are display unions only. They never
+  write a ballot-level statistical-area assignment.
 - `data/manual/historical_single_stat_fallback_exclusions.csv` blocks the
   deterministic single-area fallback when an election result represents a
   reviewed combined municipality but the historical layer retains separate
@@ -258,12 +311,22 @@ Verified from the offline rebuild on 2026-08-03:
   footprints cannot be displayed as exclusive geography.
 - `data/manual/historical_composite_ballot_components.csv` preserves reviewed
   K17/K18 polling-register ranges and component-locality evidence.
+- `data/manual/historical_composite_component_display_geometries.csv` declares
+  the nine K17/K18 component fallback shapes that must be built inside their
+  complete election-era historical footprints.
+- `data/manual/historical_locality_boundary_overrides.csv` records reviewed
+  display-only replacements and cutouts. Each cutout names the historical host,
+  current fallback locality, and audited overlap share; replacement rows can
+  also name obsolete display features to suppress.
 - `data/manual/historical_stat_area_overrides.csv` records five reviewed K19
   target corrections.
 - `data/manual/arcgis_assignment_reconstruction_reviews.csv` records approved
   and rejected ArcGIS decisions.
-- `data/manual/cross_election_stat_area_reviews.csv` records the 50 approved
+- `data/manual/cross_election_stat_area_reviews.csv` records the 54 approved
   high-confidence polling-register continuity links and their source evidence.
+- `data/manual/omitted_ordinary_ballot_reviews.csv` records the reviewed
+  row-level, set-level, and unresolved outcomes for the thirteen specific
+  ordinary crosswalk omissions.
 - `data/manual/party_registry.csv` covers every election-specific result column;
   map colors remain presentation configuration under `web/app/`.
 
@@ -275,11 +338,12 @@ before unique site linkage. Planned counts then weight graph edges without
 being treated as conserved final totals. Disconnected geometry never forces
 otherwise distinct polling groups to merge. Planned-only sites are reconciled
 only through unique agreement on candidate areas, polling-place text, and
-eligible-voter arithmetic. The pipeline currently publishes 517 exact closed
-units without uncertainty notices and 1,757 representative units with notices.
-Multi-group representative units eliminate every former broad
-network fallback; `build_statistical_area_result_aggregates.py` emits an empty
-artifact so stale fallback geometry cannot survive a rebuild.
+eligible-voter arithmetic. The pipeline currently publishes 525 exact closed
+units without uncertainty notices and 1,750 representative units with notices.
+Multi-group representative units eliminate every former broad network
+fallback. `build_statistical_area_result_aggregates.py` rewrites a separate
+artifact for exact reviewed locality unions and the remaining narrow reviewed
+result aggregates, so stale geometry cannot survive a rebuild.
 
 ## Web Build
 
@@ -296,7 +360,8 @@ national-result and election-aware geography-search assets under
 download release's schema-v2 ballot tables.
 
 `build_public_outputs.py` also emits a display-only locality aggregate when an
-election/locality has zero supported area assignments. The frontend substitutes
-that locality footprint for its empty component areas and exposes a notice.
-This layer is excluded from assignment coverage and never writes an area ID
-back to a ballot row.
+election/locality has zero supported area assignments. Whole-locality cases use
+their reviewed fallback footprint. The nine K17/K18 historical-composite
+components use the validated election-era component geometry generated above.
+Both expose the standard unsplit-locality notice. This layer is excluded from
+assignment coverage and never writes an area ID back to a ballot row.

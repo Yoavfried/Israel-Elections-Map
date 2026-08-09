@@ -73,7 +73,7 @@ export function normalizeSearchText(value: string): string {
     .replace(/\p{M}/gu, '')
     .toLocaleLowerCase()
     .replace(/[ךםןףץ]/g, (character) => HEBREW_FINAL_LETTERS[character] ?? character)
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/[^\p{L}\p{N}\s]+/gu, '')
     .trim()
     .replace(/\s+/g, ' ')
 }

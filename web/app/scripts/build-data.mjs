@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import {
   applyStatisticalDisplayGroups,
+  assertUniqueStatisticalDisplayOwnership,
   aliasJoinedCompositeResults,
   buildCoverage,
   buildCompositeMetadataIndex,
@@ -52,6 +53,8 @@ async function main() {
       localityMetadataRows,
       statisticalAreas,
       localities,
+      historicalComponentFallbackGeometries,
+      historicalLocalityFallbackGeometries,
       statisticalAreaBackdrop,
       mapContextFootprint,
       compositeLocalities,
@@ -89,6 +92,20 @@ async function main() {
       ),
       readJson(
         resolve(sourceRoot, 'geographies', 'localities_2022_dissolved.display.simplified.geojson'),
+      ),
+      readJson(
+        resolve(
+          sourceRoot,
+          'geographies',
+          'historical_composite_component_display_geometries.geojson',
+        ),
+      ),
+      readJson(
+        resolve(
+          sourceRoot,
+          'geographies',
+          'historical_locality_fallback_display_geometries.geojson',
+        ),
       ),
       readJson(
         resolve(sourceRoot, 'geographies', 'statistical_area_land_backdrop.simplified.geojson'),
@@ -247,6 +264,30 @@ async function main() {
       ),
     )
     const fallbackFeaturesByVintage = new Map()
+    const componentFallbackGeometryIds = new Set(
+      historicalComponentFallbackGeometries.features.map((feature) =>
+        String(feature.properties?.fallback_geography_id ?? feature.id ?? '').trim(),
+      ),
+    )
+    if (
+      componentFallbackGeometryIds.has('') ||
+      componentFallbackGeometryIds.size !== historicalComponentFallbackGeometries.features.length
+    ) {
+      throw new Error('Historical component fallback geography has blank or duplicate IDs')
+    }
+    const localityFallbackGeometryIds = new Set(
+      historicalLocalityFallbackGeometries.features.map((feature) =>
+        String(feature.properties?.fallback_geography_id ?? feature.id ?? '').trim(),
+      ),
+    )
+    if (
+      localityFallbackGeometryIds.has('') ||
+      localityFallbackGeometryIds.size !== historicalLocalityFallbackGeometries.features.length
+    ) {
+      throw new Error('Historical locality fallback geography has blank or duplicate IDs')
+    }
+    const referencedComponentFallbackIds = new Set()
+    const referencedLocalityFallbackIds = new Set()
     for (const election of electionConfig) {
       const sourceData = electionSourceDataById.get(election.id)
       const vintage = Number(election.statisticalAreaVintage)
@@ -254,12 +295,26 @@ async function main() {
       if (!sourceData || !statisticalGeography) {
         throw new Error(`${election.id} is missing municipality fallback build inputs`)
       }
+      for (const row of sourceData.fallbackRows) {
+        const fallbackId = String(row.fallback_geography_id ?? '').trim()
+        if (fallbackId.startsWith('municipality-component-fallback:')) {
+          referencedComponentFallbackIds.add(fallbackId)
+        }
+        if (localityFallbackGeometryIds.has(fallbackId)) {
+          referencedLocalityFallbackIds.add(fallbackId)
+        }
+      }
       const fallbackDisplay = buildMunicipalityFallbackDisplay({
         electionId: election.id,
         vintage,
         fallbackRows: sourceData.fallbackRows,
         localityGeography: prunedLocalities,
         statisticalGeography,
+        componentFallbackGeography: historicalComponentFallbackGeometries,
+        localityFallbackGeography: filterFallbackGeographiesByVintage(
+          historicalLocalityFallbackGeometries,
+          vintage,
+        ),
       })
       electionSourceDataById.set(election.id, { ...sourceData, fallbackDisplay })
 
@@ -275,6 +330,25 @@ async function main() {
         }
         fallbackFeatures.set(feature.id, feature)
       }
+    }
+    const missingComponentFallbackGeometryIds = [...referencedComponentFallbackIds].filter(
+      (id) => !componentFallbackGeometryIds.has(id),
+    )
+    const unusedComponentFallbackGeometryIds = [...componentFallbackGeometryIds].filter(
+      (id) => !referencedComponentFallbackIds.has(id),
+    )
+    if (missingComponentFallbackGeometryIds.length || unusedComponentFallbackGeometryIds.length) {
+      throw new Error(
+        `Historical component fallback geometry mismatch: missing=${missingComponentFallbackGeometryIds.join(',') || 'none'} unused=${unusedComponentFallbackGeometryIds.join(',') || 'none'}`,
+      )
+    }
+    const unusedLocalityFallbackGeometryIds = [...localityFallbackGeometryIds].filter(
+      (id) => !referencedLocalityFallbackIds.has(id),
+    )
+    if (unusedLocalityFallbackGeometryIds.length) {
+      throw new Error(
+        `Historical locality fallback geometry is not referenced: ${unusedLocalityFallbackGeometryIds.join(',')}`,
+      )
     }
     for (const [vintage, featuresById] of fallbackFeaturesByVintage) {
       prunedStatisticalAreasByVintage.get(vintage)?.features.push(...featuresById.values())
@@ -411,6 +485,13 @@ async function main() {
             Object.entries(row).filter(([, value]) => String(value ?? '').trim() !== ''),
           ),
         )
+      const electionStatisticalDisplayGroups =
+        statisticalAreaDisplayGroups.get(election.id) ?? []
+      assertUniqueStatisticalDisplayOwnership({
+        electionId: election.id,
+        displayGroups: electionStatisticalDisplayGroups,
+        pollingGroupRows,
+      })
       const pollingGroupHiddenIds = pollingGroupRows.flatMap((row) =>
         String(row.component_stat_area_ids ?? '')
           .split('|')
@@ -430,7 +511,7 @@ async function main() {
         electionId: election.id,
         primaryRows: statisticalRows,
         customRows,
-        groups: statisticalAreaDisplayGroups.get(election.id),
+        groups: electionStatisticalDisplayGroups,
       })
       const pollingGroupHiddenIdSet = new Set(pollingGroupHiddenIds)
       const statisticalPrimaryRows = statisticalDisplay.primaryRows.filter(
@@ -942,6 +1023,15 @@ function filterStatisticalCustomGeographiesByVintage(collection, vintage) {
         .filter(Boolean)
       return componentIds.length === 0 || componentIds.every((id) => id.startsWith(prefix))
     }),
+  }
+}
+
+function filterFallbackGeographiesByVintage(collection, vintage) {
+  return {
+    type: 'FeatureCollection',
+    features: collection.features.filter(
+      (feature) => Number(feature.properties?.stat_area_vintage) === vintage,
+    ),
   }
 }
 

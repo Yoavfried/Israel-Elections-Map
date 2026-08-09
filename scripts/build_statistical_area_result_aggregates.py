@@ -24,6 +24,13 @@ GENERATED_FALLBACK_PATH = (
     / "audits"
     / "statistical_area_polling_group_fallbacks.csv"
 )
+REVIEWED_LOCALITY_DISPLAY_PATH = (
+    ROOT
+    / "data"
+    / "processed"
+    / "audits"
+    / "reviewed_locality_statistical_displays.csv"
+)
 MANUAL_REVIEW_PATH = (
     ROOT
     / "data"
@@ -36,7 +43,7 @@ SOURCE_PATHS = [
     / "processed"
     / "geographies"
     / f"statistical_areas_{vintage}.display.simplified.geojson"
-    for vintage in (2008, 2011)
+    for vintage in (1995, 2008, 2011)
 ]
 OUTPUT_PATH = (
     ROOT
@@ -140,6 +147,11 @@ def main() -> None:
         encoding="utf-8-sig", newline=""
     ) as handle:
         configured_groups = list(csv.DictReader(handle))
+    if REVIEWED_LOCALITY_DISPLAY_PATH.exists():
+        with REVIEWED_LOCALITY_DISPLAY_PATH.open(
+            encoding="utf-8-sig", newline=""
+        ) as handle:
+            configured_groups.extend(csv.DictReader(handle))
     if MANUAL_REVIEW_PATH.exists():
         with MANUAL_REVIEW_PATH.open(
             encoding="utf-8-sig", newline=""

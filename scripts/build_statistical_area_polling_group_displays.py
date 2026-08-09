@@ -53,7 +53,7 @@ ASSIGNMENTS_PATH = (
     / "data"
     / "processed"
     / "assignments"
-    / "historical_ballot_assignments.csv"
+    / "ballot_geography_assignments.csv"
 )
 RESULTS_DIR = ROOT / "data" / "processed" / "normalized" / "ballot_votes_wide"
 OUTPUT_GEOMETRY_PATH = (

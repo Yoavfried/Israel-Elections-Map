@@ -36,6 +36,8 @@ written permission.
 The following reviewed files are website-presentation configuration, not open
 assignment data, and are also covered by LICENSE-WEBSITE:
 
+- data/manual/historical_composite_component_display_geometries.csv
+- data/manual/historical_locality_boundary_overrides.csv
 - data/manual/locality_display_overrides.csv
 - data/manual/statistical_area_display_groups.csv
 - data/manual/statistical_area_display_overrides.csv
