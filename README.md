@@ -51,7 +51,7 @@ pipeline run is required.
 The ballot CSVs contain every source result row, party-vote columns, and the
 corresponding statistical-area and locality IDs. Polygon ZIPs expose the same
 `geography_id`, so the join is direct. Assignment method/source fields identify
-198 rows whose area link is inferred rather than copied from a direct official
+164 rows whose area link is inferred rather than copied from a direct official
 crosswalk. Their vote values remain official, and the exact evidence class,
 confidence, source, and synthetic-link flag are published on every row.
 
@@ -75,7 +75,8 @@ Statistical-area assignment precedence is:
 3. official election-specific CBS ballot-to-statistical-area crosswalk;
 4. direct K23 CEC AGS evidence;
 5. reviewed exact ArcGIS residual reconstruction;
-6. official CBS stable-ballot propagation when all same-vintage evidence agrees;
+6. official CBS stable-ballot propagation when all same-vintage evidence agrees
+   and the election-specific mixed-site safety audit passes;
 7. reviewed high-confidence polling-register continuity across elections;
 8. reviewed K17/K18 polling-register evidence identifying a composite's
    component locality;

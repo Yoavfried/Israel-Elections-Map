@@ -110,12 +110,15 @@ found no parser-level loss of a positive, fully identified statistical area.
 The archived K20-K25 CEC polling-place workbooks were inspected separately.
 Only K23 contains an AGS field. Its direct AGS evidence adds 74 assignments
 after 6,775 of 6,776 comparable existing targets agree and the one conflict is
-withheld. The stable-ballot workbooks add 134 high-confidence inferred links;
-all same-vintage and transition conflicts remain withheld.
+withheld. The stable-ballot workbooks produce 134 inferred candidates. The
+election-specific polling-place safety audit withholds 38 K24 candidates after
+showing that their decimal batches combine planned ballots from multiple areas:
+ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Ninety-six stable links publish.
+All same-vintage and transition conflicts remain withheld.
 
 A separate reviewed continuity pass compares official CEC polling-place
 reports across elections with official same-vintage CBS crosswalk targets. It
-accepts 50 additional high-confidence links where polling-register identity is
+accepts 54 additional high-confidence links where polling-register identity is
 supported by exact ballot/place continuity or an independently reconcilable
 crosswalk gap. The approved source fingerprints and notes are committed in
 `data/manual/cross_election_stat_area_reviews.csv`. These links are explicitly
@@ -170,9 +173,10 @@ evidence. Consolidated final subdivisions in K21-K23 are accepted only when
 locality, official site ID, and normalized site text remain continuous and at
 least two direct-evidence elections agree on the exact multi-area set. Other
 K22/K23 groups retain the stricter site-and-ballot-base continuity rule. The
-policy produces 525 exact closed units and 1,750 representative units over
-4,706 polygon-election memberships, with no remaining broad fallback. Exact
-units cover 1,282 polygon memberships and have no uncertainty notice.
+final display layer produces 536 exact closed units and 1,728 representative
+units over 4,722 polygon-election memberships, with no remaining broad
+fallback. Exact units cover 1,333 polygon memberships and have no uncertainty
+notice.
 Bilingual notices remain on representative placements.
 Disconnected geometry is disclosed rather than used to force larger groups.
 Twelve K25 planned-only sites are reconciled to unique final-result sites using

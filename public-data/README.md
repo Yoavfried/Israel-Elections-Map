@@ -76,9 +76,9 @@ Every ballot row exposes:
 - `assignment_is_synthetic_link`;
 - the specific `final_assignment_method` and `final_assignment_source`.
 
-The release contains 198 inferred ballot-to-area links representing 58,829
-actual voters: 134 from official CBS stable-ballot evidence, nine from reviewed
-exact ArcGIS residuals, five reviewed cross-election corrections, and 50
+The release contains 164 inferred ballot-to-area links representing 52,804
+actual voters: 96 from official CBS stable-ballot evidence, nine from reviewed
+exact ArcGIS residuals, five reviewed cross-election corrections, and 54
 approved high-confidence polling-register continuity links. The ballot
 identity, electorate, turnout, valid/invalid totals, and party votes remain
 unchanged official source values. Only the area link is synthetic.

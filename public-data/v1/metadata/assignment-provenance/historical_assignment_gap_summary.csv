@@ -22,11 +22,11 @@ K22,2011,entire_locality_omitted_from_official_crosswalk,irreducible_with_curren
 K23,2011,all_pending_rows,mixed,616,33,432660,295946
 K23,2011,central_ballot_990_locality_only,intentionally_locality_only,1,1,338,234
 K23,2011,entire_locality_omitted_from_official_crosswalk,irreducible_with_current_sources,615,32,432322,295712
-K24,2011,all_pending_rows,mixed,868,42,462594,212156
+K24,2011,all_pending_rows,mixed,906,44,483714,219524
 K24,2011,central_ballot_990_locality_only,intentionally_locality_only,31,9,15787,8664
-K24,2011,entire_locality_omitted_from_official_crosswalk,irreducible_with_current_sources,833,32,444711,202743
-K24,2011,specific_ballot_omitted_from_official_crosswalk,irreducible_with_current_sources,4,1,2096,749
+K24,2011,entire_locality_omitted_from_official_crosswalk,irreducible_with_current_sources,871,34,465831,210111
+K24,2011,specific_ballot_omitted_from_official_crosswalk,resolved_exact_set_display,4,1,2096,749
 K25,2011,all_pending_rows,mixed,806,37,469894,259533
 K25,2011,central_ballot_990_locality_only,intentionally_locality_only,9,3,5210,2730
 K25,2011,entire_locality_omitted_from_official_crosswalk,irreducible_with_current_sources,792,32,461876,255412
-K25,2011,specific_ballot_omitted_from_official_crosswalk,irreducible_with_current_sources,5,2,2808,1391
+K25,2011,specific_ballot_omitted_from_official_crosswalk,resolved_exact_set_display,5,2,2808,1391

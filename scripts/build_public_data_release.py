@@ -219,6 +219,21 @@ PROVENANCE_TABLES = [
         "Synthetic area links inferred from official CBS stable-ballot workbooks.",
     ),
     (
+        AUDIT_DIR / "stable_ballot_site_safety.csv",
+        "stable_ballot_site_safety.csv",
+        "Row-level preservation and mixed-site safety audit for every stable-ballot candidate.",
+    ),
+    (
+        MANUAL_DIR / "stable_ballot_assignment_reviews.csv",
+        "stable_ballot_assignment_reviews.csv",
+        "Reviewed rejections where a stable base ballot became a mixed final polling-site batch.",
+    ),
+    (
+        MANUAL_DIR / "polling_register_planned_area_reviews.csv",
+        "polling_register_planned_area_reviews.csv",
+        "Reviewed planned-ballot area sets used to audit final polling-site consolidations.",
+    ),
+    (
         AUDIT_DIR / "stable_ballot_assignment_conflicts.csv",
         "stable_ballot_assignment_conflicts.csv",
         "Stable-ballot links withheld because authoritative areas conflict.",
@@ -276,6 +291,7 @@ PROVENANCE_JSON = [
     (AUDIT_DIR / "arcgis_assignment_reconstruction_summary.json", "arcgis_reconstruction_summary.json"),
     (AUDIT_DIR / "k23_cec_ags_assignment_summary.json", "k23_cec_ags_assignment_summary.json"),
     (AUDIT_DIR / "stable_ballot_assignment_summary.json", "stable_ballot_assignment_summary.json"),
+    (AUDIT_DIR / "stable_ballot_site_safety_summary.json", "stable_ballot_site_safety_summary.json"),
     (AUDIT_DIR / "historical_assignment_gap_summary.json", "historical_assignment_gap_summary.json"),
 ]
 

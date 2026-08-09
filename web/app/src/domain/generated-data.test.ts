@@ -1608,17 +1608,17 @@ describe('generated web data', () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
       K21: 92,
-      K22: 428,
-      K23: 428,
-      K24: 403,
+      K22: 429,
+      K23: 426,
+      K24: 382,
       K25: 399,
     }
     const expectedExactClosedCounts: Record<string, number> = {
       K21: 134,
       K22: 4,
       K23: 2,
-      K24: 194,
-      K25: 191,
+      K24: 204,
+      K25: 192,
     }
 
     for (const election of catalog.elections) {
@@ -1731,7 +1731,7 @@ describe('generated web data', () => {
       await readJson(resolve(dataRoot, k21Catalog.resultUrls['statistical-area'])),
     )
     const southTelAvivDisplay = k21Payload.records.find(
-      (record) => record.id === 'display:polling-topology:K21:5000:aggregate:21:1',
+      (record) => record.id === 'display:polling-topology:K21:5000:aggregate:14:1',
     )
     expect(southTelAvivDisplay).toMatchObject({
       names: { he: expect.stringContaining('811, 812, 813') },
@@ -1749,7 +1749,7 @@ describe('generated web data', () => {
     )
     expect(
       k21Search.items.find(
-        (item) => item.id === 'display:polling-topology:K21:5000:aggregate:21:1',
+        (item) => item.id === 'display:polling-topology:K21:5000:aggregate:14:1',
       )?.names.he,
     ).toContain('811, 812, 813')
 
@@ -1831,7 +1831,7 @@ describe('generated web data', () => {
         geometryPartCount: 1,
       },
       K24: {
-        id: 'display:polling-partition:K24:3000:aggregate:10:4',
+        id: 'display:polling-partition:K24:3000:aggregate:11:4',
         totals: { eligibleVoters: 2_544, actualVoters: 1_473, validVotes: 1_469 },
         geometryType: 'MultiPolygon',
         geometryPartCount: 2,

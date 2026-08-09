@@ -48,14 +48,18 @@ python scripts/run_pipeline.py --skip-geographies
 13. aggregate statistical-area, locality, custom, envelope, contribution, and
     unresolved outputs;
 14. audit official planned/final polling-group networks;
-15. identify exact closed polygon/polling-group units with transport-flow
+15. audit every stable-ballot candidate against available election-specific
+    polling-site topology and fail on any unreviewed mixed final batch;
+16. identify exact closed polygon/polling-group units with transport-flow
     bounds;
-16. reconstruct consolidated final subdivisions only from strict
+17. reconstruct consolidated final subdivisions only from strict
     two-reference polling-site continuity, then solve representative polygon
     ownership for the remaining networks;
-17. generate exact closed and representative display layers;
-18. audit cross-layer polygon ownership and reject duplicate election-area claims;
-19. build the committed schema-v2 `public-data/v1` release and validation report.
+18. generate reviewed locality unions and exact/representative statistical-area
+    display layers;
+19. audit cross-layer polygon ownership and reject duplicate election-area claims;
+20. audit contributor capacity and require a recorded decision for every flag;
+21. build the committed schema-v2 `public-data/v1` release and validation report.
 
 ## Assignment Precedence
 
@@ -106,8 +110,21 @@ and summary artifacts.
 `scripts/audit_stable_ballot_assignments.py` builds components from the official
 transition workbooks. It accepts a pending ballot only when all assigned
 same-vintage members agree on one area. Decimal subdivisions share the
-historical base ballot. Conflicts and cross-vintage transitions remain
+historical base ballot. Before publication,
+`data/manual/stable_ballot_assignment_reviews.csv` can reject an otherwise
+stable candidate when election-specific polling-register evidence proves that
+the final decimal batch consolidated planned ballots from several areas.
+Conflicts, rejected consolidations, and cross-vintage transitions remain
 published audit records rather than assignments.
+
+`scripts/audit_stable_ballot_site_safety.py` then checks all 134 candidates
+against distinct official pre/post polling registers where those registers
+exist. It fails publication if a mixed final batch is not explicitly rejected.
+The current review rejects 38 K24 rows: ten in Daliyat al-Karmel and 28 in Umm
+al-Fahm. Ninety-six candidates remain published as row-level links. The audit
+also records that the other 47 election/locality candidates have no decimal
+batch signal, but lack distinct pre/post registers and therefore cannot receive
+the same structural test.
 
 ### ArcGIS Residuals
 
@@ -140,7 +157,7 @@ mismatch. These are labeled synthetic links; no vote value is changed.
 
 ### Gap And Polygon Audit
 
-`scripts/audit_historical_assignment_gaps.py` classifies all 5,545 pending rows,
+`scripts/audit_historical_assignment_gaps.py` classifies all 5,583 pending rows,
 compares K20/K21 detailed ArcGIS polygons where applicable, and writes
 election-level polygon coverage, recurring crosswalk-locality omission, and
 cross-election persistence tables.
@@ -157,10 +174,22 @@ dissolves the approved polygon set, and aggregates complete final ballot rows
 onto that set. Row-level assignments and downloadable ballot tables remain
 unchanged.
 
+`data/manual/polling_register_planned_area_reviews.csv` supplies reviewed
+planned-ballot area sets only when the election lacks a direct detailed
+crosswalk and surrounding official crosswalks agree. For K24 Daliyat
+al-Karmel, K21, K22, and K25 give the same five-area planned mapping. The
+official K24 pre/post registers then prove that three final ballot batches mix
+areas 1, 3, 4, and 5. Those four polygons publish one exact closed result;
+area 2 remains separate. The same procedure identifies 28 unsafe K24 Umm
+al-Fahm rows and closes the complete areas-13-14-15-21-34 polling-site network.
+No internal split is estimated in either locality.
+
 `data/manual/omitted_ordinary_ballot_reviews.csv` records the complete review
 of the thirteen formerly open ordinary rows. Four Nazareth rows publish
 single-area synthetic links, eight Ar'ara rows publish only through exact
-areas-1-and-3 displays, and one Daliyat al-Karmel row remains unresolved.
+areas-1-and-3 displays, and K25 Daliyat ballot 23 publishes with the complete
+areas-3-and-5 result at its unchanged mixed-area polling site. The latter nine
+rows retain blank row-level area IDs despite their exact set-level resolution.
 
 ## Historical Geometry
 
@@ -257,18 +286,18 @@ decisions.
 
 ## Verified Coverage
 
-Verified from the offline rebuild on 2026-08-03:
+Verified from the offline rebuild on 2026-08-09:
 
 | Election | Vintage | Supported rows | Pending rows | Supported voter share | Locality share |
 |---|---:|---:|---:|---:|---:|
 | K17 | 1995 | 7,865 | 409 | 94.65% | 100% |
 | K18 | 2008 | 8,741 | 518 | 94.14% | 100% |
 | K19 | 2011 | 9,317 | 558 | 94.13% | 100% |
-| K20 | 2011 | 9,545 | 567 | 93.55% | 100% |
-| K21 | 2011 | 9,855 | 597 | 94.51% | 100% |
-| K22 | 2011 | 9,922 | 609 | 93.65% | 100% |
-| K23 | 2011 | 10,006 | 617 | 93.08% | 100% |
-| K24 | 2011 | 11,251 | 868 | 94.71% | 100% |
+| K20 | 2011 | 9,546 | 566 | 93.56% | 100% |
+| K21 | 2011 | 9,856 | 596 | 94.52% | 100% |
+| K22 | 2011 | 9,923 | 608 | 93.66% | 100% |
+| K23 | 2011 | 10,007 | 616 | 93.09% | 100% |
+| K24 | 2011 | 11,213 | 906 | 94.53% | 100% |
 | K25 | 2011 | 10,893 | 806 | 94.01% | 100% |
 
 ## Other Reviewed Inputs
@@ -325,7 +354,7 @@ Verified from the offline rebuild on 2026-08-03:
 - `data/manual/cross_election_stat_area_reviews.csv` records the 54 approved
   high-confidence polling-register continuity links and their source evidence.
 - `data/manual/omitted_ordinary_ballot_reviews.csv` records the reviewed
-  row-level, set-level, and unresolved outcomes for the thirteen specific
+  row-level and set-level outcomes for the thirteen specific
   ordinary crosswalk omissions.
 - `data/manual/party_registry.csv` covers every election-specific result column;
   map colors remain presentation configuration under `web/app/`.
@@ -338,8 +367,9 @@ before unique site linkage. Planned counts then weight graph edges without
 being treated as conserved final totals. Disconnected geometry never forces
 otherwise distinct polling groups to merge. Planned-only sites are reconciled
 only through unique agreement on candidate areas, polling-place text, and
-eligible-voter arithmetic. The pipeline currently publishes 525 exact closed
-units without uncertainty notices and 1,750 representative units with notices.
+eligible-voter arithmetic. The final display layer currently publishes 536
+exact closed units without uncertainty notices and 1,728 representative units
+with notices.
 Multi-group representative units eliminate every former broad network
 fallback. `build_statistical_area_result_aggregates.py` rewrites a separate
 artifact for exact reviewed locality unions and the remaining narrow reviewed

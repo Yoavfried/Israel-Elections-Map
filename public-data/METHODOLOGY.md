@@ -46,7 +46,8 @@ applicable rule in this order wins:
 5. use a reviewed exact ArcGIS residual only when the official aggregate can be
    reconciled uniquely;
 6. propagate an official CBS stable-ballot link only when all same-version
-   evidence agrees;
+   evidence agrees and the polling-site safety audit does not identify a mixed
+   final batch;
 7. use reviewed polling-register continuity only when election, locality,
    ballot/site identity, and the target area's evidence meet the documented
    high-confidence rule;
@@ -64,16 +65,16 @@ that station live in the address's statistical area.
 
 ## Inferred Links
 
-The release marks 198 ballot-to-area links as inferred. The vote rows remain
+The release marks 164 ballot-to-area links as inferred. The vote rows remain
 official; only their geographic link is synthetic.
 
 | Evidence class | Rows | Actual voters |
 |---|---:|---:|
-| Official CBS stable-ballot inference | 134 | 35,129 |
+| Official CBS stable-ballot inference | 96 | 27,761 |
 | Reviewed exact ArcGIS residual inference | 9 | 3,599 |
 | Reviewed cross-election correction | 5 | 2,024 |
-| Reviewed polling-register continuity | 50 | 18,077 |
-| **Total** | **198** | **58,829** |
+| Reviewed polling-register continuity | 54 | 19,420 |
+| **Total** | **164** | **52,804** |
 
 The separate 74 K23 AGS links, representing 29,685 actual voters, are direct
 official evidence and are not marked synthetic.
@@ -91,21 +92,27 @@ To analyze only direct assignments, filter
 
 ## Explicit Unresolved Rows
 
-The release leaves 5,549 rows without a statistical-area target rather than
+The release leaves 5,583 rows without a statistical-area target rather than
 guessing:
 
 | Source limitation | Rows |
 |---|---:|
-| Entire locality omitted from the official crosswalk | 5,298 |
+| Entire locality omitted from the official crosswalk | 5,336 |
 | Election locality identity absent from the active historical version | 53 |
 | K17 component locality has multiple areas but no component crosswalk | 31 |
 | K18 component locality is nested in published composite geometry | 84 |
 | Central ballot 990, intentionally locality-only | 70 |
-| Specific ordinary ballot omitted from the official crosswalk | 13 |
-| **Total** | **5,549** |
+| Specific ordinary ballot omitted from the official crosswalk | 9 |
+| **Total** | **5,583** |
 
 These rows are available under `v1/aggregates/unresolved/` and retain their
 locality result. They are not counted as statistical-area assignments.
+
+Row-level unresolved does not always mean map-level missing. Thirty-eight K24
+mixed-batch rows and nine specific omitted rows have reviewed exact set-level
+displays. Their votes are shown once across the complete contributing polygon
+set, while their ballot rows retain blank area IDs because no internal split is
+supported.
 
 ## Aggregation And Joins
 

@@ -25,6 +25,9 @@ OUTPUT_SITES = AUDIT_DIR / "statistical_area_polling_group_sites.csv"
 OUTPUT_COMPONENTS = AUDIT_DIR / "statistical_area_polling_group_components.csv"
 OUTPUT_AREAS = AUDIT_DIR / "statistical_area_polling_group_area_evidence.csv"
 OUTPUT_SUMMARY = AUDIT_DIR / "statistical_area_polling_group_evidence_summary.json"
+PLANNED_AREA_REVIEWS = (
+    ROOT / "data" / "manual" / "polling_register_planned_area_reviews.csv"
+)
 
 
 @dataclass(frozen=True)
@@ -152,6 +155,70 @@ def pipe(values: Any) -> str:
     return "|".join(sorted({clean(value) for value in values if clean(value)}))
 
 
+def load_planned_area_reviews(metadata: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "election",
+        "locality_code",
+        "locality_name",
+        "ballot_base",
+        "stat_area_id",
+        "evidence_class",
+    ]
+    if not PLANNED_AREA_REVIEWS.exists():
+        return pd.DataFrame(columns=columns)
+
+    reviews = pd.read_csv(
+        PLANNED_AREA_REVIEWS,
+        dtype=str,
+        encoding="utf-8-sig",
+    ).fillna("")
+    expanded: list[dict[str, str]] = []
+    for review in reviews.to_dict("records"):
+        if clean(review.get("review_status")) != "approved":
+            continue
+        election = clean(review.get("election"))
+        locality_code = clean(review.get("locality_code"))
+        stat_area_id = clean(review.get("stat_area_id"))
+        evidence_class = clean(review.get("evidence_class"))
+        if not election or not locality_code or not stat_area_id or not evidence_class:
+            raise ValueError("Reviewed planned-area mapping has a blank identity field")
+        for ballot in clean(review.get("planned_ballots")).split("|"):
+            base = ballot_base(ballot)
+            if not base:
+                continue
+            expanded.append(
+                {
+                    "election": election,
+                    "locality_code": locality_code,
+                    "locality_name": clean(review.get("locality_name")),
+                    "ballot_base": base,
+                    "stat_area_id": stat_area_id,
+                    "evidence_class": evidence_class,
+                }
+            )
+
+    output = pd.DataFrame(expanded, columns=columns)
+    if output.empty:
+        return output
+    duplicate = output.duplicated(
+        ["election", "locality_code", "ballot_base"], keep=False
+    )
+    if duplicate.any():
+        raise ValueError(
+            "Duplicate reviewed planned ballot mappings:\n"
+            + output.loc[duplicate].to_string(index=False)
+        )
+
+    area_locality = metadata.set_index("stat_area_id")["locality_code"].to_dict()
+    for row in output.to_dict("records"):
+        if area_locality.get(row["stat_area_id"]) != row["locality_code"]:
+            raise ValueError(
+                "Reviewed planned ballot mapping crosses locality boundaries: "
+                f"{row['election']}/{row['locality_code']}/{row['ballot_base']}"
+            )
+    return output
+
+
 def read_source(source: Source) -> pd.DataFrame:
     path = RAW / source.filename
     if source.kind == "csv":
@@ -224,7 +291,8 @@ class UnionFind:
         left_root = self.find(left)
         right_root = self.find(right)
         if left_root != right_root:
-            self.parent[right_root] = left_root
+            canonical_root, merged_root = sorted((left_root, right_root))
+            self.parent[merged_root] = canonical_root
 
 
 def unique_sets(
@@ -244,25 +312,28 @@ def link_site_components(
     planned = planned.copy()
     final = final.copy()
     graph = UnionFind()
-    for site in set(planned["site_key"]):
+    for site in sorted(set(planned["site_key"])):
         graph.add(f"p:{site}")
-    for site in set(final["site_key"]):
+    for site in sorted(set(final["site_key"])):
         graph.add(f"f:{site}")
 
-    for site in set(planned["site_key"]) & set(final["site_key"]):
+    for site in sorted(set(planned["site_key"]) & set(final["site_key"])):
         graph.union(f"p:{site}", f"f:{site}")
 
     planned_sites_by_base = unique_sets(planned, "ballot_base", "site_key")
     final_sites_by_base = unique_sets(final, "ballot_base", "site_key")
-    for base in set(planned_sites_by_base) & set(final_sites_by_base):
+    for base in sorted(set(planned_sites_by_base) & set(final_sites_by_base)):
         planned_sites = planned_sites_by_base[base]
         final_sites = final_sites_by_base[base]
-        if len(planned_sites) == 1 and len(final_sites) == 1:
-            graph.union(f"p:{planned_sites[0]}", f"f:{final_sites[0]}")
+        if len(planned_sites) == 1:
+            for final_site in final_sites:
+                graph.union(f"p:{planned_sites[0]}", f"f:{final_site}")
 
     planned_sites_by_location = unique_sets(planned, "location_key", "site_key")
     final_sites_by_location = unique_sets(final, "location_key", "site_key")
-    for location in set(planned_sites_by_location) & set(final_sites_by_location):
+    for location in sorted(
+        set(planned_sites_by_location) & set(final_sites_by_location)
+    ):
         if location == "|":
             continue
         planned_sites = planned_sites_by_location[location]
@@ -334,6 +405,7 @@ def main() -> None:
         encoding="utf-8-sig",
     ).fillna("")
     metadata["locality_code"] = metadata["locality_code"].map(clean)
+    planned_area_reviews = load_planned_area_reviews(metadata)
     locality_area_counts = metadata.groupby("locality_code")[
         "stat_area_id"
     ].nunique()
@@ -365,6 +437,9 @@ def main() -> None:
             "official_post_balance_register"
         )
         election_crosswalk = crosswalk.loc[crosswalk["election"].eq(election)].copy()
+        election_planned_reviews = planned_area_reviews.loc[
+            planned_area_reviews["election"].eq(election)
+        ].copy()
 
         result_rows = pd.read_csv(
             RESULTS / f"{election.lower()}_ballot_votes.csv",
@@ -385,7 +460,10 @@ def main() -> None:
         locality_codes = sorted(
             (
                 set(planned_all["locality_code"])
-                & set(election_crosswalk["locality_code"])
+                & (
+                    set(election_crosswalk["locality_code"])
+                    | set(election_planned_reviews["locality_code"])
+                )
                 & multi_area_localities
             )
             - {""}
@@ -399,6 +477,9 @@ def main() -> None:
             ].copy()
             locality_crosswalk = election_crosswalk.loc[
                 election_crosswalk["locality_code"].eq(locality_code)
+            ].copy()
+            locality_planned_reviews = election_planned_reviews.loc[
+                election_planned_reviews["locality_code"].eq(locality_code)
             ].copy()
 
             exact_area_sets = (
@@ -416,6 +497,17 @@ def main() -> None:
                 .agg(lambda values: sorted(set(value for value in values if value)))
                 .to_dict()
             )
+            reviewed_area_by_base = locality_planned_reviews.set_index(
+                "ballot_base"
+            )["stat_area_id"].to_dict()
+            for base, reviewed_area in reviewed_area_by_base.items():
+                official_areas = area_by_base.get(base, [])
+                if official_areas and official_areas != [reviewed_area]:
+                    raise ValueError(
+                        "Reviewed planned-area mapping conflicts with the official "
+                        f"crosswalk: {election}/{locality_code}/{base}"
+                    )
+                area_by_base[base] = [reviewed_area]
             planned["stat_area_id"] = planned["ballot_base"].map(
                 lambda base: (
                     area_by_base.get(base, [""])[0]
@@ -465,6 +557,7 @@ def main() -> None:
                         "locality_name", pd.Series(dtype=str)
                     )
                 )
+                + list(locality_planned_reviews["locality_name"])
             )
             found_planned_bases = set(planned["ballot_base"])
             missing_crosswalk = locality_crosswalk.loc[
@@ -681,6 +774,15 @@ def main() -> None:
                         "locality_code": locality_code,
                         "locality_name": locality_name,
                         "source_evidence": config.evidence,
+                        "planned_area_evidence": pipe(
+                            locality_planned_reviews.loc[
+                                locality_planned_reviews["ballot_base"].isin(
+                                    planned_site["ballot_base"]
+                                ),
+                                "evidence_class",
+                            ]
+                        )
+                        or "official_crosswalk",
                         "classification": classification,
                         "planned_site_ids": pipe(
                             planned.loc[

@@ -4,12 +4,12 @@
   "central_ballot_990_rows": 70,
   "crosswalk_localities_omitted_in_all_nine_elections": 16,
   "crosswalk_omission_context": "CBS methodology documents incomplete residential address anchoring in 36 of 38 Arab and Druze statistical-area localities. The recurrence table is an observed source-coverage audit, not an ethnicity classifier.",
-  "pending_actual_voters": 2079068,
-  "pending_eligible_voters": 3554675,
-  "pending_rows": 5545,
+  "pending_actual_voters": 2086436,
+  "pending_eligible_voters": 3575795,
+  "pending_rows": 5583,
   "polygon_persistence_status_counts": {
-    "assigned_in_every_supported_election": 7412,
-    "intermittently_unassigned": 355,
+    "assigned_in_every_supported_election": 7410,
+    "intermittently_unassigned": 357,
     "never_assigned_with_positive_population_proxy": 278,
     "never_assigned_without_positive_population_proxy": 761
   },
@@ -123,14 +123,14 @@
       "arcgis_detailed_or_single_area_records": 0,
       "arcgis_dissolved_locality_aggregate_records": 0,
       "arcgis_polygons_matching_special_non_geographic_rows": 0,
-      "assigned_polygons_in_localities_with_pending_ballots": 3,
+      "assigned_polygons_in_localities_with_pending_ballots": 15,
       "election": "K24",
-      "polygons_requiring_assignment_followup": 145,
-      "polygons_with_assigned_ballots": 2572,
-      "polygons_without_assigned_ballots": 543,
+      "polygons_requiring_assignment_followup": 162,
+      "polygons_with_assigned_ballots": 2568,
+      "polygons_without_assigned_ballots": 547,
       "stat_area_vintage": "2011",
       "statistical_area_polygons": 3115,
-      "unassigned_polygons_in_localities_with_pending_ballots": 142,
+      "unassigned_polygons_in_localities_with_pending_ballots": 147,
       "unassigned_polygons_with_official_arcgis_electorate": 0,
       "unassigned_polygons_with_positive_population_proxy": 256
     },
@@ -272,11 +272,11 @@
       "rows": 31
     },
     {
-      "actual_voters": 202743,
+      "actual_voters": 210111,
       "election": "K24",
-      "eligible_voters": 444711,
+      "eligible_voters": 465831,
       "gap_reason_code": "entire_locality_omitted_from_official_crosswalk",
-      "rows": 833
+      "rows": 871
     },
     {
       "actual_voters": 749,

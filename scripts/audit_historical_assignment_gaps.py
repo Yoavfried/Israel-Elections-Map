@@ -12,7 +12,7 @@ if LOCAL_PYTHON.exists():
 import geopandas as gpd
 import pandas as pd
 
-from pipeline_common import PROCESSED_DIR, RAW_DIR, write_csv, write_json
+from pipeline_common import MANUAL_DIR, PROCESSED_DIR, RAW_DIR, write_csv, write_json
 
 
 ASSIGNMENTS = PROCESSED_DIR / "assignments" / "ballot_geography_assignments.csv"
@@ -25,6 +25,9 @@ HISTORICAL_CROSSWALK = (
 GEOGRAPHY_DIR = PROCESSED_DIR / "geographies"
 ARCGIS_LOCALITY_AUDIT = (
     PROCESSED_DIR / "audits" / "arcgis_assignment_reconstruction_localities.csv"
+)
+OMITTED_ORDINARY_BALLOT_REVIEWS = (
+    MANUAL_DIR / "omitted_ordinary_ballot_reviews.csv"
 )
 OUT_DIR = PROCESSED_DIR / "audits"
 
@@ -387,6 +390,7 @@ def build_gap_rows(
     metadata: pd.DataFrame,
     crosswalk: pd.DataFrame,
     arcgis_localities: pd.DataFrame,
+    omitted_ballot_reviews: pd.DataFrame,
 ) -> pd.DataFrame:
     pending = assignments[
         assignments["geography_assignment_status"].isin(PENDING_STATUSES)
@@ -448,6 +452,25 @@ def build_gap_rows(
         "gap_explanation",
     ]
     pending = pd.concat([pending.reset_index(drop=True), reasons], axis=1)
+
+    if not omitted_ballot_reviews.empty:
+        exact_set_reviews = omitted_ballot_reviews[
+            omitted_ballot_reviews["decision"] == "approved_exact_set_display"
+        ].set_index("source_row_uid")
+        reviewed_rows = pending["source_row_uid"].isin(exact_set_reviews.index)
+        for index in pending.index[reviewed_rows]:
+            review = exact_set_reviews.loc[pending.at[index, "source_row_uid"]]
+            target_areas = str(review.get("target_stat_area_ids", ""))
+            display_id = str(review.get("published_treatment", ""))
+            pending.at[index, "resolution_state"] = "resolved_exact_set_display"
+            pending.at[index, "classification_confidence"] = str(
+                review.get("confidence", "high")
+            )
+            pending.at[index, "gap_explanation"] = (
+                "No defensible row-level area exists, but reviewed polling-register "
+                f"evidence closes this ballot inside {target_areas}. Its votes publish "
+                f"once through {display_id}; no internal area split is asserted."
+            )
 
     if not arcgis_localities.empty:
         arcgis = arcgis_localities[
@@ -1181,10 +1204,20 @@ def main() -> None:
         if ARCGIS_LOCALITY_AUDIT.exists()
         else pd.DataFrame()
     )
+    omitted_ballot_reviews = (
+        read_csv(OMITTED_ORDINARY_BALLOT_REVIEWS)
+        if OMITTED_ORDINARY_BALLOT_REVIEWS.exists()
+        else pd.DataFrame()
+    )
     arcgis_totals, missing_arcgis_aliases = load_arcgis_area_totals(metadata)
 
     gaps = build_gap_rows(
-        assignments, historical, metadata, crosswalk, arcgis_localities
+        assignments,
+        historical,
+        metadata,
+        crosswalk,
+        arcgis_localities,
+        omitted_ballot_reviews,
     )
     locality_summary = build_locality_summary(gaps)
     election_summary = build_election_summary(gaps)

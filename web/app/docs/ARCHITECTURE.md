@@ -222,8 +222,9 @@ Move to tiles before public launch if any of these remain true after compression
   map-wide coverage bubble is not treated as assignment evidence; uncertainty
   is disclosed on affected geographic results.
 - Coverage is mode-specific: locality result-row coverage is complete;
-  historical statistical coverage ranges from 93.08% to 94.71% by election.
-  The partial-presence locality audit remains open.
+  historical statistical row-level coverage ranges from 93.09% to 94.65% by election.
+  Twelve unsupported partial-presence cells remain neutral under a closed
+  policy.
 - Envelope votes are excluded from polygon coverage and remain visible through the separate national result control.
 - Active composite localities hide their 2022 component features; inactive composites are hidden. A joined-register union replaces exactly one published host result and is rejected if another union claims that host or an attached component has a standalone result. Its visible title/code remain the host's, and attached polygon names are exposed separately through the details-panel info tooltip. Other hidden-result conflicts remain fatal.
 - `data/manual/locality_display_overrides.csv` can preserve an election-time name on 2022 geometry or hide a reviewed feature that has no standalone result. The geometry remains canonical and the same hidden-result rejection applies. `data/manual/statistical_area_display_overrides.csv` independently hides reviewed election-vintage display proxies, including standalone Ganei Modi'in in K19/K20 and the evacuated Gaza features in K17, without changing assignment geometry.

@@ -20,6 +20,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+LOCAL_AUDIT_PYTHON = Path(__file__).resolve().parents[1] / ".local" / "python-audit"
+if LOCAL_AUDIT_PYTHON.exists():
+    sys.path.insert(0, str(LOCAL_AUDIT_PYTHON))
+
 import pandas as pd
 
 

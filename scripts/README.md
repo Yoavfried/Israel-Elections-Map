@@ -75,7 +75,14 @@ Production stages:
   a locality has no supported area assignments.
 - `audit_statistical_area_polling_group_evidence.py` first removes exact final
   ballot-to-area matches, then links official planned and final polling sites
-  only through unique site, ballot-base, or normalized-location evidence.
+  only through unique site, ballot-base, or normalized-location evidence. A
+  reviewed planned-area table may supply a missing election mapping only when
+  surrounding official crosswalks agree; it never supplies a final row-level
+  assignment.
+- `audit_stable_ballot_site_safety.py` checks every stable-ballot candidate
+  against available election-specific planned/final site topology. It fails the
+  pipeline if a mixed decimal batch lacks an explicit reviewed rejection or if
+  any candidate remains unclassified.
 - `build_statistical_area_polling_group_policy.py` first uses
   `polling_group_flow.py` to publish provably closed polygon/polling-group
   units. For the remaining networks, `polling_group_partition.py` starts with

@@ -6480,18 +6480,18 @@ stat2011:2680001,2011,268,טירת צבי,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,
 stat2011:2690001,2011,269,מולדת,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1088,673,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:2700001,2011,270,עין השופט,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,836,594,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:270001,2011,27,שדות מיכה,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,384,246,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100001,2011,2710,אום אל-פחם,1,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,,never_assigned_without_positive_population_proxy,True,0,0,,
-stat2011:27100011,2011,2710,אום אל-פחם,11,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,56776,33588,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100012,2011,2710,אום אל-פחם,12,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100013,2011,2710,אום אל-פחם,13,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100014,2011,2710,אום אל-פחם,14,7,6,K19|K20|K21|K22|K23|K24,1,K25,,,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100015,2011,2710,אום אל-פחם,15,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100021,2011,2710,אום אל-פחם,21,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100022,2011,2710,אום אל-פחם,22,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100031,2011,2710,אום אל-פחם,31,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100032,2011,2710,אום אל-פחם,32,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100033,2011,2710,אום אל-פחם,33,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:27100034,2011,2710,אום אל-פחם,34,7,6,K19|K20|K21|K22|K23|K24,1,K25,,,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100001,2011,2710,אום אל-פחם,1,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,K24,never_assigned_without_positive_population_proxy,True,0,0,,
+stat2011:27100011,2011,2710,אום אל-פחם,11,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,56776,33588,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100012,2011,2710,אום אל-פחם,12,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100013,2011,2710,אום אל-פחם,13,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100014,2011,2710,אום אל-פחם,14,7,6,K19|K20|K21|K22|K23|K24,1,K25,,K24,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100015,2011,2710,אום אל-פחם,15,7,6,K19|K20|K21|K22|K23|K25,1,K24,,K24,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100021,2011,2710,אום אל-פחם,21,7,6,K19|K20|K21|K22|K23|K25,1,K24,,K24,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100022,2011,2710,אום אל-פחם,22,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100031,2011,2710,אום אל-פחם,31,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100032,2011,2710,אום אל-פחם,32,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100033,2011,2710,אום אל-פחם,33,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,K24,assigned_in_every_supported_election,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:27100034,2011,2710,אום אל-פחם,34,7,5,K19|K20|K21|K22|K23,2,K24|K25,,K24,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:27200001,2011,2720,טירה,1,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,K19|K20|K21|K22|K23|K24|K25,never_assigned_with_positive_population_proxy,True,27039,17402,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:27200002,2011,2720,טירה,2,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,K19|K20|K21|K22|K23|K24|K25,never_assigned_without_positive_population_proxy,True,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:27200003,2011,2720,טירה,3,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,K19|K20|K21|K22|K23|K24|K25,never_assigned_without_positive_population_proxy,True,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
@@ -7237,11 +7237,11 @@ stat2011:4900003,2011,490,דייר אל-אסד,3,7,0,,7,K19|K20|K21|K22|K23|K24|
 stat2011:490001,2011,49,אילנייה,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,487,362,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:4920001,2011,492,דייר חנא,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,10488,6767,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:4930001,2011,493,דייר ראפאת,1,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,,never_assigned_with_positive_population_proxy,True,103,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:4940001,2011,494,דאלית אל-כרמל,1,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K25,intermittently_unassigned,False,17866,12298,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:4940002,2011,494,דאלית אל-כרמל,2,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:4940003,2011,494,דאלית אל-כרמל,3,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:4940004,2011,494,דאלית אל-כרמל,4,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
-stat2011:4940005,2011,494,דאלית אל-כרמל,5,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:4940001,2011,494,דאלית אל-כרמל,1,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K24|K25,intermittently_unassigned,False,17866,12298,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:4940002,2011,494,דאלית אל-כרמל,2,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K24|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:4940003,2011,494,דאלית אל-כרמל,3,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K24|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:4940004,2011,494,דאלית אל-כרמל,4,7,6,K20|K21|K22|K23|K24|K25,1,K19,,K19|K20|K24|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
+stat2011:4940005,2011,494,דאלית אל-כרמל,5,7,5,K20|K21|K22|K23|K25,2,K19|K24,,K19|K20|K24|K25,intermittently_unassigned,False,0,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:4960001,2011,496,חורפיש,1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,6488,4231,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:4970001,2011,497,טייבה (בעמק),1,7,7,K19|K20|K21|K22|K23|K24|K25,0,,,,assigned_in_every_supported_election,False,1918,0,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries
 stat2011:4980001,2011,498,טורעאן,1,7,0,,7,K19|K20|K21|K22|K23|K24|K25,,K19|K20|K21|K22|K23|K24|K25,never_assigned_with_positive_population_proxy,True,14436,8763,2020.0,CBS 2020 demographics on 2011 statistical-area boundaries

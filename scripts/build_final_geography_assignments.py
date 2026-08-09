@@ -59,6 +59,7 @@ STABLE_BALLOT_CANDIDATES = (
 STABLE_BALLOT_SUMMARY = (
     PROCESSED_DIR / "audits" / "stable_ballot_assignment_summary.json"
 )
+STABLE_BALLOT_REVIEWS = MANUAL_DIR / "stable_ballot_assignment_reviews.csv"
 K23_CEC_AGS_CANDIDATES = (
     PROCESSED_DIR / "audits" / "k23_cec_ags_assignment_candidates.csv"
 )
@@ -732,12 +733,45 @@ def load_stable_ballot_assignments() -> dict[str, dict[str, str]]:
     ):
         raise ValueError("Stable-ballot candidate mapping fingerprint changed")
 
-    output: dict[str, dict[str, str]] = {}
+    candidate_by_key: dict[tuple[str, str, str], dict[str, str]] = {}
     for candidate in candidates:
         uid = candidate.get("source_row_uid", "")
-        if not uid or uid in output:
+        key = (
+            normalize_spaces(candidate.get("election", "")),
+            normalize_locality_code(candidate.get("source_locality_code", "")),
+            normalize_spaces(candidate.get("source_kalpi", "")),
+        )
+        if not uid or key in candidate_by_key:
             raise ValueError(f"Missing or duplicate stable-ballot row: {uid}")
-        output[uid] = candidate
+        candidate_by_key[key] = candidate
+
+    rejected_uids: set[str] = set()
+    reviewed_keys: set[tuple[str, str, str]] = set()
+    for review in read_csv(STABLE_BALLOT_REVIEWS):
+        decision = normalize_spaces(review.get("decision", ""))
+        if decision != "reject_exact_assignment":
+            raise ValueError(f"Unsupported stable-ballot review decision: {decision}")
+        election = normalize_spaces(review.get("election", ""))
+        locality_code = normalize_locality_code(review.get("locality_code", ""))
+        if not normalize_spaces(review.get("evidence_sources", "")) or not normalize_spaces(
+            review.get("reason", "")
+        ):
+            raise ValueError("Stable-ballot rejection lacks evidence or a reason")
+        for ballot in normalize_spaces(review.get("source_ballots", "")).split("|"):
+            key = (election, locality_code, normalize_spaces(ballot))
+            if not key[2] or key in reviewed_keys:
+                raise ValueError(f"Blank or duplicate stable-ballot review key: {key}")
+            candidate = candidate_by_key.get(key)
+            if not candidate:
+                raise ValueError(f"Stable-ballot review no longer matches a candidate: {key}")
+            reviewed_keys.add(key)
+            rejected_uids.add(candidate["source_row_uid"])
+
+    output: dict[str, dict[str, str]] = {}
+    for candidate in candidates:
+        uid = candidate["source_row_uid"]
+        if uid not in rejected_uids:
+            output[uid] = candidate
     return output
 
 

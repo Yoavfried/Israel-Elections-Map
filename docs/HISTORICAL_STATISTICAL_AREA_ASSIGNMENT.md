@@ -125,24 +125,33 @@ between elections. A pending row is propagated only when every assigned member
 of its same-vintage stability component agrees on one area. Decimal
 subdivisions are evaluated through the historical base ballot.
 
-This adds 134 links representing 35,129 actual voters:
+The assignment audit produces 134 candidates representing 35,129 actual voters.
+The election-specific site-safety audit rejects 38 K24 candidates because the
+official pre/post polling-place registers prove their final batches combine
+planned ballots from multiple areas: ten in Daliyat al-Karmel and 28 in Umm
+al-Fahm. The published row-level result is 96 links representing 27,761 actual
+voters:
 
 | Election | Rows | Actual voters |
 |---|---:|---:|
 | K19 | 2 | 537 |
 | K20 | 43 | 16,676 |
 | K22 | 1 | 344 |
-| K24 | 87 | 17,082 |
+| K24 | 49 | 9,714 |
 | K25 | 1 | 490 |
 
 One same-vintage conflict and 105 conflicts crossing a statistical-area
 vintage transition are withheld. Stable-ballot links are high-confidence
-inferences, not direct election-specific crosswalk rows.
+inferences, not direct election-specific crosswalk rows. The safety audit covers
+every candidate and fails publication when an unsafe mixed batch lacks an
+explicit rejection. Forty-seven non-K24 integer candidates have no decimal
+batch signal but cannot receive the same pre/post structural test because no
+distinct register pair is available for those elections.
 
 ### Reviewed Cross-Election Polling-Register Continuity
 
 The CEC polling-register reports can identify an exact recurring polling place
-across elections. Fifty rows were approved only where that register continuity,
+across elections. Fifty-four rows were approved only where that register continuity,
 combined with direct CBS targets elsewhere in the same historical vintage,
 supports one unique area. The reviewed table validates the exact source row,
 electorate, turnout, target vintage, target locality, and target geometry before
@@ -152,15 +161,15 @@ the link is applied.
 |---|---:|---:|---:|
 | K18 | 1 | 613 | 459 |
 | K19 | 6 | 4,325 | 1,838 |
-| K20 | 24 | 15,820 | 9,825 |
-| K21 | 1 | 574 | 235 |
-| K22 | 2 | 1,380 | 689 |
-| K23 | 2 | 1,399 | 776 |
+| K20 | 25 | 16,449 | 10,149 |
+| K21 | 2 | 1,277 | 461 |
+| K22 | 3 | 2,097 | 1,052 |
+| K23 | 3 | 2,130 | 1,206 |
 | K24 | 3 | 1,832 | 545 |
 | K25 | 11 | 7,105 | 3,710 |
-| **Total** | **50** | **33,048** | **18,077** |
+| **Total** | **54** | **35,828** | **19,420** |
 
-Thirty-nine approvals preserve the same ballot number and exact polling place,
+Forty-three approvals preserve the same ballot number and exact polling place,
 six use an exact place with an otherwise documented register change, three use
 a renumbered exact place, one uses a prior exact ballot/place link, and one
 reconstructs an isolated K18 crosswalk gap from the surrounding official
@@ -404,26 +413,26 @@ site ID, so it cannot satisfy either continuity rule.
 | Election | Evidence | All display units | Exact closed units | Representative units | Owned polygon memberships | Representative components | Broad fallbacks |
 |---|---|---:|---:|---:|---:|---:|---:|
 | K21 | Direct registers + two-reference site continuity | 226 | 134 | 92 | 497 | 47 | 0 |
-| K22 | Two-reference site continuity | 432 | 4 | 428 | 874 | 281 | 0 |
-| K23 | Two-reference site continuity | 430 | 2 | 428 | 873 | 279 | 0 |
-| K24 | Direct official registers | 597 | 194 | 403 | 1,254 | 119 | 0 |
-| K25 | Direct official register + final results | 590 | 191 | 399 | 1,208 | 126 | 0 |
-| **Total** |  | **2,275** | **525** | **1,750** | **4,706** | **852** | **0** |
+| K22 | Two-reference site continuity | 433 | 4 | 429 | 877 | 282 | 0 |
+| K23 | Two-reference site continuity | 428 | 2 | 426 | 871 | 278 | 0 |
+| K24 | Direct official registers | 586 | 204 | 382 | 1,267 | 111 | 0 |
+| K25 | Direct official register + final results | 591 | 192 | 399 | 1,210 | 126 | 0 |
+| **Total** |  | **2,264** | **536** | **1,728** | **4,722** | **844** | **0** |
 
 Compared with the direct statistical-area result tables, the approved policy
-recovers 846 election-specific polygon placements that would otherwise be
-blank: 80 in K21, 133 in K22, 130 in K23, 236 in K24, and 267 in K25. It does not
+recovers 824 election-specific polygon placements that would otherwise be
+blank: 76 in K21, 121 in K22, 118 in K23, 240 in K24, and 269 in K25. It does not
 color a remaining blank polygon without qualifying polling-group evidence.
 
-The 525 exact units cover 1,282 polygon-election memberships. None carries an
+The 536 exact units cover 1,333 polygon-election memberships. None carries an
 uncertainty notice.
 The flow audit tested ten exactly balanced closed networks; no impossible-edge
 removal divided a real network into more than one smaller closed component.
 The full reproducible edge bounds are published in
 `statistical_area_polling_group_exact_groups.csv`.
 
-The 852 representative components produce 1,750 displayed units. Of those,
-1,736 are connected and 14 require disclosed disconnected placement.
+The 844 representative components produce 1,728 displayed units. Of those,
+1,714 are connected and 14 require disclosed disconnected placement.
 Strict site consolidation reconciles 12 planned-only K25 sites; remaining
 planned groups without identifiable final results are omitted.
 
@@ -492,13 +501,13 @@ is generated by `scripts/review_display_contributor_capacity_flags.py`.
 | `official_direct_crosswalk` | 83,230 | No |
 | `official_direct_ags` | 74 | No |
 | `deterministic_single_area_locality` | 3,801 | No |
-| `official_stability_inferred_link` | 134 | Yes |
+| `official_stability_inferred_link` | 96 | Yes |
 | `reviewed_exact_aggregate_inferred_link` | 9 | Yes |
 | `reviewed_cross_election_inferred_link` | 5 | Yes |
 | `reviewed_polling_register_continuity_inferred_link` | 54 | Yes |
 | `reviewed_custom_geography` | 92 | No |
 | `non_geographic` | 3,585 | No |
-| `unresolved` | 5,545 | No |
+| `unresolved` | 5,583 | No |
 | **Total** | **96,529** | |
 
 Every public ballot row carries `assignment_evidence_class`,
@@ -521,12 +530,12 @@ denominator.
 | K21 | 2011 | 9,856 | 596 | 224,699 | 94.52% |
 | K22 | 2011 | 9,923 | 608 | 264,994 | 93.66% |
 | K23 | 2011 | 10,007 | 616 | 295,946 | 93.09% |
-| K24 | 2011 | 11,251 | 868 | 212,156 | 94.71% |
+| K24 | 2011 | 11,213 | 906 | 219,524 | 94.53% |
 | K25 | 2011 | 10,893 | 806 | 259,533 | 94.01% |
 
-The 5,545 pending rows are fully classified:
+The 5,583 pending rows are fully classified:
 
-- 5,298 belong to entire localities omitted from an official crosswalk;
+- 5,336 belong to entire localities omitted from an official crosswalk;
 - 53 use an election locality identity absent from the active historical
   vintage;
 - 31 are K17 component-locality rows where the component has multiple 1995
@@ -534,6 +543,11 @@ The 5,545 pending rows are fully classified:
 - 84 are K18 component-locality rows nested in composite 2008 geometry;
 - 70 are central ballot 990 rows intentionally retained at locality level;
 - 9 are specific ordinary ballots omitted from an otherwise present locality.
+
+Thirty-eight of the 5,336 rows in crosswalk-omitted localities are reviewed K24
+mixed-site batches: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their
+row-level area IDs remain blank, but their complete results are recovered
+without estimation in exact areas-1-3-4-5 and areas-13-14-15-21-34 displays.
 
 These labels describe different failures. An "entire locality omitted" row has
 usable historical geometry, but the public election crosswalk contains no
@@ -559,17 +573,18 @@ evidence. Four Nazareth ballot-80 rows in K20-K23 are now approved synthetic
 links to area 32: the number and exact polling place are unchanged, and both
 official K18 and K19 crosswalks assign that ballot to area 32.
 
-The nine rows still lacking a single-area ID have two different treatments.
+The nine rows still lacking a single-area ID have two exact set-level treatments.
 Eight K24/K25 Ar'ara ballot-14 subdivisions replace complete planned polling-
 site totals spanning areas 1 and 3. The final totals differ from the three
 planned ballots by only one eligible voter in each election, and cross-election
 area totals confine the missing planned ballot to that same area set. The map
 therefore shows all and only the combined areas-1-and-3 results on one dissolved
 display, while the downloadable subdivision rows remain blank rather than
-inventing an internal split. K25 Daliyat al-Karmel ballot 23 remains genuinely
-ambiguous between areas 3 and 5; the polygons are not adjacent and no source
-chooses between them, so neither a single-area assignment nor a display union is
-published. All thirteen review outcomes are recorded in
+inventing an internal split. K25 Daliyat al-Karmel ballot 23 is the new third
+ballot at the unchanged polling site serving areas 3 and 5. Including it keeps
+the combined electorate continuous from K24 to K25; excluding it creates an
+unsupported drop. The map therefore publishes the complete areas-3-and-5 result
+once while retaining a blank row-level area ID. All thirteen review outcomes are recorded in
 `data/manual/omitted_ordinary_ballot_reviews.csv`.
 
 ## Geometry Provenance

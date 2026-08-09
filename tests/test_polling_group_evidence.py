@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import pandas as pd
 
-from audit_statistical_area_polling_group_evidence import link_site_components
+from audit_statistical_area_polling_group_evidence import UnionFind, link_site_components
 
 
 def rows(values: list[tuple[str, str, str]]) -> pd.DataFrame:
@@ -30,6 +30,16 @@ def rows(values: list[tuple[str, str, str]]) -> pd.DataFrame:
 
 
 class PollingGroupEvidenceTests(unittest.TestCase):
+    def test_union_find_uses_an_order_independent_component_identity(self) -> None:
+        forward = UnionFind()
+        forward.union("p:z-site", "f:a-site")
+
+        reverse = UnionFind()
+        reverse.union("f:a-site", "p:z-site")
+
+        self.assertEqual(forward.find("p:z-site"), "f:a-site")
+        self.assertEqual(reverse.find("p:z-site"), "f:a-site")
+
     def test_unique_ballot_base_links_planned_and_final_sites(self) -> None:
         planned, final = link_site_components(
             rows([("planned-69", "569", "planned-location")]),
@@ -56,6 +66,22 @@ class PollingGroupEvidenceTests(unittest.TestCase):
             final["site_component"]
         )
         self.assertEqual(len(components), 3)
+
+    def test_one_planned_ballot_split_across_final_sites_stays_one_component(self) -> None:
+        planned, final = link_site_components(
+            rows([("planned-a", "18", "planned-location")]),
+            rows(
+                [
+                    ("final-a", "18", "final-a-location"),
+                    ("final-b", "18", "final-b-location"),
+                ]
+            ),
+        )
+
+        components = set(planned["site_component"]) | set(
+            final["site_component"]
+        )
+        self.assertEqual(len(components), 1)
 
 
 if __name__ == "__main__":

@@ -61,15 +61,15 @@ handling.
 | `official_direct_crosswalk` | 83,230 | Direct election-specific CBS crosswalk, including supported base subdivisions. |
 | `official_direct_ags` | 74 | Direct AGS from the official K23 CEC report. |
 | `deterministic_single_area_locality` | 3,801 | The active historical locality has exactly one canonical area; reviewed combined-municipality exclusions prevent assignment to only one obsolete component. |
-| `official_stability_inferred_link` | 134 | Official CBS stable-ballot evidence has a unanimous same-vintage target. |
+| `official_stability_inferred_link` | 96 | Official CBS stable-ballot evidence has a unanimous same-vintage target after election-specific mixed-site rejections. |
 | `reviewed_exact_aggregate_inferred_link` | 9 | Reviewed unique exact K21 ArcGIS residual partition. |
 | `reviewed_cross_election_inferred_link` | 5 | Reviewed correction supported by independent same-vintage evidence. |
-| `reviewed_polling_register_continuity_inferred_link` | 50 | Approved high-confidence link from exact cross-election polling-register continuity and direct same-vintage targets. |
+| `reviewed_polling_register_continuity_inferred_link` | 54 | Approved high-confidence link from exact cross-election polling-register continuity and direct same-vintage targets. |
 | `reviewed_custom_geography` | 92 | Supported custom geography where historical geometry cannot represent the target; the tribal bucket is a marker and Hebron uses a detailed polygon. K19-K25 ballots retain their exact tribe/statistical-area IDs in this package even though the web map combines those results into the same marker. |
 | `non_geographic` | 3,585 | Envelope or other reviewed non-geographic row. |
-| `unresolved` | 5,549 | No defensible historical area under the current evidence. |
+| `unresolved` | 5,583 | No defensible row-level historical area under the current evidence. Reviewed exact set-level displays may still recover the complete result without splitting it. |
 
-The four inferred evidence paths total 198 rows and 58,829 actual voters. Filter
+The four inferred evidence paths total 164 rows and 52,804 actual voters. Filter
 `assignment_is_synthetic_link=false` when an analysis requires only direct or
 deterministic links.
 
@@ -86,7 +86,7 @@ deterministic links.
 - `arcgis_residual_partition_tier_c` covers six exact Jerusalem rows with
   unrelated source-snapshot deltas documented in the review record.
 - `reviewed_historical_stat_area_override` covers five corrected K19 targets.
-- `reviewed_cross_election_stat_area_assignment` covers 50 approved
+- `reviewed_cross_election_stat_area_assignment` covers 54 approved
   high-confidence polling-register continuity links. The reviewed table records
   source-row identity, target, evidence subtype, and source documents.
 - `single_historical_stat_locality` is deterministic only when the active
@@ -164,7 +164,8 @@ contains 30 inspectable artifacts:
 - official normalized crosswalk and final assignment summary;
 - source-field inventory;
 - K23 AGS candidates, conflicts, validation, coverage, and summary;
-- stable-ballot candidates, conflicts, transition audit, and summary;
+- stable-ballot candidates, conflicts, transition audit, site-safety audit,
+  reviewed mixed-batch rejections, and summaries;
 - ArcGIS candidates, locality classifications, reviews, and summary;
 - historical overrides;
 - approved cross-election polling-register continuity reviews;
