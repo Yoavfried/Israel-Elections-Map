@@ -43,6 +43,7 @@ assignment data, and are also covered by LICENSE-WEBSITE:
 - data/manual/statistical_area_display_overrides.csv
 - data/manual/statistical_area_polling_group_display_reviews.csv
 - data/manual/statistical_area_result_display_reviews.csv
+- data/manual/west_bank_display_boundary_replacements.geojson
 
 Canonical geography packages and row-level assignment fields published under
 `public-data/` remain on the open-data side. Web-only polygon unions,

@@ -866,20 +866,24 @@ describe('generated web data', () => {
       'loc:3654',
       'loc:3784',
       'loc:3824',
+      'loc:3782',
+      'loc:3785',
+      'loc:3786',
+      'loc:3825',
       'composite:shaar-shomron',
     ]) {
       expect(featuresById.get(id)?.properties?.displayMode, id).toBe('polygon')
       expect(markersById.has(id), id).toBe(false)
     }
 
-    for (const id of ['loc:3782', 'loc:3785', 'loc:3786', 'loc:3825', 'loc:1794']) {
+    for (const id of ['loc:1794']) {
       expect(featuresById.get(id)?.properties?.displayMode, id).toBe('marker')
       expect(markersById.get(id)?.geometry?.type, id).toBe('Point')
     }
 
-    const yitavJoin = markersById.get('composite:joined-k25-3607')
-    expect(yitavJoin?.geometry?.type).toBe('MultiPoint')
-    expect(yitavJoin?.geometry?.coordinates).toHaveLength(2)
+    const yitavJoin = featuresById.get('composite:joined-k25-3607')
+    expect(['Polygon', 'MultiPolygon']).toContain(yitavJoin?.geometry?.type)
+    expect(markersById.has('composite:joined-k25-3607')).toBe(false)
   })
 
   it('uses one combined tribal marker and shows only result-bearing statistical markers', async () => {
@@ -931,10 +935,10 @@ describe('generated web data', () => {
       K19: ['custom:tribal_negev'],
       K20: ['custom:tribal_negev'],
       K21: ['custom:tribal_negev'],
-      K22: ['custom:tribal_negev', 'stat2011:37850001'],
-      K23: ['custom:tribal_negev', 'stat2011:37850001'],
-      K24: ['custom:tribal_negev', 'stat2011:37820001', 'stat2011:37850001'],
-      K25: ['custom:tribal_negev', 'stat2011:37820001', 'stat2011:37850001'],
+      K22: ['custom:tribal_negev'],
+      K23: ['custom:tribal_negev'],
+      K24: ['custom:tribal_negev'],
+      K25: ['custom:tribal_negev'],
     }
 
     for (const election of catalog.elections) {

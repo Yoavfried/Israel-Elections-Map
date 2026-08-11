@@ -29,6 +29,9 @@ GDB_PATH = RAW_DIR / "ezorim_statistiim_2022.gdb"
 LAYER_NAME = "statistical_areas_2022"
 OUT_DIR = PROCESSED_DIR / "geographies"
 ARCGIS_DIR = RAW_DIR / "arcgis"
+REVIEWED_WEST_BANK_DETAILS_PATH = (
+    MANUAL_DIR / "west_bank_display_boundary_replacements.geojson"
+)
 COMPOSITE_LOCALITIES_PATH = MANUAL_DIR / "composite_localities.csv"
 JOINED_LOCALITY_COMPOSITES_PATH = MANUAL_DIR / "joined_locality_composites.csv"
 ELECTIONS = {f"K{number}" for number in range(17, 26)}
@@ -529,7 +532,10 @@ def main() -> None:
     args = parser.parse_args()
 
     stats = read_statistical_areas()
-    detailed_by_locality = load_arcgis_detail_by_locality(ARCGIS_DIR)
+    detailed_by_locality = load_arcgis_detail_by_locality(
+        ARCGIS_DIR,
+        REVIEWED_WEST_BANK_DETAILS_PATH,
+    )
     stats_4326 = stats.to_crs("EPSG:4326")
     stats_display, stat_display_replacements, stat_display_rejected = (
         apply_detailed_display_geometries(

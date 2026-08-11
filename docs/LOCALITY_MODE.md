@@ -1,6 +1,6 @@
 # Locality Mode
 
-Last updated: 2026-07-24
+Last updated: 2026-08-10
 
 ## Coverage And Scope
 
@@ -11,12 +11,14 @@ implemented in every election. The 80 partial-presence localities produce 227
 election-specific gaps: 215 are explained, and 12 remain deliberately neutral
 because no source supports a result host.
 
-Current display geometry replaces 115 tiny West Bank proxies with audited
-ArcGIS footprints. Rotem, Maskiyot, Avnat, and Mavo'ot Yeriho remain
-marker-capable because no accepted detailed boundary is available, but a
-marker is rendered only when the selected election has a result for its exact
-ID. Sha'ar Shomron uses its component-polygon union; the K25 Yitav/Mavo'ot
-joined result uses two marker points.
+Current display geometry replaces all 119 reviewed tiny West Bank proxies with
+detailed footprints. The final four replacements, Rotem, Maskiyot, Avnat, and
+Mavo'ot Yeriho, use reviewed 2024 Peace Now built-up polygons; the earlier 115
+come from the audited election ArcGIS layers. All are display-only and never
+assign or move votes. Sha'ar Shomron uses its component-polygon union, and the
+K25 Yitav/Mavo'ot joined result now uses a polygon union rather than two marker
+points. Avnat and Mavo'ot Yeriho remain hidden where no standalone result
+exists.
 
 Each ordinary ballot row already identifies an election locality. The reviewed locality crosswalk maps that identity directly to either:
 

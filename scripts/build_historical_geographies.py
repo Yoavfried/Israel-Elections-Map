@@ -36,6 +36,9 @@ SOURCE_DIR = RAW_DIR / "cbs_historical_geography"
 EXTRACTED_DIR = SOURCE_DIR / "extracted"
 OUT_DIR = PROCESSED_DIR / "geographies"
 ARCGIS_DIR = RAW_DIR / "arcgis"
+REVIEWED_WEST_BANK_DETAILS_PATH = (
+    MANUAL_DIR / "west_bank_display_boundary_replacements.geojson"
+)
 STATISTICAL_DISPLAY_GROUPS_PATH = (
     MANUAL_DIR / "statistical_area_display_groups.csv"
 )
@@ -1453,7 +1456,10 @@ def main() -> None:
     parser.add_argument("--simplify-tolerance", type=float, default=0.00005)
     args = parser.parse_args()
 
-    detailed_by_locality = load_arcgis_detail_by_locality(ARCGIS_DIR)
+    detailed_by_locality = load_arcgis_detail_by_locality(
+        ARCGIS_DIR,
+        REVIEWED_WEST_BANK_DETAILS_PATH,
+    )
     summary: dict[str, Any] = {
         "display_detail_localities_available": len(detailed_by_locality),
         "vintages": {},

@@ -711,9 +711,11 @@ K17 `stat1995:9400008` result on the non-conflicting `stat1995:1062001`
 component polygon between Or Yehuda area 4 and Yehud area 3. The duplicate
 source feature is hidden, and the election-specific map name is `Yehud`; the
 official transition assignment ID and source name remain intact in published
-canonical data. Rotem and Maskiyot remain markers only in elections where they
-have standalone results and no accepted detailed boundary. Election votes
-never come from geometry files.
+canonical data. Reviewed detailed built-up footprints replace the tiny display
+proxies for Rotem, Maskiyot, Avnat, and Mavo'ot Yeriho. Avnat and Mavo'ot
+Yeriho remain hidden in elections without standalone results, while supported
+joined displays may use their geometry. These substitutions are presentation
+only. Election votes never come from geometry files.
 
 The 16 evacuated Gaza localities present in the canonical 1995 source package
 are hidden in K17 by `statistical_area_display_overrides.csv`. They remain in

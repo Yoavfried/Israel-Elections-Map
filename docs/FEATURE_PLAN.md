@@ -2,39 +2,36 @@
 
 Last updated: 2026-08-04
 
-This document records the intended design and delivery order for future map
-features. It is not a completion tracker. Actual complete/in-progress state is
-maintained only in `docs/PROJECT_STATUS.md`.
+This document records the delivered design of the map's feature set. It is not
+a completion tracker; authoritative status is maintained only in
+`docs/PROJECT_STATUS.md`.
 
-## Delivery Order
+## Scope Status
 
-Search and the Wikipedia-link audit are complete. Statistical assignment work
-continues in parallel; closing a source gap never means forcing a ballot onto a
-polygon.
+Search, party metadata, statistical-area review, and the portrait-mobile
+rewrite are complete under the current project scope and evidence policy.
+Closing a source gap never means forcing a ballot onto a polygon. Satellite
+imagery and 3D buildings are not planned product modes.
 
-Current priority is the map-first mobile rewrite plus continuing desktop UX,
-accessibility, performance, and regression work. Satellite imagery and 3D
-buildings are not planned product modes.
+The national-results view remains the reference surface for the completed
+party-name, color, and Wikipedia-link tables. Any future analysis mode should
+use the same primary navigation rather than being added to the geographic-level
+selector.
 
-The national-results baseline is implemented as a primary top-bar view and
-remains the reference surface for the completed party-name, color, and
-Wikipedia-link tables. Future analysis modes should use the same primary
-navigation rather than being added to the geographic-level selector.
+Responsive bilingual UX, accessibility, and regression QA remain requirements
+for later maintenance. The delivered portrait-mobile interface preserves the
+map viewport, moves controls into a compact header menu, handles the on-screen
+keyboard, and presents closable, scrollable result sheets. Landscape-phone
+support is outside the current scope.
 
-Responsive bilingual UX, accessibility, and regression QA are requirements for
-every item. The existing narrow-screen stack is only an interim compatibility
-layout: because it does not preserve a useful map viewport, a complete mobile
-rewrite is also a defined product task rather than completed responsive work.
+## Delivered Features
 
-## Planned Features
+### Mobile Map Interface
 
-### Mobile Map Rewrite
+The old stacked narrow-screen shell has been replaced with a map-first portrait
+mobile experience.
 
-Replace the current stacked narrow-screen shell with a map-first mobile
-experience. The existing mobile CSS may remain useful for QA while this is
-built, but it is not the target design and should not constrain the rewrite.
-
-Required behavior:
+Delivered behavior:
 
 - keep a useful portion of the interactive map visible in every core state;
 - move controls and selected-area results into collapsible, sheet-based, or
@@ -172,12 +169,12 @@ Self-hosted regional PMTiles remain the stronger long-term control option.
 Do not treat the community `tile.openstreetmap.org` or
 `vector.openstreetmap.org` servers as an unlimited production backend.
 
-## Technical Sequence
+## Maintenance Constraints
 
-1. Preserve replaceable neutral/vector styles without changing result IDs.
-2. Build the map-first mobile shell without constraining the desktop layout.
-3. Continue Hebrew/English, keyboard, performance, attribution, and result-click
-   regression tests for every stage.
+- Preserve replaceable neutral/vector styles without changing result IDs.
+- Keep mobile-only layout changes from constraining the desktop layout.
+- Retain Hebrew/English, keyboard, attribution, and result-click regression
+  coverage when the product changes.
 
 ## Reference Policies And Capabilities
 

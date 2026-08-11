@@ -1,10 +1,13 @@
+import { Database, Languages, Shield } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { AccessibilityWidget } from './components/AccessibilityWidget'
 import { ControlPanel } from './components/ControlPanel'
 import { CoalitionPanel } from './components/CoalitionPanel'
 import { DetailsPanel } from './components/DetailsPanel'
 import { EnvelopeSummary } from './components/EnvelopeSummary'
 import { GeographySearch } from './components/GeographySearch'
 import { LoadingState } from './components/LoadingState'
+import { MobileMenu } from './components/MobileMenu'
 import { NationalResultsScreen } from './components/NationalResultsScreen'
 import { PartyComparisonPanel } from './components/PartyComparisonPanel'
 import { PartyMapPanel } from './components/PartyMapPanel'
@@ -494,21 +497,58 @@ export default function App() {
   return (
     <main className="app-shell" data-language={language} data-view={activeView}>
       <header className="app-header">
-        <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">IL</span>
-          <div>
-            <h1>{translate(language, 'appTitle')}</h1>
-            <p>{translate(language, 'appSubtitle')}</p>
-          </div>
-        </div>
+        <AccessibilityWidget language={language} />
         <PrimaryTabs
           activeView={activeView}
           language={language}
           onChange={handleViewChange}
         />
-        <button className="language-toggle" type="button" onClick={toggleLanguage}>
-          {translate(language, 'languageAction')}
-        </button>
+        <div className="header-actions">
+          <a
+            className="header-icon-link"
+            href="https://github.com/Yoavfried/israel-election-map"
+            target="_blank"
+            rel="noreferrer"
+            aria-label={translate(language, 'repositoryAction')}
+            title={translate(language, 'repositoryAction')}
+          >
+            <Database size={19} strokeWidth={2} aria-hidden="true" />
+          </a>
+          <a
+            className="header-icon-link"
+            href={`/privacy.html?lang=${language}`}
+            aria-label={translate(language, 'privacyAction')}
+            title={translate(language, 'privacyAction')}
+          >
+            <Shield size={19} strokeWidth={2} aria-hidden="true" />
+          </a>
+          <button className="language-toggle" type="button" onClick={toggleLanguage}>
+            <Languages size={18} strokeWidth={2} aria-hidden="true" />
+            <span>{translate(language, 'languageAction')}</span>
+          </button>
+          <MobileMenu
+            language={language}
+            activeView={activeView}
+            elections={catalog.elections}
+            geographyModes={catalog.geographyModes}
+            electionId={electionId}
+            geographyMode={geographyMode}
+            basemapMode={basemapMode}
+            partyMapDisplayMode={partyMapDisplayMode}
+            parties={partyMapParties}
+            selectedPartyId={effectivePartyId}
+            firstPartyId={effectiveComparisonFirstId}
+            secondPartyId={effectiveComparisonSecondId}
+            onViewChange={handleViewChange}
+            onElectionChange={handleElectionChange}
+            onGeographyModeChange={handleGeographyChange}
+            onBasemapModeChange={handleBasemapChange}
+            onPartyMapDisplayModeChange={setPartyMapDisplayMode}
+            onPartyChange={setSelectedPartyId}
+            onFirstPartyChange={handleComparisonFirstChange}
+            onSecondPartyChange={handleComparisonSecondChange}
+          />
+        </div>
       </header>
 
       <div className="app-content">
@@ -647,6 +687,7 @@ export default function App() {
               highlightedPartiesLabel={highlightedPartiesLabel}
               highlightedPartyTotalLabel={highlightedPartyTotalLabel}
               highlightedPartyNotes={highlightedPartyNotes}
+              onClose={selectedId ? clearMapSelection : undefined}
             />
           </div>
         </div>

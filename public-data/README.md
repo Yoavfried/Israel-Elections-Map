@@ -12,6 +12,16 @@ Read the [public data methodology](METHODOLOGY.md) for the exact assignment
 precedence, synthetic-link counts, unresolved-row policy, validation rules, and
 step-by-step audit procedure.
 
+Public releases use a two-level `major.minor` policy: minor releases correct
+values or documentation without changing the contract, while a new election,
+column change, or other major contract change starts the next major release.
+See the [data and website versioning policy](../docs/VERSIONING.md).
+
+Public releases use a two-level `major.minor` policy: minor releases correct
+values or documentation without changing the contract, while a new election,
+column change, or other major contract change starts the next major release.
+See the [data and website versioning policy](../docs/VERSIONING.md).
+
 ## Download One Election
 
 Each ballot CSV contains every source result row for that election, one column

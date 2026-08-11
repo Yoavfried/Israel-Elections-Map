@@ -95,6 +95,7 @@ function NationalResultContent({
             results.totals.contestingParties,
             language,
           )}`}
+          valueDirection="ltr"
         />
         <SummaryMetric
           label={translate(language, 'mandates')}
@@ -137,9 +138,23 @@ function NationalResultContent({
         <table className="national-results-table">
           <thead>
             <tr>
-              <th scope="col">{translate(language, 'candidateLists')}</th>
+              <th scope="col">
+                <span className="national-column-label--desktop">
+                  {translate(language, 'candidateLists')}
+                </span>
+                <span className="national-column-label--mobile">
+                  {translate(language, 'candidateListAndBallot')}
+                </span>
+              </th>
               <th scope="col">{translate(language, 'ballotLetter')}</th>
-              <th scope="col">{translate(language, 'votes')}</th>
+              <th scope="col">
+                <span className="national-column-label--desktop">
+                  {translate(language, 'votes')}
+                </span>
+                <span className="national-column-label--mobile">
+                  {translate(language, 'votesAndShare')}
+                </span>
+              </th>
               <th scope="col">{translate(language, 'share')}</th>
               <th scope="col">{translate(language, 'mandates')}</th>
               <th scope="col">{translate(language, 'wikipedia')}</th>
@@ -189,6 +204,9 @@ function NationalPartyRow({
           <span className="national-party-name" dir="auto">
             {party.names[language]}
           </span>
+          <span className="national-ballot-letter national-ballot-letter--mobile">
+            {party.ballotLetter}
+          </span>
           {party.colorStatus === 'provisional' ? (
             <span className="national-color-status">
               {translate(language, 'provisionalColor')}
@@ -200,7 +218,10 @@ function NationalPartyRow({
         <span className="national-ballot-letter">{party.ballotLetter}</span>
       </td>
       <td className="national-number-cell" data-label={translate(language, 'votes')}>
-        {formatNumber(party.votes, language)}
+        <span className="national-vote-value">{formatNumber(party.votes, language)}</span>
+        <span className="national-vote-share--mobile">
+          {formatPercent(party.voteShare, language, 2)}
+        </span>
       </td>
       <td className="national-number-cell" data-label={translate(language, 'share')}>
         {formatPercent(party.voteShare, language, 2)}
@@ -269,11 +290,19 @@ function WikipediaButton({
   )
 }
 
-function SummaryMetric({ label, value }: { label: string; value: string }) {
+function SummaryMetric({
+  label,
+  value,
+  valueDirection,
+}: {
+  label: string
+  value: string
+  valueDirection?: 'ltr' | 'rtl'
+}) {
   return (
     <div>
       <span>{label}</span>
-      <strong>{value}</strong>
+      <strong dir={valueDirection}>{value}</strong>
     </div>
   )
 }

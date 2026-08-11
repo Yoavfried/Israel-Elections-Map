@@ -42,6 +42,7 @@ def is_point_proxy(geometry: Any) -> bool:
 
 def load_arcgis_detail_by_locality(
     arcgis_dir: Path,
+    reviewed_path: Path | None = None,
 ) -> dict[int, tuple[Any, str]]:
     sources = [
         (
@@ -80,6 +81,72 @@ def load_arcgis_detail_by_locality(
         for row in dissolved.itertuples(index=False):
             code = int(row.locality_code)
             detailed.setdefault(code, (row.geometry, source_name))
+
+    if reviewed_path is None or not reviewed_path.exists():
+        return detailed
+
+    reviewed = gpd.read_file(reviewed_path, engine="pyogrio")
+    required_columns = {
+        "locality_code",
+        "geometry_source",
+        "review_status",
+    }
+    missing_columns = required_columns.difference(reviewed.columns)
+    if missing_columns:
+        raise ValueError(
+            f"{reviewed_path} is missing required columns: "
+            f"{sorted(missing_columns)}"
+        )
+    reviewed["locality_code"] = integer_series(reviewed["locality_code"])
+    if reviewed["locality_code"].isna().any():
+        raise ValueError(f"{reviewed_path} contains a blank locality code")
+    if reviewed["locality_code"].duplicated().any():
+        duplicates = sorted(
+            reviewed.loc[
+                reviewed["locality_code"].duplicated(keep=False),
+                "locality_code",
+            ]
+            .astype(int)
+            .unique()
+        )
+        raise ValueError(
+            f"{reviewed_path} contains duplicate locality codes: {duplicates}"
+        )
+
+    reviewed = reviewed.to_crs("EPSG:2039")
+    for row in reviewed.itertuples(index=False):
+        code = int(row.locality_code)
+        if code not in WEST_BANK_DETAIL_CODES:
+            raise ValueError(
+                f"{reviewed_path} contains out-of-scope locality code {code}"
+            )
+        if code in detailed:
+            raise ValueError(
+                f"{reviewed_path} duplicates an existing ArcGIS detail for {code}"
+            )
+        if str(row.review_status).strip() != "approved_detailed_boundary":
+            raise ValueError(
+                f"{reviewed_path} locality {code} is not approved for display"
+            )
+        geometry = row.geometry
+        if (
+            geometry is None
+            or geometry.is_empty
+            or not geometry.is_valid
+            or geometry.geom_type not in {"Polygon", "MultiPolygon"}
+            or geometry.area <= POINT_PROXY_MAX_AREA_M2
+            or geometry_coordinate_count(geometry)
+            <= POINT_PROXY_MAX_COORDINATES
+        ):
+            raise ValueError(
+                f"{reviewed_path} locality {code} is not a valid detailed polygon"
+            )
+        source_name = str(row.geometry_source).strip()
+        if not source_name.startswith("arcgis_"):
+            raise ValueError(
+                f"{reviewed_path} locality {code} has invalid geometry source"
+            )
+        detailed[code] = (geometry, source_name)
     return detailed
 
 

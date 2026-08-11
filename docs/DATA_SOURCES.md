@@ -132,6 +132,27 @@ merged. After classifying those dissolved locality totals correctly, the audit
 accepts only nine exact K21 links and no K20 links. They never replace official
 ballot or vote values.
 
+The same two election layers were also checked for the four remaining tiny
+West Bank display proxies: Rotem (3782), Maskiyot (3785), Avnat (3786), and
+Mavo'ot Yeriho (3825). Neither layer contains any of those locality codes or
+names. A separate public ArcGIS map package published by Peace Now contains a
+single 2024 built-up polygon for each of the four:
+
+- [Peace Now layers](https://www.arcgis.com/home/item.html?id=e3848dc0a04c44cc9ad9f7db228cd3a3)
+- source layer `Settlements_and_outposts_14112024`
+- retained source feature IDs and dates in
+  `data/manual/west_bank_display_boundary_replacements.geojson`
+
+Those four reviewed footprints are production display geometry only. They
+replace the CBS point-like proxies but do not provide ballot-to-area evidence.
+The selected polygons were checked against the current proxies, OpenStreetMap
+residential footprints, the available K24 Kaplan polygons for Rotem and
+Maskiyot, and the Civil Administration jurisdiction layer published through
+[ArcGIS](https://services5.arcgis.com/jT9QGg5EVnLcQqRI/arcgis/rest/services/Tzav_Bdvar_Tchum_Shiput/FeatureServer).
+The jurisdiction polygons are broader legal/administrative extents and are not
+used as the displayed built-up boundaries. No candidate intersects another
+current locality display feature.
+
 ### Kaplan Election-Map Payloads
 
 The supplied Kaplan map applications were traced to five public data payloads:
@@ -154,8 +175,10 @@ The four locality layers expose no statistical-area identifier and have exactly
 one feature per locality. The neighborhood layer exposes a neighborhood ID and
 representative point, but no boundary, AGS identifier, or ballot crosswalk. It
 therefore cannot prove a ballot-to-statistical-area assignment. These sources
-are retained as reproducible locality-total cross-checks only; no vote values or
-geometry are imported into production outputs.
+are retained as reproducible locality-total cross-checks only; no vote values
+are imported into production outputs. K24 polygons for Rotem and Maskiyot are
+used only as secondary validation of the separate reviewed display footprints;
+the Kaplan geometries themselves are not imported.
 
 Display-only reuse is recorded separately from assignment evidence. The exact
 Hebron footprint is reused for the two reviewed K17/K18 custom assignments, and

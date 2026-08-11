@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-09
+Last updated: 2026-08-11
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -12,15 +12,15 @@ but open/complete workstream declarations belong here.
 |---|---|---|
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
 | Locality-mode aggregation | Complete | Every geographic-scope result row is mapped. Twelve unsupported partial-presence cells across eight localities remain neutral under a closed policy; their effect is immaterial and no further matching work is planned. |
-| Historical statistical-area mode | Implemented; assignment review ongoing | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty-four high-confidence row-level continuity links are approved and labeled synthetic. The final K21-K25 display layer publishes 536 exact closed units and 1,728 disclosed representative units across 4,722 polygon-election memberships. Entirely unassigned localities use a display-only fallback. Visual refinement of all nine K17/K18 historical-composite components, all 33 effective K17 historical-identity fallback polygons, and the additional reviewed K17/K18 locality overlaps is complete. A separate automated joined-locality display audit evaluates 180 election-specific continuity leads: 38 strict approvals are active and 142 are covered, contradicted, or unresolved; these never change ballot-level area assignments. A polling-register safety audit rejects 38 false K24 row-level stable-ballot candidates: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their complete final results publish only through reviewed exact closed area sets. All nine specific ordinary crosswalk omissions are likewise resolved at exact set level, including K25 Daliyat ballot 23; no internal area split is invented. |
+| Historical statistical-area mode | Complete under the current evidence policy | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty-four high-confidence row-level continuity links are approved and labeled synthetic. The final K21-K25 display layer publishes 536 exact closed units and 1,728 disclosed representative units across 4,722 polygon-election memberships. Entirely unassigned localities use a display-only fallback. Visual refinement of all nine K17/K18 historical-composite components, all 33 effective K17 historical-identity fallback polygons, and the additional reviewed K17/K18 locality overlaps is complete. All 119 reviewed tiny West Bank proxies now have detailed display footprints; the final four use reviewed Peace Now polygons and do not alter assignments. A separate automated joined-locality display audit evaluates 180 election-specific continuity leads: 38 strict approvals are active and 142 are covered, contradicted, or unresolved; these never change ballot-level area assignments. A polling-register safety audit rejects 38 false K24 row-level stable-ballot candidates: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their complete final results publish only through reviewed exact closed area sets. All nine specific ordinary crosswalk omissions are likewise resolved at exact set level, including K25 Daliyat ballot 23; no internal area split is invented. Remaining source limitations have settled display and publication rules and are not an active repair queue. |
 | Party/list names | Complete | All published K17-K25 lists have reviewed display names. English labels may fall back to Hebrew where no separate translation is maintained. |
 | Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
 | Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
-| UX and accessibility | Desktop implemented; mobile rewrite planned | Desktop bilingual behavior is active, including document-level direction and properly shaped Hebrew/Arabic vector labels. The current narrow-screen stack is an interim compatibility shell and obscures too much of the map; it will be replaced by a complete map-first mobile design. Keyboard and accessibility review remain continuous. |
+| UX and accessibility | Complete for the current desktop and portrait-mobile scope | Bilingual desktop and portrait-mobile behavior is active, including document-level direction, properly shaped Hebrew/Arabic vector labels, a top-bar accessibility control, compact mobile navigation and selectors, a persistent map viewport, keyboard-aware search, closable result sheets, and short-screen scrolling that keeps the selected geography title visible. Landscape-phone support is outside the agreed scope. |
 | National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
-| Product features | Core desktop analysis modes implemented | Election-aware bilingual geography and numbered-address search, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
-| Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 107 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Future versioning policy remains open. |
-| Public repository hardening | In progress | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The commercial-use audit records explicitly published third-party terms. A public Sources/Legal/Privacy surface, fresh-clone source bootstrap, CI, and performance checks remain unfinished. |
+| Product features | Complete for the current scope | Election-aware bilingual geography and numbered-address search, national results, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented on desktop and portrait mobile. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
+| Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 107 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Data releases now use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
+| Public repository hardening | Implemented | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The app links directly to this repository for downloads, sources, methodology, and legal notices, and publishes a bilingual privacy notice for current network and browser-storage behavior. Rebuilding the private-input pipeline from a fresh clone, hosted CI, continuous performance monitoring, and duplicate in-app Sources/Legal pages are not public-data deliverables. |
 
 ## Public Data Release
 
@@ -200,18 +200,14 @@ unallocated-register candidates remain withheld.
 
 ## Remaining Work
 
-1. Search for defensible detailed display boundaries for Rotem, Maskiyot,
-   Avnat, and Mavo'ot Yeriho. No better candidate boundaries have been located
-   yet, so there is currently nothing awaiting approval. Keep the present
-   proxy/hidden treatment unless a sourced candidate is found. This is a
-   geometry-quality issue, not an assignment gap.
-2. Continue desktop UX/accessibility work and build the planned map-first mobile
-   rewrite. Satellite and 3D-building modes are not part of the plan.
-3. Add reproducible fresh-clone source bootstrap and CI checks.
-4. Treat the supplied Kaplan layers as exhausted locality/neighborhood
-   aggregates. Reopen recurring crosswalk omissions only if the internal CBS
-   `kalpi_artzi` layer, another detailed official crosswalk, or independently
-   reconcilable ballot-register evidence becomes available.
+There are no active implementation or audit items in the agreed project scope.
+Landscape-phone support, satellite imagery, and 3D buildings are outside that
+scope.
+
+The supplied Kaplan layers are exhausted locality/neighborhood aggregates.
+Historical assignment limitations should be reopened only if the internal CBS
+`kalpi_artzi` layer, another detailed official crosswalk, or independently
+reconcilable ballot-register evidence becomes available.
 
 Historical assignment gaps should only be reopened when a new official or
 independently reconcilable source becomes available. Reusing a ballot number

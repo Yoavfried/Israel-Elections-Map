@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Party, ResultRecord } from '../domain/schemas'
 import { DetailsPanel } from './DetailsPanel'
 
@@ -61,6 +61,24 @@ describe('DetailsPanel', () => {
     expect(html).toContain('<span class="party-share">0.0%</span>')
     expect(html).not.toContain('<dt>Lead</dt>')
     expect(html).not.toContain('Geography code')
+    expect(html).toContain('<div class="details-scroll-body" tabindex="0"')
+    expect(html.indexOf('details-heading')).toBeLessThan(
+      html.indexOf('details-scroll-body'),
+    )
+  })
+
+  it('renders a labeled close action when selection clearing is available', () => {
+    const html = renderToStaticMarkup(
+      <DetailsPanel
+        language="en"
+        record={record}
+        parties={parties}
+        onClose={vi.fn()}
+      />,
+    )
+
+    expect(html).toContain('class="details-close"')
+    expect(html).toContain('aria-label="Close results"')
   })
 
   it('surfaces and highlights both selected comparison parties', () => {

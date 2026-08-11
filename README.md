@@ -59,6 +59,7 @@ confidence, source, and synthetic-link flag are published on every row.
 - [Data dictionary and join examples](public-data/DATA_DICTIONARY.md)
 - [Exact assignment and validation methodology](public-data/METHODOLOGY.md)
 - [Machine-readable manifest and checksums](public-data/v1/manifest.csv?raw=1)
+- [Data release versioning policy](docs/VERSIONING.md)
 
 Map colors, UI labels, web-only polygon transformations, and interaction
 settings remain protected presentation configuration under `web/app/` and the
@@ -147,6 +148,10 @@ then writes validated assets under `web/app/public/data/v2/`.
   geography, and party sources.
 - [`docs/COMMERCIAL_USE_AUDIT.md`](docs/COMMERCIAL_USE_AUDIT.md) records
   explicitly published commercial-use permissions and obligations.
+- [`docs/VERSIONING.md`](docs/VERSIONING.md) keeps public-data and website
+  release numbers separate.
+- [`web/app/public/privacy.html`](web/app/public/privacy.html) is the bilingual
+  privacy notice for address search, map requests, local storage, and hosting.
 - [`web/app/docs/ARCHITECTURE.md`](web/app/docs/ARCHITECTURE.md) defines the
   frontend data contract and product boundary.
 

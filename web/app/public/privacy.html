@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f4eb" />
+    <meta
+      name="description"
+      content="Privacy notice for the Israel Election Map, including address search, map services, local storage, and future advertising."
+    />
+    <title>הודעת פרטיות | Privacy Notice</title>
+    <style>
+      :root {
+        color: #171a17;
+        background: #f4f1e8;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --paper: #faf8f1;
+        --ink: #171a17;
+        --muted: #69706a;
+        --line: rgba(23, 26, 23, 0.16);
+        --accent: #1c6457;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background: #f4f1e8;
+        font-size: 0.9375rem;
+        line-height: 1.65;
+      }
+
+      a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+
+      a:focus-visible {
+        outline: 3px solid rgba(28, 100, 87, 0.32);
+        outline-offset: 3px;
+      }
+
+      .privacy-header {
+        position: sticky;
+        z-index: 10;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        padding: 10px max(20px, env(safe-area-inset-right)) 10px max(20px, env(safe-area-inset-left));
+        border-bottom: 1px solid var(--line);
+        background: rgba(247, 244, 235, 0.97);
+      }
+
+      .back-link {
+        color: var(--ink);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .language-switch {
+        display: flex;
+        gap: 3px;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(23, 26, 23, 0.04);
+      }
+
+      .language-switch a {
+        min-width: 76px;
+        padding: 6px 12px;
+        border-radius: 5px;
+        color: var(--muted);
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      .language-switch a[aria-current="page"] {
+        color: var(--ink);
+        background: var(--paper);
+        box-shadow: 0 1px 4px rgba(23, 26, 23, 0.12);
+      }
+
+      main {
+        width: min(820px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 44px 0 72px;
+      }
+
+      article[hidden] {
+        display: none;
+      }
+
+      h1,
+      h2,
+      p,
+      ul {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        line-height: 1.35;
+      }
+
+      .updated,
+      .summary {
+        color: var(--muted);
+      }
+
+      .summary {
+        max-width: 70ch;
+        margin: 26px 0 32px;
+        font-size: 1rem;
+      }
+
+      section {
+        padding: 24px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      .status {
+        padding: 14px 16px;
+        border-inline-start: 4px solid var(--accent);
+        background: rgba(28, 100, 87, 0.07);
+      }
+
+      @media (max-width: 560px) {
+        .privacy-header {
+          align-items: stretch;
+          flex-direction: column-reverse;
+        }
+
+        .back-link {
+          text-align: center;
+        }
+
+        .language-switch a {
+          flex: 1;
+        }
+
+        main {
+          width: min(100% - 28px, 820px);
+          padding-top: 30px;
+        }
+
+        h1 {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="privacy-header">
+      <a class="back-link" href="./" data-back-he="חזרה למפה" data-back-en="Back to map">חזרה למפה</a>
+      <nav class="language-switch" aria-label="Language">
+        <a href="?lang=he" data-language-link="he">עברית</a>
+        <a href="?lang=en" data-language-link="en">English</a>
+      </nav>
+    </header>
+
+    <main>
+      <article lang="he" dir="rtl" data-language-panel="he">
+        <h1>הודעת פרטיות</h1>
+        <p class="updated">עודכן לאחרונה: 10 באוגוסט 2026</p>
+        <p class="summary">
+          האתר אינו דורש חשבון, אינו מפעיל כלי ניתוח או פרסום ואינו שומר שאילתות כתובת
+          בשרת שבשליטת הפרויקט. שירותים מסוימים מחייבים פנייה לספק חיצוני, כמפורט להלן.
+        </p>
+
+        <section>
+          <h2>1. מי מפעיל את האתר</h2>
+          <p>
+            מפת הבחירות בישראל היא פרויקט עצמאי המופעל על ידי Yoav Fried. ניתן ליצור קשר דרך
+            <a href="https://github.com/Yoavfried/israel-election-map/issues" target="_blank" rel="noreferrer">מאגר הפרויקט ב-GitHub</a>.
+            אין לפרסם בפנייה כתובת פרטית או מידע אישי שאינכם רוצים לחשוף בפומבי.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. איזה מידע מעובד</h2>
+          <ul>
+            <li>
+              <strong>חיפוש כתובת:</strong> רק כאשר מזינים כתובת הכוללת מספר בית, נוסח
+              החיפוש המדויק, שפת הממשק וגבולות אזור החיפוש נשלחים לשירות Photon המוגדר
+              באתר. ברירת המחדל היא השירות הציבורי של
+              <a href="https://photon.komoot.io/" target="_blank" rel="noreferrer">Photon</a>.
+              התוצאות נשמרות בזיכרון הדפדפן עד לרענון העמוד ואינן נשמרות בשרת של הפרויקט.
+              בדיקת האזור הסטטיסטי מתבצעת בדפדפן.
+            </li>
+            <li>
+              <strong>מפת רחובות:</strong> במצב מפת רחובות הדפדפן מבקש סגנון, אריחים
+              ונתוני מפה מ-<a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a>.
+              כמו בכל בקשת אינטרנט, הספק עשוי לקבל כתובת IP, פרטי דפדפן, זמן בקשה וכתובת מפנה.
+            </li>
+            <li>
+              <strong>אחסון מקומי:</strong> בחירת שפה, מערכת בחירות, רמה גאוגרפית ומפת
+              רקע, וכן הגדרות כלי הנגישות, נשמרות באחסון המקומי של הדפדפן. מידע זה נועד
+              לזכור העדפות ואינו נשלח על ידי האתר לצורכי מעקב.
+            </li>
+            <li>
+              <strong>אירוח האתר:</strong> ספק האירוח עשוי לעבד נתוני בקשה רגילים, כגון
+              כתובת IP, סוג דפדפן וזמן בקשה, לצורך מסירת האתר, אבטחה ואבחון תקלות.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. מטרות והשימוש לבחירת המשתמש</h2>
+          <p>
+            המידע משמש רק להצגת המפה, שמירת העדפות, איתור כתובת שביקשתם והגנה תפעולית על
+            השירות. חיפוש כתובת ממוספרת הוא רשות. אפשר להשתמש בחיפוש היישובים והאזורים
+            הסטטיסטיים בלי למסור כתובת ל-Photon.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. עוגיות ופרסום</h2>
+          <p class="status">
+            נכון למועד העדכון אין באתר פרסומות, כלי ניתוח או עוגיות פרסום. קוד האתר עצמו
+            אינו יוצר עוגיות.
+          </p>
+          <p>
+            פרסום אינו מחייב בהכרח עוגיות. אם יופעל בעתיד ספק פרסום שאינו משתמש בעוגיות,
+            באחסון מקומי או במזהים אישיים, לא תתווסף הודעת עוגיות רק משום שמוצגות פרסומות.
+            אם הספק שייבחר ידרוש עוגיות, אחסון מקומי או עיבוד מידע אישי, הודעה זו תעודכן
+            בפרטי הספק והמטרות, ובמקום שבו נדרשת הסכמה יוצג מנגנון הסכמה לפני הפעלתם.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. שמירה, ספקים וקישורים חיצוניים</h2>
+          <p>
+            העדפות מקומיות נשמרות עד למחיקת נתוני האתר בדפדפן. מטמון חיפוש הכתובות נמחק
+            ברענון העמוד. תקופות השמירה של Photon, OpenFreeMap וספק האירוח נקבעות על ידם.
+            מעבר לקישורים חיצוניים, לרבות GitHub, ויקיפדיה ואתרים רשמיים, כפוף למדיניות של
+            אותו אתר.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. פניות ועדכונים</h2>
+          <p>
+            האתר אינו מנהל חשבונות משתמש ואינו מחזיק מאגר של שאילתות כתובת. אם אתם סבורים
+            שמידע אישי שלכם נשמר בידי הפרויקט או מבקשים הבהרה, ניתן לפנות דרך מאגר
+            הפרויקט. הודעה זו תעודכן לפני הוספת שימוש מהותי חדש במידע, ובפרט לפני הפעלת
+            פרסום המשתמש בעוגיות או במזהים.
+          </p>
+        </section>
+      </article>
+
+      <article lang="en" dir="ltr" data-language-panel="en" hidden>
+        <h1>Privacy Notice</h1>
+        <p class="updated">Last updated: 10 August 2026</p>
+        <p class="summary">
+          The site requires no account, runs no analytics or advertising, and does not store
+          address queries on a project-controlled server. Some features require a request to
+          an external provider, as described below.
+        </p>
+
+        <section>
+          <h2>1. Who operates the site</h2>
+          <p>
+            Israel Election Map is an independent project operated by Yoav Fried. You can contact the project through
+            its <a href="https://github.com/Yoavfried/israel-election-map/issues" target="_blank" rel="noreferrer">GitHub repository</a>.
+            Do not include a private address or other personal information that you do not want
+            to publish in an issue.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Information processed</h2>
+          <ul>
+            <li>
+              <strong>Address search:</strong> only when you enter an address containing a house
+              number, the exact query, interface language, and search bounds are sent to the
+              configured Photon service. The default is the public
+              <a href="https://photon.komoot.io/" target="_blank" rel="noreferrer">Photon service</a>.
+              Results remain in browser memory until the page is refreshed and are not stored on
+              a project server. Statistical-area lookup is performed in your browser.
+            </li>
+            <li>
+              <strong>Street map:</strong> in street-map mode, the browser requests map styles,
+              tiles, and related resources from
+              <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a>.
+              As with an ordinary web request, the provider may receive an IP address, browser
+              information, request time, and referrer.
+            </li>
+            <li>
+              <strong>Local storage:</strong> language, election, geography level, and basemap
+              choices, together with accessibility-tool settings, are stored locally in your
+              browser. They remember preferences and are not transmitted by the site for tracking.
+            </li>
+            <li>
+              <strong>Hosting:</strong> the hosting provider may process ordinary request data,
+              such as IP address, browser type, and request time, to deliver and secure the site
+              and diagnose failures.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. Purposes and your choice</h2>
+          <p>
+            Information is used only to display the map, remember preferences, perform an address
+            lookup that you request, and protect site operations. Numbered-address search is
+            optional. You can search for localities and statistical areas without sending an
+            address to Photon.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Cookies and advertising</h2>
+          <p class="status">
+            As of the date above, the site contains no advertising, analytics, or advertising
+            cookies. The application itself does not set cookies.
+          </p>
+          <p>
+            Advertising does not inherently require cookies. If a future provider can serve ads
+            without cookies, local storage, or personal identifiers, a cookie prompt will not be
+            added merely because ads are displayed. If the selected provider requires cookies,
+            local storage, or personal-data processing, this notice will identify the provider and
+            purposes, and a consent control will be shown before use wherever consent is required.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Retention, providers, and external links</h2>
+          <p>
+            Local preferences remain until you clear this site's browser data. The address-search
+            memory cache is cleared when the page is refreshed. Photon, OpenFreeMap, and the hosting
+            provider determine their own retention periods. Following external links, including
+            GitHub, Wikipedia, and official result sources, is subject to the destination's policy.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Requests and changes</h2>
+          <p>
+            The site has no user accounts and keeps no project database of address queries. If you
+            believe the project holds your personal information or need clarification, contact the
+            project through the repository. This notice will be updated before a material new use
+            of information is introduced, especially before advertising that uses cookies or
+            identifiers is enabled.
+          </p>
+        </section>
+      </article>
+    </main>
+
+    <script>
+      const requestedLanguage = new URLSearchParams(window.location.search).get('lang')
+      const language = requestedLanguage === 'en' || requestedLanguage === 'he'
+        ? requestedLanguage
+        : navigator.language.toLowerCase().startsWith('he') ? 'he' : 'en'
+
+      document.documentElement.lang = language
+      document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr'
+      document.querySelectorAll('[data-language-panel]').forEach((panel) => {
+        panel.hidden = panel.dataset.languagePanel !== language
+      })
+      document.querySelectorAll('[data-language-link]').forEach((link) => {
+        if (link.dataset.languageLink === language) link.setAttribute('aria-current', 'page')
+      })
+      const backLink = document.querySelector('.back-link')
+      backLink.textContent = language === 'he' ? backLink.dataset.backHe : backLink.dataset.backEn
+    </script>
+  </body>
+</html>

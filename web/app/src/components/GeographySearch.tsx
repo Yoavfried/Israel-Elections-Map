@@ -15,6 +15,7 @@ import type {
   GeographySearchItem,
   Language,
 } from '../domain/schemas'
+import { calculateVisualViewportPlacement } from '../domain/visualViewport'
 import { translate } from '../i18n/translations'
 
 interface GeographySearchProps {
@@ -53,10 +54,13 @@ export function GeographySearch({
   onClearSelection,
 }: GeographySearchProps) {
   const listboxId = useId()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const previousSelectionRef = useRef<string | null>(null)
   const preserveQueryOnSelectionClearRef = useRef(false)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [addressMatches, setAddressMatches] = useState<AddressSearchMatch[]>([])
   const [addressLoading, setAddressLoading] = useState(false)
@@ -77,6 +81,7 @@ export function GeographySearch({
   useEffect(() => {
     setQuery('')
     setOpen(false)
+    setMobileOpen(false)
     setActiveIndex(0)
     setAddressMatches([])
     setAddressError(false)
@@ -161,8 +166,74 @@ export function GeographySearch({
     setActiveIndex((current) => Math.min(current, Math.max(options.length - 1, 0)))
   }, [options.length])
 
+  useEffect(() => {
+    if (!mobileOpen) {
+      return
+    }
+
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    const visualViewport = window.visualViewport
+    let animationFrame = 0
+    const updatePosition = () => {
+      window.cancelAnimationFrame(animationFrame)
+      animationFrame = window.requestAnimationFrame(() => {
+        const layoutHeight = document.documentElement.clientHeight
+        const visibleHeight = visualViewport?.height ?? window.innerHeight
+        const visibleTop = visualViewport?.offsetTop ?? 0
+        const placement = calculateVisualViewportPlacement(
+          layoutHeight,
+          visibleHeight,
+          visibleTop,
+        )
+
+        container.style.setProperty(
+          '--mobile-search-keyboard-offset',
+          `${Math.round(placement.coveredBottom)}px`,
+        )
+        container.style.setProperty(
+          '--mobile-search-visible-height',
+          `${Math.round(placement.visibleHeight)}px`,
+        )
+      })
+    }
+
+    updatePosition()
+    visualViewport?.addEventListener('resize', updatePosition)
+    visualViewport?.addEventListener('scroll', updatePosition)
+    window.addEventListener('resize', updatePosition)
+
+    // Some WebKit versions report the final viewport only after the keyboard animation.
+    const settledUpdate = window.setTimeout(updatePosition, 500)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      window.clearTimeout(settledUpdate)
+      visualViewport?.removeEventListener('resize', updatePosition)
+      visualViewport?.removeEventListener('scroll', updatePosition)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [mobileOpen])
+
+  const openMobileSearch = () => {
+    setMobileOpen(true)
+    setOpen(true)
+    window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }))
+  }
+
+  const closeMobileSearch = () => {
+    setMobileOpen(false)
+    setOpen(false)
+    inputRef.current?.blur()
+  }
+
   const choose = (option: SearchOption) => {
     setOpen(false)
+    setMobileOpen(false)
+    inputRef.current?.blur()
     if (option.kind === 'address') {
       setQuery(option.match.label)
       onAddressSelect(option.match)
@@ -182,75 +253,103 @@ export function GeographySearch({
 
   return (
     <div
-      className="geography-search"
+      ref={containerRef}
+      className={`geography-search${mobileOpen ? ' geography-search--mobile-open' : ''}`}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
           setOpen(false)
         }
       }}
     >
+      <button
+        className="geography-search__mobile-trigger"
+        type="button"
+        aria-label={translate(language, 'searchLabel')}
+        aria-expanded={mobileOpen}
+        aria-controls={`${listboxId}-input`}
+        onClick={openMobileSearch}
+      >
+        <Search size={20} strokeWidth={2.2} aria-hidden="true" />
+      </button>
       <label htmlFor={`${listboxId}-input`}>{translate(language, 'searchLabel')}</label>
-      <div className="geography-search__input-wrap">
-        <Search className="geography-search__icon" size={18} aria-hidden="true" />
-        <input
-          id={`${listboxId}-input`}
-          type="search"
-          role="combobox"
-          dir="auto"
-          autoComplete="off"
-          value={query}
-          disabled={loading}
-          placeholder={
-            loading
-              ? translate(language, 'searchLoading')
-              : translate(language, 'searchPlaceholder')
-          }
-          aria-autocomplete="list"
-          aria-controls={listboxId}
-          aria-expanded={showResults}
-          aria-activedescendant={
-            showResults && options[activeIndex]
-              ? `${listboxId}-option-${activeIndex}`
-              : undefined
-          }
-          onFocus={() => setOpen(true)}
-          onChange={(event) => {
-            if (selectedItem || selectedAddress) {
-              preserveQueryOnSelectionClearRef.current = true
-              onClearSelection()
+      <div className="geography-search__mobile-row">
+        <div className="geography-search__input-wrap">
+          <Search className="geography-search__icon" size={18} aria-hidden="true" />
+          <input
+            ref={inputRef}
+            id={`${listboxId}-input`}
+            type="search"
+            role="combobox"
+            dir="auto"
+            autoComplete="off"
+            value={query}
+            disabled={loading}
+            placeholder={
+              loading
+                ? translate(language, 'searchLoading')
+                : translate(language, 'searchPlaceholder')
             }
-            setQuery(event.target.value)
-            setOpen(true)
-            setActiveIndex(0)
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowDown' && options.length > 0) {
-              event.preventDefault()
-              setOpen(true)
-              setActiveIndex((current) => (current + 1) % options.length)
-            } else if (event.key === 'ArrowUp' && options.length > 0) {
-              event.preventDefault()
-              setOpen(true)
-              setActiveIndex((current) => (current - 1 + options.length) % options.length)
-            } else if (event.key === 'Enter' && showResults && options[activeIndex]) {
-              event.preventDefault()
-              choose(options[activeIndex])
-            } else if (event.key === 'Escape') {
-              setOpen(false)
+            aria-label={translate(language, 'searchLabel')}
+            aria-autocomplete="list"
+            aria-controls={listboxId}
+            aria-expanded={showResults}
+            aria-activedescendant={
+              showResults && options[activeIndex]
+                ? `${listboxId}-option-${activeIndex}`
+                : undefined
             }
-          }}
-        />
-        {query ? (
-          <button
-            className="geography-search__clear"
-            type="button"
-            title={translate(language, 'clearSearch')}
-            aria-label={translate(language, 'clearSearch')}
-            onClick={clear}
-          >
-            <X size={17} aria-hidden="true" />
-          </button>
-        ) : null}
+            onFocus={() => setOpen(true)}
+            onChange={(event) => {
+              if (selectedItem || selectedAddress) {
+                preserveQueryOnSelectionClearRef.current = true
+                onClearSelection()
+              }
+              setQuery(event.target.value)
+              setOpen(true)
+              setActiveIndex(0)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowDown' && options.length > 0) {
+                event.preventDefault()
+                setOpen(true)
+                setActiveIndex((current) => (current + 1) % options.length)
+              } else if (event.key === 'ArrowUp' && options.length > 0) {
+                event.preventDefault()
+                setOpen(true)
+                setActiveIndex((current) => (current - 1 + options.length) % options.length)
+              } else if (event.key === 'Enter' && showResults && options[activeIndex]) {
+                event.preventDefault()
+                choose(options[activeIndex])
+              } else if (event.key === 'Escape') {
+                if (mobileOpen) {
+                  closeMobileSearch()
+                } else {
+                  setOpen(false)
+                }
+              }
+            }}
+          />
+          {query ? (
+            <button
+              className="geography-search__clear"
+              type="button"
+              title={translate(language, 'clearSearch')}
+              aria-label={translate(language, 'clearSearch')}
+              onClick={clear}
+            >
+              <X size={17} aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
+        <button
+          className="geography-search__mobile-close"
+          type="button"
+          aria-label={translate(language, 'closeSearch')}
+          title={translate(language, 'closeSearch')}
+          onClick={closeMobileSearch}
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
       </div>
 
       {showResults ? (

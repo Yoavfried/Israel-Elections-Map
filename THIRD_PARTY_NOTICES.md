@@ -31,6 +31,17 @@ source files, logos, or other protected presentation:
 
 https://data.gov.il/api/3/action/package_show?id=26f9fa06-fcd7-4173-8df5-65797b63e857
 
+## Peace Now Settlement Footprints
+
+The display-only boundaries for Rotem, Maskiyot, Avnat, and Mavo'ot Yeriho
+are derived from the `Settlements_and_outposts_14112024` polygon layer in the
+Peace Now ArcGIS map package. The retained feature metadata identifies the
+source item, source feature, and source date. These footprints replace tiny
+CBS display proxies only; they do not assign, split, or move election results.
+
+- ArcGIS item: https://www.arcgis.com/home/item.html?id=e3848dc0a04c44cc9ad9f7db228cd3a3
+- Source acknowledgement: https://peacenow.org.il/
+
 ## OpenStreetMap Vector Basemap
 
 When enabled, the web client requests a MapLibre style and vector-map resources
@@ -86,3 +97,8 @@ configuration.
 Packages installed through Python and npm remain under their respective
 licenses. See `requirements.txt`, `web/app/package.json`, and installed package
 metadata for the applicable notices.
+
+The website uses OpenNagish 1.1.4 for its accessibility toolbar. OpenNagish is
+distributed under the MIT License:
+
+https://github.com/leon2589/open-nagish

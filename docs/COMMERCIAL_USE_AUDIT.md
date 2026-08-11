@@ -1,6 +1,6 @@
 # Commercial-Use Audit
 
-Last reviewed: 2026-08-03
+Last reviewed: 2026-08-10
 
 This document records published reuse terms for repository inputs, services,
 and redistributed outputs relevant to a deployment intended to make money. It
@@ -35,13 +35,17 @@ commercial use when their conditions are followed.
 
 Before charging users, running advertising, or selling access:
 
-1. Publish an accessible Sources/Legal page containing CBS, OSM/OpenMapTiles,
-   OpenFreeMap, and software notices plus a clear non-affiliation
-   statement.
-2. Publish a privacy notice explaining that exact address text is transmitted
-   to the configured geocoder and that tile providers receive ordinary web
-   request metadata. The current code contains no analytics, advertising, or
-   payment SDK.
+1. Keep a visible link from the website to this repository's source, licence,
+   attribution, and non-affiliation notices. Duplicating those documents as
+   separate application pages is not a project requirement.
+2. Keep the bilingual privacy notice at `web/app/public/privacy.html` aligned
+   with the deployed services. It currently covers optional Photon address
+   searches, OpenFreeMap requests, local preference/accessibility storage, and
+   ordinary hosting request metadata. The current code contains no analytics
+   or advertising SDK and sets no cookies itself. Before adding advertising,
+   identify the provider and its purposes in the notice. Add prior consent only
+   if the chosen implementation uses cookies, local storage, identifiers, or
+   personal data in circumstances where consent is required.
 3. Use production-capacity providers or self-hosting for geocoding and map
    tiles where uptime and request volume matter. This is an operational
    requirement even where free commercial use is legally allowed.
@@ -66,3 +70,10 @@ new work but does not create complete exclusivity over the earlier codebase.
 - OpenStreetMap copyright/ODbL: https://www.openstreetmap.org/copyright
 - OpenFreeMap terms and commercial-use statement: https://openfreemap.org/tos/ and https://openfreemap.org/
 - Photon licence and public-demo policy: https://github.com/komoot/photon
+- Israeli Privacy Protection Authority guidance on notice when collecting and
+  using personal information:
+  https://www.gov.il/BlobFolder/legalinfo/duty_to_notify/he/notify13.pdf
+- Google AdSense privacy-policy requirements:
+  https://support.google.com/adsense/answer/1348695
+- Google AdSense personalized and non-personalized advertising behavior:
+  https://support.google.com/adsense/answer/9007336

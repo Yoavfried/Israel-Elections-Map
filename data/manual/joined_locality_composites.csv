@@ -223,5 +223,5 @@ composite:joined-k25-1177,K25,1177,1,1177|1378,strong,under_100_host_delta,The u
 composite:joined-k25-1258,K25,1258,1,1258|1225,strong,under_100_host_delta,The K25 planned Massad and Ravid registers total 386 eligible voters; the published Massad host result has 382; a four-voter delta; and Ravid has no standalone final result.,
 composite:joined-k25-2011,K25,2011,1,2011|1339,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,
 composite:joined-k25-3555,K25,3555,,3555|3620,confirmed,exact_eligible_arithmetic,The published host eligible total 225 exactly equals the host register 156 plus the Na'aran register 69.,
-composite:joined-k25-3607,K25,3607,1,3607|3825,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,marker
+composite:joined-k25-3607,K25,3607,1,3607|3825,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,
 composite:joined-k25-4303,K25,4303,1,4303|4035,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,
