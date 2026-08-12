@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   resolve: {
     alias: [
@@ -18,7 +18,7 @@ export default defineConfig({
     ],
   },
   build: {
-    sourcemap: true,
+    sourcemap: mode !== 'deployment',
     // MapLibre is intentionally isolated behind React.lazy; its minified chunk is about 1.03 MB.
     chunkSizeWarningLimit: 1_100,
   },
@@ -26,4 +26,4 @@ export default defineConfig({
     port: 4173,
     strictPort: true,
   },
-})
+}))

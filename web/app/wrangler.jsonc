@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "israel-election-map-origin",
+  "compatibility_date": "2026-08-12",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./cloudflare-dist",
+    "html_handling": "auto-trailing-slash"
+  }
+}

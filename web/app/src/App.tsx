@@ -516,7 +516,7 @@ export default function App() {
           </a>
           <a
             className="header-icon-link"
-            href={`/privacy.html?lang=${language}`}
+            href={`${import.meta.env.BASE_URL}privacy.html?lang=${language}`}
             aria-label={translate(language, 'privacyAction')}
             title={translate(language, 'privacyAction')}
           >

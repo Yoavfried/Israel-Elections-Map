@@ -11,6 +11,8 @@
     "data:build": "node scripts/build-data.mjs",
     "dev": "npm run data:build && vite",
     "build": "npm run data:build && tsc --noEmit && vite build",
+    "build:deploy": "npm run data:build && tsc --noEmit && vite build --mode deployment --base=/isr-electionmap/ && node scripts/prepare-cloudflare-deploy.mjs",
+    "deploy": "npm run build:deploy && wrangler deploy",
     "test": "npm run data:build && vitest run",
     "test:unit": "vitest run",
     "check": "npm run data:build && tsc --noEmit && vitest run && vite build",
@@ -33,6 +35,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "typescript": "^7.0.2",
     "vite": "^8.1.4",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "4.121.0"
   }
 }

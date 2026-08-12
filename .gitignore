@@ -9,6 +9,7 @@ data/raw/
 data/processed/
 data/cache/
 web/app/public/data/
+web/app/cloudflare-dist/
 
 # OS/editor noise.
 .DS_Store

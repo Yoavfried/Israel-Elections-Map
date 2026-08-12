@@ -263,7 +263,7 @@ export function MobileMenu({
               <Database size={18} strokeWidth={2} aria-hidden="true" />
               <span>{translate(language, 'repositoryAction')}</span>
             </a>
-            <a href={`/privacy.html?lang=${language}`}>
+            <a href={`${import.meta.env.BASE_URL}privacy.html?lang=${language}`}>
               <Shield size={18} strokeWidth={2} aria-hidden="true" />
               <span>{translate(language, 'privacyAction')}</span>
             </a>
