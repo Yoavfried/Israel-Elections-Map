@@ -56,12 +56,14 @@ registry as source-audit evidence but are excluded from map and national-result
 payloads. Any future zero-vote registry row must receive an explicit exclusion
 reason before the build will publish.
 
-All published Hebrew display names are reviewed. English labels may fall back
-to the reviewed Hebrew name. Wikipedia links remain under manual audit. The
-generated-data checks enforce link-presence continuity across elections when
-the reviewed Hebrew display name and identity are shared. Explicit reviewed
-exceptions cover identical short labels used by different slates, such as
-`כח להשפיע`, so a leader link is not copied onto an unrelated election entry.
+All published Hebrew and English display names are reviewed. The 297 English
+labels are stored in `data/manual/party_display_names_en.csv` and applied to the
+registry by election and ballot letter, independently of the reviewed
+Wikipedia URLs. The generated-data checks enforce link-presence continuity
+across elections when the reviewed Hebrew display name and identity are shared.
+Explicit reviewed exceptions cover identical short labels used by different
+slates, such as `כח להשפיע`, so a leader link is not copied onto an unrelated
+election entry.
 `web/app/config/party-overrides.json` separates reviewed names and colors from
 the data table, supports stable default colors by ballot letter, and allows
 election-specific exceptions. All 297 published K17-K25 lists now have

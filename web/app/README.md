@@ -30,10 +30,11 @@ boundary in the neutral map, including the Jordan Valley edge. Maritime
 administrative extensions and northern Ghajar are excluded from this
 presentation geometry.
 
-The current narrow-screen layout is an interim compatibility shell, not the
-finished mobile product. It keeps controls operable but leaves too little map
-visible. A complete map-first mobile rewrite is planned; public mobile UX
-should not be judged or documented as complete until that replacement lands.
+The portrait-mobile interface is map-first: it moves modes and selectors into
+a compact header menu, keeps map controls available, raises search above the
+on-screen keyboard, and presents closable result sheets with a fixed result
+title and scrollable detail body. Landscape-phone support is outside the
+current scope.
 
 ## Run Locally
 

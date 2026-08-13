@@ -47,6 +47,8 @@ Important reviewed inputs:
   statistical-area grouping, visibility, and naming rules; these do not alter
   canonical assignment IDs.
 - `manual/party_registry.csv` - election-specific party/list metadata.
+- `manual/party_display_names_en.csv` - reviewed English display names for all
+  positive-vote party rows, keyed by election and ballot letter.
 
 Source preparation constraints:
 

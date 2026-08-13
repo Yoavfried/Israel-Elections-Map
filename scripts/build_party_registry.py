@@ -27,6 +27,7 @@ from lxml import html
 ROOT = Path(__file__).resolve().parents[1]
 PARTY_COLUMNS_PATH = ROOT / "data" / "processed" / "normalized" / "party_columns.csv"
 OUTPUT_PATH = ROOT / "data" / "manual" / "party_registry.csv"
+REVIEWED_DISPLAY_NAMES_PATH = ROOT / "data" / "manual" / "party_display_names_en.csv"
 AUDIT_PATH = ROOT / "data" / "processed" / "audits" / "party_registry_wikipedia_candidates.csv"
 CACHE_ROOT = ROOT / "tmp" / "party_registry_sources"
 
@@ -112,6 +113,11 @@ REGISTRY_FIELDS = [
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--refresh", action="store_true", help="Ignore cached source downloads.")
+    parser.add_argument(
+        "--apply-reviewed-names-only",
+        action="store_true",
+        help="Apply the checked-in English display names without refreshing source data.",
+    )
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
     parser.add_argument("--audit-output", type=Path, default=AUDIT_PATH)
     return parser.parse_args()
@@ -122,6 +128,53 @@ def normalize_text(value: str | None) -> str:
         return ""
     value = value.replace("\xa0", " ").replace("\u200f", "").replace("\u200e", "")
     return " ".join(value.split())
+
+
+def read_reviewed_display_names() -> dict[tuple[str, str], str]:
+    with REVIEWED_DISPLAY_NAMES_PATH.open(
+        "r", encoding="utf-8-sig", newline=""
+    ) as handle:
+        rows = list(csv.DictReader(handle))
+
+    names: dict[tuple[str, str], str] = {}
+    for row in rows:
+        key = (row["election"].strip(), row["ballot_letter"].strip())
+        name = row["display_name_en"].strip()
+        if not all(key) or not name:
+            raise ValueError("Reviewed English party names cannot contain blank keys or names.")
+        if key in names:
+            raise ValueError(f"Duplicate reviewed English party name for {key[0]}:{key[1]}.")
+        names[key] = name
+    return names
+
+
+def apply_reviewed_display_names(
+    rows: list[dict[str, object]],
+    names: dict[tuple[str, str], str],
+) -> None:
+    row_keys = {
+        (str(row["election"]), str(row["ballot_letter"]))
+        for row in rows
+    }
+    unknown = sorted(set(names) - row_keys)
+    if unknown:
+        labels = ", ".join(f"{election}:{letter}" for election, letter in unknown)
+        raise ValueError(f"Reviewed English party names contain unknown rows: {labels}")
+
+    missing = sorted(
+        (str(row["election"]), str(row["ballot_letter"]))
+        for row in rows
+        if int(str(row["total_votes"])) > 0
+        and (str(row["election"]), str(row["ballot_letter"])) not in names
+    )
+    if missing:
+        labels = ", ".join(f"{election}:{letter}" for election, letter in missing)
+        raise ValueError(f"Positive-vote party rows lack reviewed English names: {labels}")
+
+    for row in rows:
+        key = (str(row["election"]), str(row["ballot_letter"]))
+        if key in names:
+            row["display_name_en"] = names[key]
 
 
 def read_inventory() -> list[dict[str, str]]:
@@ -592,6 +645,22 @@ def write_csv(path: Path, rows: list[dict[str, object]], fields: list[str]) -> N
 
 def main() -> int:
     args = parse_args()
+    reviewed_display_names = read_reviewed_display_names()
+
+    if args.apply_reviewed_names_only:
+        if not args.output.exists():
+            print(f"Registry does not exist: {args.output}", file=sys.stderr)
+            return 1
+        with args.output.open("r", encoding="utf-8-sig", newline="") as handle:
+            registry_rows = list(csv.DictReader(handle))
+        apply_reviewed_display_names(registry_rows, reviewed_display_names)
+        write_csv(args.output, registry_rows, REGISTRY_FIELDS)
+        print(
+            f"Applied {len(reviewed_display_names)} reviewed English names to "
+            f"{args.output.relative_to(ROOT)}"
+        )
+        return 0
+
     inventory = read_inventory()
     by_election: dict[str, list[dict[str, str]]] = {}
     for row in inventory:
@@ -742,6 +811,8 @@ def main() -> int:
                 "links_by_cell": json.dumps(candidate["links_by_cell"], ensure_ascii=False) if candidate else "",
             }
         )
+
+    apply_reviewed_display_names(registry_rows, reviewed_display_names)
 
     if missing_official:
         print("Missing official/list names: " + ", ".join(missing_official), file=sys.stderr)

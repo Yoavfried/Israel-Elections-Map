@@ -137,7 +137,8 @@ then writes validated assets under `web/app/public/data/v2/`.
 
 - [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) is the only completion
   tracker.
-- [`docs/FEATURE_PLAN.md`](docs/FEATURE_PLAN.md) records the product roadmap and delivery order.
+- [`docs/FEATURE_PLAN.md`](docs/FEATURE_PLAN.md) records delivered feature scope and the current public-website roadmap.
+- [`docs/WEBSITE_LAUNCH_PLAN.md`](docs/WEBSITE_LAUNCH_PLAN.md) defines hosting, SEO, and AdSense implementation order and acceptance criteria.
 - [`docs/HISTORICAL_STATISTICAL_AREA_ASSIGNMENT.md`](docs/HISTORICAL_STATISTICAL_AREA_ASSIGNMENT.md)
   documents source hierarchy, vintages, matching rules, and coverage.
 - [`docs/LOCALITY_MODE.md`](docs/LOCALITY_MODE.md) documents locality

@@ -23,7 +23,7 @@ The web app supports:
 - A replaceable OSM-derived vector background with localized labels,
   attribution, and a persisted neutral fallback.
 - English and Hebrew, including document-level LTR/RTL switching.
-- Desktop layout plus an interim narrow-screen compatibility layout.
+- Desktop layout plus a map-first portrait-mobile interface.
 - Explicit mapped/unmapped vote coverage.
 - Custom reviewed geographic buckets when they have results in an election.
 - Display-only whole-locality totals when an election/locality has zero
@@ -198,13 +198,11 @@ Move to tiles before public launch if any of these remain true after compression
   data names use automatic direction isolation when their script differs from
   the surrounding interface.
 - The header and controls remain reachable above the map.
-- Desktop uses floating side panels. The current narrow-screen breakpoint
-  stacks a full-width control and result rail over the map only as an interim
-  compatibility measure; it leaves the map too obscured to qualify as the
-  mobile design.
-- The planned mobile rewrite is map-first. Controls and results must become
-  collapsible or sheet-based so a useful interactive map viewport remains
-  visible throughout the core workflow.
+- Desktop uses floating side panels. Portrait mobile uses a compact header
+  menu for modes and selectors, keeps map controls in the viewport, and opens
+  selected results as a closable sheet.
+- The mobile result title remains fixed while the complete detail body scrolls,
+  allowing short screens to reach every result row without losing context.
 - The national comparison table reflows into labeled two-column party rows on
   narrow screens rather than requiring horizontal scrolling.
 - Language, election, geography, and basemap preferences are stored in one versioned, minimal local-storage record.

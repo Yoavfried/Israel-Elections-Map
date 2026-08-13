@@ -21,6 +21,9 @@ but open/complete workstream declarations belong here.
 | Product features | Complete for the current scope | Election-aware bilingual geography and numbered-address search, national results, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented on desktop and portrait mobile. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 107 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Data releases now use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
 | Public repository hardening | Implemented | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The app links directly to this repository for downloads, sources, methodology, and legal notices, and publishes a bilingual privacy notice for current network and browser-storage behavior. Rebuilding the private-input pipeline from a fresh clone, hosted CI, continuous performance monitoring, and duplicate in-app Sources/Legal pages are not public-data deliverables. |
+| Production website launch | Planned | Use a local production build and Cloudflare Pages Wrangler Direct Upload so private processed inputs remain local. The current 84-file build fits the documented free Pages limits and requires no paid database or object storage. Domain, canonical-host, deployment, header, redirect, and rollback work remains open. |
+| SEO and discoverability | Planned | Add crawlable Hebrew/English election, locality, statistical-area, party, and data routes with useful initial HTML, stable map deep links, canonical/hreflang metadata, structured data, real 404s, robots, split sitemaps, Search Console verification, and Core Web Vitals validation. |
+| AdSense advertising | Planned | Use manual responsive units on content-rich pages and the national-results view. Keep mobile maps, result sheets, controls, search, and selectors ad-free. Implementation waits for the production domain, crawlable content, an AdSense publisher ID, an updated privacy notice, and a Google-certified consent flow. |
 
 ## Public Data Release
 
@@ -200,8 +203,17 @@ unallocated-register candidates remain withheld.
 
 ## Remaining Work
 
-There are no active implementation or audit items in the agreed project scope.
-Landscape-phone support, satellite imagery, and 3D buildings are outside that
+The map and data scope is complete. Three website-launch workstreams are now
+active, in dependency order:
+
+1. configure and deploy the production site on the owned domain without paid
+   storage;
+2. publish crawlable bilingual result pages and complete technical SEO;
+3. apply for and integrate AdSense using only the reviewed placements and
+   consent behavior.
+
+The exact plan and completion criteria are in `WEBSITE_LAUNCH_PLAN.md`.
+Landscape-phone support, satellite imagery, and 3D buildings remain outside
 scope.
 
 The supplied Kaplan layers are exhausted locality/neighborhood aggregates.

@@ -33,14 +33,14 @@ const coverage = {
 
 function registryFor(electionId, parties) {
   return buildPartyRegistryIndex(
-    parties.map(({ sourceColumn, ballotLetter = sourceColumn, totalVotes, nameHe, nameEn = '' }) => ({
+    parties.map(({ sourceColumn, ballotLetter = sourceColumn, totalVotes, nameHe, nameEn }, index) => ({
       election: electionId,
       source_column: sourceColumn,
       ballot_letter: ballotLetter,
       total_votes: String(totalVotes),
       list_name_he: nameHe,
       display_name_he: nameHe,
-      display_name_en: nameEn,
+      display_name_en: nameEn === undefined ? `Party ${index + 1}` : nameEn,
       wikipedia_he_url: '',
       wikipedia_en_url: '',
     })),
@@ -50,6 +50,24 @@ function registryFor(electionId, parties) {
 describe('web data compiler', () => {
   it('parses UTF-8 BOM CSV headers', () => {
     expect(parseCsv('\ufeffid,name\n1,שלום\n')).toEqual([{ id: '1', name: 'שלום' }])
+  })
+
+  it('requires a reviewed English name for every positive-vote party', () => {
+    expect(() =>
+      registryFor('K25', [
+        { sourceColumn: 'blank', totalVotes: 1, nameHe: 'רשימה', nameEn: '' },
+      ]),
+    ).toThrow(/display_name_en must be a reviewed English name/)
+    expect(() =>
+      registryFor('K25', [
+        { sourceColumn: 'hebrew', totalVotes: 1, nameHe: 'רשימה', nameEn: 'רשימה' },
+      ]),
+    ).toThrow(/display_name_en must be a reviewed English name/)
+    expect(() =>
+      registryFor('K25', [
+        { sourceColumn: 'withdrawn', totalVotes: 0, nameHe: 'רשימה', nameEn: '' },
+      ]),
+    ).not.toThrow()
   })
 
   it('builds and validates a complete national result', () => {

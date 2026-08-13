@@ -356,8 +356,11 @@ Verified from the offline rebuild on 2026-08-09:
 - `data/manual/omitted_ordinary_ballot_reviews.csv` records the reviewed
   row-level and set-level outcomes for the thirteen specific
   ordinary crosswalk omissions.
-- `data/manual/party_registry.csv` covers every election-specific result column;
-  map colors remain presentation configuration under `web/app/`.
+- `data/manual/party_registry.csv` covers every election-specific result column.
+- `data/manual/party_display_names_en.csv` preserves the reviewed English label
+  for every positive-vote row. `build_party_registry.py` reapplies these labels
+  after source refreshes without changing the separately reviewed Wikipedia
+  fields. Map colors remain presentation configuration under `web/app/`.
 
 Polling-group display ownership is intentionally not a manual input. The
 pipeline rebuilds it from the audited official-register evidence, validates

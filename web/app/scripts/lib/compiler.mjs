@@ -87,6 +87,11 @@ export function buildPartyRegistryIndex(rows) {
     if (!Number.isInteger(totalVotes) || totalVotes < 0) {
       throw new Error(`${electionId}.${sourceColumn}.total_votes must be a nonnegative integer`)
     }
+    if (totalVotes > 0 && (!displayNameEn || /[\u0590-\u05ff]/u.test(displayNameEn))) {
+      throw new Error(
+        `${electionId}.${sourceColumn}.display_name_en must be a reviewed English name`,
+      )
+    }
 
     let election = byElection.get(electionId)
     if (!election) {
