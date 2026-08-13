@@ -1612,17 +1612,17 @@ describe('generated web data', () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
       K21: 92,
-      K22: 429,
-      K23: 426,
+      K22: 427,
+      K23: 424,
       K24: 382,
-      K25: 399,
+      K25: 407,
     }
     const expectedExactClosedCounts: Record<string, number> = {
       K21: 134,
       K22: 4,
       K23: 2,
       K24: 204,
-      K25: 192,
+      K25: 193,
     }
 
     for (const election of catalog.elections) {

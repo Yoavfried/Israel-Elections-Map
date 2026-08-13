@@ -92,7 +92,9 @@ Production stages:
   one displayed polygon combination. Disconnected geometry is disclosed but
   never causes polling groups to merge. A planned-only site is reconciled to a
   final-result site only when candidate areas, normalized polling-place text,
-  and eligible-voter arithmetic identify one unique target. Final decimal subdivisions still require
+  and eligible-voter arithmetic identify one unique target. K25 instead uses
+  the July planned register and archived 27 October final register directly.
+  Final decimal subdivisions still require
   stable site identity and exact area-set agreement in at least two
   direct-evidence elections. Exact closed units have no uncertainty notice.
 - `build_statistical_area_result_aggregates.py` and
@@ -111,8 +113,8 @@ Production stages:
   continuity must be bracketed by matching direct host evidence or supported
   backward by the first two adjacent later direct-evidence elections. The
   script records every decision and supports an idempotent `--apply` for only
-  conflict-free approvals. The current run retains all 180 cases in the audit,
-  with 38 applied and 142 covered, contradicted, or insufficient.
+  conflict-free approvals. The current run retains all 175 cases in the audit,
+  with 38 applied and 137 covered, contradicted, or insufficient.
   Reviewed set-level display corrections are sourced from
   `data/manual/statistical_area_polling_group_display_reviews.csv`; they may
   replace generated polygon ownership but never rewrite the ballot table.

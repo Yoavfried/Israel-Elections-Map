@@ -99,8 +99,8 @@ geometry or a name component.
 
 The reproducible continuity audit is
 `data/processed/audits/joined_locality_continuity_evidence.csv`. It evaluates
-180 election-specific leads without geocoding. Thirty-eight strict approvals
-are active; 142 cases remain already covered, contradicted, or insufficient.
+175 election-specific leads without geocoding. Thirty-eight strict approvals
+are active; 137 cases remain already covered, contradicted, or insufficient.
 The audit changes only election-specific display unions and never assigns a
 ballot row to a statistical area.
 

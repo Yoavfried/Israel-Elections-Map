@@ -42,6 +42,6 @@
     "K25"
   ],
   "interpretation": "The official CBS catalog supplies one direct ballot-to-statistical-area crosswalk for every election K17-K25. Among the separately archived CEC polling-place reports audited here, only K23 exposes an AGS field.",
-  "sources_audited": 17,
+  "sources_audited": 18,
   "status": "complete"
 }

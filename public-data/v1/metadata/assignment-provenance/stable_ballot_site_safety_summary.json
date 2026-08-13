@@ -6,18 +6,18 @@
   "mapping_output": "data\\processed\\audits\\stable_ballot_site_safety_planned_mappings.csv",
   "missing_rejection_keys": [],
   "output": "data\\processed\\audits\\stable_ballot_site_safety.csv",
-  "planned_mapping_rows": 137,
+  "planned_mapping_rows": 188,
   "planned_mapping_status_counts": {
-    "conflicting_official_crosswalks": 92,
-    "insufficient_official_crosswalk_references": 10,
-    "unanimous_two_or_more_official_crosswalks": 35
+    "conflicting_official_crosswalks": 118,
+    "insufficient_official_crosswalk_references": 19,
+    "unanimous_two_or_more_official_crosswalks": 51
   },
   "publication_guard": "pass",
   "status_counts": {
-    "no_decimal_batch_signal_without_distinct_pre_post_registers": 47,
+    "no_decimal_batch_signal_without_distinct_pre_post_registers": 46,
     "safe_final_only_integer_stable_link": 1,
     "safe_preserved_ballot_base": 20,
-    "safe_single_residual_area": 28,
+    "safe_single_area_site_peer_confirmation": 29,
     "unsafe_mixed_final_batch": 38
   },
   "unresolved_safety_rows": 0,

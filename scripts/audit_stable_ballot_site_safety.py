@@ -228,6 +228,12 @@ def classify_candidates(candidates: pd.DataFrame) -> pd.DataFrame:
             and len(final_rows) == 1
         ):
             result["safety_status"] = "safe_final_only_integer_stable_link"
+        elif (
+            source_ballot in residual_final_ballots
+            and len(planned_area_ids) == 1
+            and clean(candidate["candidate_stat_area_id"]) in planned_area_ids
+        ):
+            result["safety_status"] = "safe_single_area_site_peer_confirmation"
         elif source_ballot in residual_final_ballots and len(residual_area_ids) > 1:
             result["safety_status"] = "unsafe_mixed_final_batch"
         elif source_ballot in residual_final_ballots and len(residual_area_ids) == 1:

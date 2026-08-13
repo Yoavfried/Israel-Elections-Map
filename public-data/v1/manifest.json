@@ -596,8 +596,8 @@
       "stat_area_vintage": 2011,
       "format": "csv",
       "rows_or_features": 12545,
-      "bytes": 6049894,
-      "sha256": "49c6b0edc4bb6a3f9a5952872a72ef8b18a4ba7f20b46fcd587b7f42a03643cc",
+      "bytes": 6050000,
+      "sha256": "e9d5294ac378af079b1f58f43c00191534a1104dcef8f73bb8ffe4749d33b40c",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -607,8 +607,8 @@
       "stat_area_vintage": "reviewed",
       "format": "csv",
       "rows_or_features": 230,
-      "bytes": 92665,
-      "sha256": "61ea0e3111942961857cd9832d9e68b711bbccc4fbcbbbc216db39d6ccb7c7c3",
+      "bytes": 92659,
+      "sha256": "b3189f731f0c83fdde8a13e34381e969396f08a957e2710dec6961c2ace0ba5f",
       "description": "Feature metadata and join IDs for composite_localities."
     },
     {
@@ -618,8 +618,8 @@
       "stat_area_vintage": "reviewed",
       "format": "zip",
       "rows_or_features": 230,
-      "bytes": 2266154,
-      "sha256": "ff0b25e1cbd94a8c4f0dc4cd1c6494ca52b1bda9817fd43d85b06fef5de6f102",
+      "bytes": 2260570,
+      "sha256": "d6c6cad16aa86108bb6c335c3cfde5191563293b9a144a8e18a7b4f721207ef6",
       "description": "Full-resolution GeoJSON and metadata for composite_localities."
     },
     {
@@ -805,8 +805,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 54,
-      "bytes": 17293,
-      "sha256": "011fd5c2b5fab2255222749ce11ca3c0b53400013e4bdbe7715770b7078f0c8c",
+      "bytes": 17678,
+      "sha256": "20308270bb45b6c93dd88dddc128abe2a26640036ba8c707d42ced7968bbcfe2",
       "description": "Approved high-confidence synthetic links reconstructed from cross-election polling-register continuity."
     },
     {
@@ -815,9 +815,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 17,
-      "bytes": 4707,
-      "sha256": "d95b340af9b545892b610d9650860035a53a9ce658296af453385f43f613490e",
+      "rows_or_features": 18,
+      "bytes": 4878,
+      "sha256": "1b2350bec071d0e8100e3a75c50ab99740b29bd89fe6520fd35d976f7487c08c",
       "description": "Reproducible inventory of statistical-area and AGS fields in official sources."
     },
     {
@@ -828,7 +828,7 @@
       "format": "json",
       "rows_or_features": "",
       "bytes": 1475,
-      "sha256": "2e35c367bdbe99751e7aa7d611261ceee41ab9f3d353b6f285a2c6adc95aeaac",
+      "sha256": "a96a678b1b31dde55ac652d47b0cbe3e797466805ae3e6c735ec7065bf70fd0a",
       "description": "Machine-readable summary for the corresponding assignment audit."
     },
     {
@@ -916,7 +916,7 @@
       "format": "json",
       "rows_or_features": "",
       "bytes": 45597,
-      "sha256": "d87f32ad5b8020fca6a071aac7d1f6fa64d24d841fce08c3fcdee4682bfc69aa",
+      "sha256": "e0e604d44f4cbe6d62b4a0388766eb103c29b802ab252ea6bfc6c0e02394bfde",
       "description": "Machine-readable summary for the corresponding assignment audit."
     },
     {
@@ -1113,8 +1113,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 134,
-      "bytes": 48790,
-      "sha256": "0a40fcaf5f71d1d6f6c072d353bc62e72f57ff062ba54bd0de8465f6f45b12c4",
+      "bytes": 49258,
+      "sha256": "091c13557a759f4f3888132a57faedf60ff1849f8b0abec9488f9d77a79e4a16",
       "description": "Row-level preservation and mixed-site safety audit for every stable-ballot candidate."
     },
     {
@@ -1124,8 +1124,8 @@
       "stat_area_vintage": "",
       "format": "json",
       "rows_or_features": "",
-      "bytes": 1173,
-      "sha256": "02e52ed9f5c7f688bc12d9a72a2bd0187845e5a2c6acb4b7b16d199fe9f547fd",
+      "bytes": 1188,
+      "sha256": "79035ecfd82242985ef6fe060f52f561889b14ce7ff13db2ed00e1b8ea4ad003",
       "description": "Machine-readable summary for the corresponding assignment audit."
     },
     {
@@ -1168,8 +1168,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 14282,
-      "bytes": 3427914,
-      "sha256": "7888ff8e72bc08aef24bef12e3db34dd3715e13936c14ba06b6febcd85cb0cb7",
+      "bytes": 3427908,
+      "sha256": "9d4ec3a8969f271783676ffaadce3aa8ef4a12541624cdb746eda3b2aa318f40",
       "description": "Combined lookup for every published geography ID and package."
     },
     {
@@ -1179,8 +1179,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 309,
-      "bytes": 151867,
-      "sha256": "289ea41e0e5d343a139eaebe03f90cfbba43fe64a6d0fcf58ca4bb93c7e9f0be",
+      "bytes": 153167,
+      "sha256": "c3cc09d41b03b112a3037bb29b3b0bddb58061babe2f8789499b6a4eaea7b396",
       "description": "Election-specific party/list lookup keyed by election and source_column; no map colors."
     }
   ]

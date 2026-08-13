@@ -96,15 +96,22 @@ are identical in every language:
 - `/{lang}/elections/2026` - truthful future-election and official-voter
   information without invented results;
 - `/{lang}/elections/{year}` - national historical election result;
+- `/{lang}/features` - the complete analysis-tool overview;
+- `/{lang}/features/party-comparison` - the two-party comparison method and a
+  stable map example;
+- `/{lang}/elections/{year}/coalition` - the reviewed coalition definition,
+  member lists, national total, and coalition map link;
+- `/{lang}/elections/{year}/parties/{party-id}` - one election-specific party,
+  its national result, and its single-party map link;
 - `/{lang}/elections/{year}/localities/{encoded-result-id}` - one election
   and locality;
 - `/{lang}/elections/{year}/statistical-areas/{encoded-result-id}` - one
   election and displayed statistical result unit.
 
 Each result page links to the interactive application with validated query
-state for the exact election, mode, language, and selected result. Party pages
-and localized data-catalog pages are not currently generated and are not
-claimed as completed SEO surfaces.
+state for the exact election, mode, language, selected result, and party
+selection where relevant. The application URL contract also preserves the
+single-party circle display and both comparison-party IDs.
 
 Only result-bearing, useful pages belong in the sitemap. Empty polygons,
 duplicate map-state URLs, arbitrary party comparisons, and combinatorial UI
@@ -166,6 +173,8 @@ are not targeted because this is not a news service.
 ### Structured Data
 
 - Use `WebSite` for the project surface and `WebPage` where appropriate.
+- Use `WebApplication` with a localized feature list on the overview and
+  feature pages.
 - Use `BreadcrumbList` on content routes.
 - Use `Dataset` for election and result pages, with the MIT data-license URL,
   temporal coverage, spatial coverage, and creator.
@@ -178,9 +187,11 @@ are not targeted because this is not a news service.
 - The application publishes `/isr-electionmap/robots.txt`; the canonical
   host's root `/robots.txt` must also add
   `Sitemap: https://yoavfried.com/isr-electionmap/sitemap.xml`.
-- The Worker publishes one sitemap index, one core sitemap, and result
-  sitemaps split by language, election, and geography mode. Each remains below
-  50,000 URLs and 50 MB uncompressed.
+- The Worker publishes one sitemap index, one core sitemap, analysis sitemaps
+  split by language and election, and result sitemaps split by language,
+  election, and geography mode. Analysis sitemaps include coalition and
+  positive-vote single-party pages, but never arbitrary party pairs. Each
+  remains below 50,000 URLs and 50 MB uncompressed.
 - Include only canonical URLs that return `200` and contain useful content.
 - Return a real `404` for unknown entity IDs instead of the generic SPA shell.
 - Add the domain property to Google Search Console with DNS verification, then

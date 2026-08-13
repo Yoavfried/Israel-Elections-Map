@@ -14,5 +14,6 @@ K24,cbs_ballot_to_statistical_area_crosswalk,raw/cbs_historical_geography/k24_ba
 K24,cec_polling_place_report,raw/archive_knesset24_kalpies_report_tofes_a_25_12_20.xlsx,xlsx,DataSheet|Sheet1,2,11210,11,False,,False,,cec_polling_place_report_has_no_ags_field
 K24,cec_polling_place_report,raw/archive_knesset24_kalpies_report_tofes_b_18_3_21.xlsx,xlsx,DataSheet|גיליון1,2,12128,11,False,,False,,cec_polling_place_report_has_no_ags_field
 K25,cbs_ballot_to_statistical_area_crosswalk,raw/cbs_historical_geography/k25_ballot_to_stat2011.xlsx,xlsx,הסברים|kalpi_November_stat2011,2,10773,5,False,,True,הסברים!R21C2|הסברים!R22C2|kalpi_November_stat2011!R12C4|kalpi_November_stat2011!R12C5,official_direct_ballot_to_statistical_area_crosswalk
+K25,cec_polling_place_report,raw/archive_knesset25_kalpies_list_27_10.xlsx,xlsx,DataSheet|גיליון1,2,11708,11,False,,False,,cec_polling_place_report_has_no_ags_field
 K25,cec_polling_place_report,raw/election-25_kalpi-places_kalpies_list_10_7_nagish.xlsx,xlsx,DataSheet,1,11548,11,False,,False,,cec_polling_place_report_has_no_ags_field
 K25,cec_polling_place_report,raw/election-25_kalpi-places_statistic_report_10_7_nagish.xlsx,xlsx,דוח סטטיסטי קלפיות,1,22,8,False,,False,,cec_polling_place_report_has_no_ags_field

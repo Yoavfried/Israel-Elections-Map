@@ -38,11 +38,12 @@ current scope.
 
 The deployed build also includes Worker-rendered SEO pages in Hebrew, English,
 French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and
-Polish. Every language has overview, 2026 information, historical-election,
-locality-result, and statistical-area-result routes. These responses contain
-their metadata, result facts, tables, canonical/hreflang links, structured
-data, and exact interactive-map deep links in the initial HTML. The React map
-interface itself remains bilingual.
+Polish. Every language has overview, feature overview, party-comparison,
+election-specific coalition and single-party, 2026 information,
+historical-election, locality-result, and statistical-area-result routes.
+These responses contain their complete social metadata, result facts, tables,
+canonical/hreflang links, structured data, and exact interactive-map deep
+links in the initial HTML. The React map interface itself remains bilingual.
 
 ## Run Locally
 
@@ -74,6 +75,12 @@ To preview the production static assets and Worker-rendered SEO routes locally:
 npm run build:deploy
 npx wrangler dev --local --port 8787
 ```
+
+The SEO surface covers the overview, feature overview, party comparison,
+election-specific coalition and positive-vote party pages, national election
+results, localities, and statistical areas in all ten supported SEO languages.
+Its links restore exact map state, including single-party, circle-display, and
+two-party selections. Sitemaps intentionally omit arbitrary party-pair pages.
 
 The production release command is `npm run deploy`. It uploads
 `cloudflare-dist/` plus `worker/index.mjs` to the configured Cloudflare Worker.

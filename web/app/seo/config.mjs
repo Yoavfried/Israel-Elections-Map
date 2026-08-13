@@ -53,7 +53,32 @@ export function resultSuffix(election, mode, recordId) {
   return `${electionSuffix(election)}/${family}/${encodeURIComponent(recordId)}`
 }
 
-export function mapUrl({ electionId = 'K25', mode = 'statistical-area', areaId, view = 'map', languageCode = 'en' } = {}) {
+export function featuresSuffix() {
+  return 'features'
+}
+
+export function comparisonSuffix() {
+  return `${featuresSuffix()}/party-comparison`
+}
+
+export function coalitionSuffix(election) {
+  return `${electionSuffix(election)}/coalition`
+}
+
+export function partySuffix(election, partyId) {
+  return `${electionSuffix(election)}/parties/${encodeURIComponent(partyId)}`
+}
+
+export function mapUrl({
+  electionId = 'K25',
+  mode = 'statistical-area',
+  areaId,
+  view = 'map',
+  languageCode = 'en',
+  partyId,
+  comparisonPartyIds,
+  partyDisplay,
+} = {}) {
   const parameters = new URLSearchParams({
     election: electionId,
     mode,
@@ -62,6 +87,16 @@ export function mapUrl({ electionId = 'K25', mode = 'statistical-area', areaId, 
   })
   if (areaId) {
     parameters.set('area', areaId)
+  }
+  if (view === 'party-map' && partyId) {
+    parameters.set('party', partyId)
+    if (partyDisplay === 'circles') {
+      parameters.set('display', partyDisplay)
+    }
+  }
+  if (view === 'party-comparison' && comparisonPartyIds?.[0] && comparisonPartyIds?.[1]) {
+    parameters.set('party1', comparisonPartyIds[0])
+    parameters.set('party2', comparisonPartyIds[1])
   }
   return `${CANONICAL_BASE}?${parameters}`
 }

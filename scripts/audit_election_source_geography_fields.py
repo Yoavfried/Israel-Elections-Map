@@ -31,6 +31,7 @@ CEC_REPORTS = [
     ("K24", RAW_DIR / "archive_knesset24_kalpies_report_tofes_a_25_12_20.xlsx"),
     ("K24", RAW_DIR / "archive_knesset24_kalpies_report_tofes_b_18_3_21.xlsx"),
     ("K25", RAW_DIR / "election-25_kalpi-places_kalpies_list_10_7_nagish.xlsx"),
+    ("K25", RAW_DIR / "archive_knesset25_kalpies_list_27_10.xlsx"),
     (
         "K25",
         RAW_DIR / "election-25_kalpi-places_statistic_report_10_7_nagish.xlsx",

@@ -1,0 +1,75 @@
+{
+  "K17": {
+    "kind": "first",
+    "memberPartyIds": ["כן", "אמת", "שס", "זך"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K18": {
+    "kind": "first",
+    "memberPartyIds": ["מחל", "ל", "אמת", "שס", "ג", "ב"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K19": {
+    "kind": "first",
+    "memberPartyIds": ["מחל", "פה", "טב", "צפ"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K20": {
+    "kind": "first",
+    "memberPartyIds": ["מחל", "כ", "טב", "שס", "ג"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K21": {
+    "kind": "transitional",
+    "memberPartyIds": ["מחל", "שס", "ג", "טב", "כ", "נ"],
+    "partialMembership": {
+      "טב": {
+        "en": "This joint ballot included factions both represented and not represented in the outgoing government; its votes cannot be separated by component.",
+        "he": "הפתק המשותף כלל סיעות שיוצגו בממשלת המעבר וסיעות שלא יוצגו בה; לא ניתן להפריד את הקולות בין מרכיביו."
+      }
+    },
+    "sourceUrls": [
+      "https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx",
+      "https://main.knesset.gov.il/News/PressReleases/pages/press30.05.19.aspx"
+    ]
+  },
+  "K22": {
+    "kind": "transitional",
+    "memberPartyIds": ["מחל", "שס", "ג", "טב"],
+    "partialMembership": {
+      "טב": {
+        "en": "This joint ballot included factions both represented and not represented in the outgoing government; its votes cannot be separated by component.",
+        "he": "הפתק המשותף כלל סיעות שיוצגו בממשלת המעבר וסיעות שלא יוצגו בה; לא ניתן להפריד את הקולות בין מרכיביו."
+      }
+    },
+    "sourceUrls": [
+      "https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx",
+      "https://main.knesset.gov.il/News/PressReleases/pages/press11.12.19f.aspx"
+    ]
+  },
+  "K23": {
+    "kind": "first",
+    "memberPartyIds": ["מחל", "פה", "שס", "ג", "אמת"],
+    "partialMembership": {
+      "פה": {
+        "en": "Only part of the Blue and White joint list entered the government; its ballot votes cannot be separated by component.",
+        "he": "רק חלק מרשימת כחול לבן נכנס לממשלה; לא ניתן להפריד את קולות הפתק בין מרכיבי הרשימה."
+      },
+      "אמת": {
+        "en": "Meretz members and Merav Michaeli did not join the coalition",
+        "he": "חברי מרצ ומרב מיכאלי לא הצטרפו לקואליציה"
+      }
+    },
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K24": {
+    "kind": "first",
+    "memberPartyIds": ["פה", "כן", "ב", "אמת", "ל", "ת", "מרצ", "עם"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  },
+  "K25": {
+    "kind": "first",
+    "memberPartyIds": ["מחל", "שס", "ג", "ט"],
+    "sourceUrls": ["https://main.knesset.gov.il/mk/government/Pages/CoalitionAgreements.aspx"]
+  }
+}

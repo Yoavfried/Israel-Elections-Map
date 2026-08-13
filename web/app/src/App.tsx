@@ -40,7 +40,11 @@ import {
 import type { PartyMapDisplayMode } from './domain/partyMap'
 import { translate } from './i18n/translations'
 import { loadPreferences, savePreferences } from './state/preferences'
-import { applyMapLinkPreferences, parseMapLinkSearch } from './state/mapLink'
+import {
+  applyMapLinkPreferences,
+  buildMapLinkSearch,
+  parseMapLinkSearch,
+} from './state/mapLink'
 
 const MapCanvas = lazy(() => import('./components/MapCanvas'))
 
@@ -68,12 +72,14 @@ export default function App() {
   const [pendingDeepLinkAreaId, setPendingDeepLinkAreaId] = useState(
     initialMapLink.areaId ?? null,
   )
-  const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null)
+  const [selectedPartyId, setSelectedPartyId] = useState<string | null>(
+    initialMapLink.partyId ?? null,
+  )
   const [partyMapDisplayMode, setPartyMapDisplayMode] =
-    useState<PartyMapDisplayMode>('areas')
+    useState<PartyMapDisplayMode>(initialMapLink.partyMapDisplayMode ?? 'areas')
   const [comparisonPartyIds, setComparisonPartyIds] = useState<
     [string | null, string | null]
-  >([null, null])
+  >(initialMapLink.comparisonPartyIds ?? [null, null])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedSearchItem, setSelectedSearchItem] =
     useState<GeographySearchItem | null>(null)
@@ -405,6 +411,42 @@ export default function App() {
         : {},
     [activeView, language, selectedCoalition],
   )
+
+  useEffect(() => {
+    const search = buildMapLinkSearch({
+      electionId,
+      geographyMode,
+      language,
+      view: activeView,
+      areaId: pendingDeepLinkAreaId ?? selectedSearchItem?.id,
+      partyId: results ? effectivePartyId : selectedPartyId,
+      comparisonPartyIds: results
+        ? [effectiveComparisonFirstId, effectiveComparisonSecondId]
+        : comparisonPartyIds,
+      partyMapDisplayMode,
+    })
+    if (window.location.search !== search) {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${window.location.pathname}${search}${window.location.hash}`,
+      )
+    }
+  }, [
+    activeView,
+    comparisonPartyIds,
+    effectiveComparisonFirstId,
+    effectiveComparisonSecondId,
+    effectivePartyId,
+    electionId,
+    geographyMode,
+    language,
+    partyMapDisplayMode,
+    pendingDeepLinkAreaId,
+    results,
+    selectedPartyId,
+    selectedSearchItem?.id,
+  ])
 
   const updatePreferences = (nextPreferences: typeof preferences) => {
     setPreferences(nextPreferences)

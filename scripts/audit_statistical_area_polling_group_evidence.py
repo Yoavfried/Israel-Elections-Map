@@ -117,8 +117,11 @@ SOURCES = {
             "election-25_kalpi-places_kalpies_list_10_7_nagish.xlsx",
             Layout(2, 3, 4, 5, 6, 7, 10),
         ),
-        final=None,
-        evidence="official_pre_balance_register_and_final_results",
+        final=Source(
+            "archive_knesset25_kalpies_list_27_10.xlsx",
+            Layout(2, 3, 4, 5, 6, 7, 10),
+        ),
+        evidence="official_pre_and_post_balance_registers",
     ),
 }
 

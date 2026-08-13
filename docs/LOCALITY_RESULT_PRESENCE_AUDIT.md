@@ -78,8 +78,8 @@ The locality map substitutes reviewed host-plus-attached polygon unions only in 
 | K25 | 8 | 9 | exact arithmetic, register continuity, or reviewed under-100 host-delta inference |
 
 `scripts/audit_joined_locality_continuity.py` makes this election-specific
-review reproducible. Of 180 continuity leads, 38 pass strict direct or bounded
-continuity rules and 142 are already covered, contradicted, or insufficient.
+review reproducible. Of 175 continuity leads, 38 pass strict direct or bounded
+continuity rules and 137 are already covered, contradicted, or insufficient.
 The machine-readable evidence remains under `data/processed/audits/`; no
 address geocoding or ballot-to-area reassignment is involved.
 

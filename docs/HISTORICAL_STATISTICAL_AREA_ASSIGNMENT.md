@@ -358,13 +358,14 @@ proportions. These weights select a display partition; they never alter final
 votes. Disconnected geometry is retained and disclosed rather than used as a
 reason to merge otherwise distinct polling groups.
 
-A planned site with no identifiable final ballot rows is reconciled to a
+A planned site with no identifiable final ballot rows can be reconciled to a
 surviving final-result site only when all four tests agree: same election and
 locality, overlapping candidate areas, matching normalized polling-place text,
-and a unique eligible-voter surplus match within 2% or 50 voters. Twelve K25
-sites in seven components pass this strict consolidation test. Five are in Tel
-Aviv, including the planned Tel Nordau site that recovers area 335. Unmatched
-planned-only sites remain omitted.
+and a unique eligible-voter surplus match within 2% or 50 voters. Unmatched
+planned-only sites remain omitted. K25 no longer relies on this fallback: the
+archived 27 October 2022 final register directly supplies its final polling-site
+topology. The former July-only audit count of 12 reconciled K25 sites is
+therefore superseded rather than carried into the current evidence table.
 
 When no mutually-majority partition exists without collapsing a larger
 network, the original detailed ownership is retained with uncertainty notices.
@@ -398,9 +399,9 @@ does not support either directional list, the notice remains generic. The
 generated metadata records `ambiguity_type`, both area-ID sets, and both
 human-readable area-number sets.
 
-Direct same-election evidence is available for K21 and K24 from official
-pre- and post-election registers, and for K25 from the official pre-election
-register plus final results. A consolidated final ballot base in K21-K23 is
+Direct same-election evidence is available for K21, K24, and K25 from official
+pre- and post-election registers. For K25 these are the July planned register
+and the archived 27 October final register. A consolidated final ballot base in K21-K23 is
 treated as a whole polling-site group only when the locality and official site
 ID remain stable, at least one normalized site label matches, and at least two
 direct-evidence elections agree on the exact same multi-area set. This prevents
@@ -413,28 +414,40 @@ site ID, so it cannot satisfy either continuity rule.
 | Election | Evidence | All display units | Exact closed units | Representative units | Owned polygon memberships | Representative components | Broad fallbacks |
 |---|---|---:|---:|---:|---:|---:|---:|
 | K21 | Direct registers + two-reference site continuity | 226 | 134 | 92 | 497 | 47 | 0 |
-| K22 | Two-reference site continuity | 433 | 4 | 429 | 877 | 282 | 0 |
-| K23 | Two-reference site continuity | 428 | 2 | 426 | 871 | 278 | 0 |
+| K22 | Two-reference site continuity | 431 | 4 | 427 | 874 | 281 | 0 |
+| K23 | Two-reference site continuity | 426 | 2 | 424 | 868 | 277 | 0 |
 | K24 | Direct official registers | 586 | 204 | 382 | 1,267 | 111 | 0 |
-| K25 | Direct official register + final results | 591 | 192 | 399 | 1,210 | 126 | 0 |
-| **Total** |  | **2,264** | **536** | **1,728** | **4,722** | **844** | **0** |
+| K25 | Direct official pre/post registers | 600 | 193 | 407 | 1,225 | 130 | 0 |
+| **Total** |  | **2,269** | **537** | **1,732** | **4,731** | **846** | **0** |
 
 Compared with the direct statistical-area result tables, the approved policy
-recovers 824 election-specific polygon placements that would otherwise be
-blank: 76 in K21, 121 in K22, 118 in K23, 240 in K24, and 269 in K25. It does not
+recovers 822 election-specific polygon placements that would otherwise be
+blank: 76 in K21, 120 in K22, 117 in K23, 240 in K24, and 269 in K25. It does not
 color a remaining blank polygon without qualifying polling-group evidence.
 
-The 536 exact units cover 1,333 polygon-election memberships. None carries an
+The 537 exact units cover 1,336 polygon-election memberships. None carries an
 uncertainty notice.
 The flow audit tested ten exactly balanced closed networks; no impossible-edge
 removal divided a real network into more than one smaller closed component.
 The full reproducible edge bounds are published in
 `statistical_area_polling_group_exact_groups.csv`.
 
-The 844 representative components produce 1,728 displayed units. Of those,
-1,714 are connected and 14 require disclosed disconnected placement.
-Strict site consolidation reconciles 12 planned-only K25 sites; remaining
-planned groups without identifiable final results are omitted.
+The 846 representative components produce 1,732 displayed units. Of those,
+1,717 are connected and 15 require disclosed disconnected placement.
+
+The final K25 register changes 14 K25 locality display partitions while leaving
+all final vote values and row-level coverage unchanged. It also removes four
+weak K22/K23 representative rows from two recurring relationships: Tel Aviv
+area 214 / ballot base 31 and Rishon LeZion areas 416 and 421 / ballot base
+254. The revised K25 site topology no longer provides the second direct
+reference required by the approved continuity rule. The ownership audit still
+reports zero duplicate election/area claims.
+
+It also supplies an independent same-site check for K25 Modi'in Illit ballot
+47: the July and October registers retain its school and address, all mapped
+site peers target area 9, and K24 directly maps ballot 47 to area 9. The safety
+audit accepts this as a single-area-site peer confirmation; mixed-area final
+batches remain rejected.
 
 Jerusalem area 1024 illustrates the rule:
 

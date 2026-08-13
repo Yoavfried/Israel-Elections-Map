@@ -316,14 +316,14 @@ Verified from the offline rebuild on 2026-08-09:
   attached polygons have no independent result, and no component is already
   owned by another display rule. Multi-area hosts are reported for review and
   retain their existing detail. `scripts/audit_joined_locality_continuity.py`
-  evaluates the 180 election-specific leads across 33 recurring
+  evaluates the 175 election-specific leads across 33 recurring
   host/component relationships. It accepts only an explicit official register
   attachment, unique exact eligible-voter arithmetic, continuity bracketed by
   the same direct host before and after the election, or backward continuity
   supported by the same host in the first two adjacent later direct-evidence
   elections. Existing ownership and contradictory register attachments are
   hard stops. Thirty-eight cases pass these rules and are recorded in
-  `data/manual/joined_locality_composites.csv`; 142 remain covered by another
+  `data/manual/joined_locality_composites.csv`; 137 remain covered by another
   rule, contradicted, or unresolved. These are display unions only. They never
   write a ballot-level statistical-area assignment.
 - `data/manual/historical_single_stat_fallback_exclusions.csv` blocks the
@@ -370,9 +370,11 @@ before unique site linkage. Planned counts then weight graph edges without
 being treated as conserved final totals. Disconnected geometry never forces
 otherwise distinct polling groups to merge. Planned-only sites are reconciled
 only through unique agreement on candidate areas, polling-place text, and
-eligible-voter arithmetic. The final display layer currently publishes 536
-exact closed units without uncertainty notices and 1,728 representative units
-with notices.
+eligible-voter arithmetic. K25 now uses its July planned register and archived
+27 October final register directly, superseding the earlier July-only
+planned-site reconciliation count. The final display layer currently publishes
+537 exact closed units without uncertainty notices and 1,732 representative
+units with notices.
 Multi-group representative units eliminate every former broad network
 fallback. `build_statistical_area_result_aggregates.py` rewrites a separate
 artifact for exact reviewed locality unions and the remaining narrow reviewed

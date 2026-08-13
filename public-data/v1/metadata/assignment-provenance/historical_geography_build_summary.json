@@ -1,5 +1,5 @@
 {
-  "display_detail_localities_available": 124,
+  "display_detail_localities_available": 128,
   "historical_composite_component_display_geometries": {
     "features": 9,
     "geometry": "data\\processed\\geographies\\historical_composite_component_display_geometries.geojson",
@@ -98,7 +98,7 @@
       },
       "current_locality_fallback_geometry_overrides": 0,
       "display_geometry_rejected_codes": [],
-      "display_geometry_replacements": 113,
+      "display_geometry_replacements": 116,
       "display_geometry_representative_sources": {
         "stat1995:9400008": "stat1995:1062001"
       },
@@ -202,7 +202,7 @@
       },
       "current_locality_fallback_geometry_overrides": 1,
       "display_geometry_rejected_codes": [],
-      "display_geometry_replacements": 102,
+      "display_geometry_replacements": 105,
       "display_geometry_representative_sources": {},
       "display_geometry_simplified": false,
       "features": 3030,
@@ -479,7 +479,7 @@
       "current_locality_boundary_overrides": {},
       "current_locality_fallback_geometry_overrides": 0,
       "display_geometry_rejected_codes": [],
-      "display_geometry_replacements": 118,
+      "display_geometry_replacements": 122,
       "display_geometry_representative_sources": {},
       "display_geometry_simplified": true,
       "features": 3115,

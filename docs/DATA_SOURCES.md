@@ -1,6 +1,6 @@
 # Data Sources
 
-Last updated: 2026-07-30
+Last updated: 2026-08-13
 
 ## Election Results
 
@@ -17,6 +17,22 @@ Current project scope starts at K17 / 2006 and runs through K25 / 2022.
 - K16 / 2003 is outside the current product scope.
 - K25 can also be checked against the official results site:
   https://votes25.bechirot.gov.il/
+
+## Archived K17 Results Workbook
+
+`data/raw/archive_knesset17_results_17.xls` preserves a second public copy of
+the K17 results workbook. It was retrieved from an independent open repository
+and is kept as source-preservation and reconciliation evidence, not as a new
+vote source. The workbook has 8,426 rows and 39 columns. All 36 compared ballot,
+turnout, and party-vote fields match the normalized K17 table on every row.
+There is one metadata-only difference: Sansana ballot 10 uses locality code
+1328 in this workbook and 3777 in the normalized official CSV. The workbook
+also preserves 8,262 rows with address text.
+
+This closes the K17 result-source check. The documented eligible-voter recovery
+below remains reproducible, but K17 has no further special result-repair queue.
+The retrieval URL, byte size, and SHA-256 fingerprint are committed in
+`docs/ELECTION_SOURCE_ARCHIVES.csv`.
 
 ## K17 Eligible-Voter Recovery
 
@@ -126,6 +142,23 @@ crosswalk gap. The approved source fingerprints and notes are committed in
 `data/manual/cross_election_stat_area_reviews.csv`. These links are explicitly
 synthetic; polling-place coordinates and address geolocation are not used.
 
+The final K25 register prompted a fresh review of Modi'in-Maccabim-Re'ut
+ballots 83 and 94. In July both ballots were in polling-site group 25 at
+Inbalim School; every mapped peer in that group targets statistical area 31.
+The October register moved the same two ballot identities together to new site
+109 at Nof Harim School, and its eligible counts exactly match the final result
+rows. The new site has no independent direct area crosswalk, so these remain
+high-confidence synthetic links rather than authoritative final-site matches.
+Their target, area 31, is retained; the evidence labels and review notes now
+state the planned-group and final-pair logic explicitly.
+
+The same final-register audit independently confirms K25 Modi'in Illit ballot
+47 at statistical area 9. The ballot remains at the same site, school, and
+address in the July and October registers; every mapped peer at that site
+targets area 9, and K24 directly maps ballot 47 to area 9. The general safety
+audit now accepts this narrow single-area-site peer pattern. It does not relax
+the rejection of final polling batches that span multiple candidate areas.
+
 Two downloadable ArcGIS FeatureServer layers provide detailed display
 footprints, 32 explicit exact-ID 2011 geometry supplements, and aggregate
 evidence for K20/K21. Their service descriptions state both that the election
@@ -198,13 +231,26 @@ evidence. Consolidated final subdivisions in K21-K23 are accepted only when
 locality, official site ID, and normalized site text remain continuous and at
 least two direct-evidence elections agree on the exact multi-area set. Other
 K22/K23 groups retain the stricter site-and-ballot-base continuity rule. The
-final display layer produces 536 exact closed units and 1,728 representative
-units over 4,722 polygon-election memberships, with no remaining broad
-fallback. Exact units cover 1,333 polygon memberships and have no uncertainty
+final display layer produces 537 exact closed units and 1,732 representative
+units over 4,731 polygon-election memberships, with no remaining broad
+fallback. Exact units cover 1,336 polygon memberships and have no uncertainty
 notice.
 Bilingual notices remain on representative placements.
 Disconnected geometry is disclosed rather than used to force larger groups.
-Twelve K25 planned-only sites are reconciled to unique final-result sites using
+
+K25 now uses the July 2022 polling-place workbook as the planned register and
+the archived 27 October 2022 workbook as the final register. The later file has
+11,707 rows, compared with 11,547 in July, and records final subdivisions and
+site changes. Re-running the display audit changed K25 from 591 to 600 units:
+192 exact and 399 representative units became 193 exact and 407 representative
+units, while polygon memberships rose from 1,210 to 1,225. The final displayed
+grouping changed in 14 K25 localities. It also removed four weak K22/K23
+continuity displays covering two recurring relationships because the revised
+K25 site topology no longer supplied the second direct reference required by
+the approved rule. The final cross-layer ownership audit still reports zero
+duplicate election/area claims.
+
+Planned-only K25 sites are reconciled to unique final-result sites only through
 overlapping candidate areas, polling-place identity, and eligible-voter balance.
 These display rules leave downloadable ballot assignments, area aggregates,
 and coverage figures unchanged.
@@ -295,8 +341,8 @@ deleting its canonical geometry.
 relationships against the extracted official K18/K19 registers and the full
 official K20-K25 polling-place workbooks. It accepts explicit attachment fields,
 unique exact eligible-voter reconciliation, or strictly bounded continuity;
-address geolocation is never used. Its 180-row evidence table records 38 active
-automatic approvals and 142 covered, contradicted, or insufficient cases.
+address geolocation is never used. Its 175-row evidence table records 38 active
+automatic approvals and 137 covered, contradicted, or insufficient cases.
 
 ## Locality Classification Evidence
 

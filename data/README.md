@@ -24,6 +24,16 @@ Important raw inputs:
 - `raw/archive_knesset17_kalpies-list17-1.pdf` and
   `raw/archive_knesset17_kalpies-list17-2.pdf` - archived official K17 reports
   used to recover eligible-voter counts.
+- `raw/archive_knesset17_results_17.xls` - preserved K17 results workbook from
+  an independent public mirror. It reconciles all election values against the
+  normalized table and preserves address text; it is validation/provenance,
+  not a competing vote source.
+- `raw/archive_knesset25_kalpies_list_27_10.xlsx` - final K25 polling-place
+  register dated 27 October 2022, used together with the July planned register
+  to audit final polling groups. It never supplies vote values.
+
+Exact retrieval URLs, byte sizes, hashes, and reconciliation results for these
+two added archives are committed in `docs/ELECTION_SOURCE_ARCHIVES.csv`.
 
 Important reviewed inputs:
 

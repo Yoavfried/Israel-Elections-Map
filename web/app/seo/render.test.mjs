@@ -12,6 +12,16 @@ const party = {
   mandates: 32,
 }
 
+const secondParty = {
+  id: 'שס',
+  ballotLetter: 'שס',
+  names: { he: 'ש"ס', en: 'Shas' },
+  color: '#171916',
+  votes: 80,
+  voteShare: 0.4,
+  mandates: 11,
+}
+
 const record = {
   id: 'loc:3000',
   code: '3000',
@@ -42,7 +52,7 @@ const catalog = {
 const national = {
   totals: { validVotes: 200, contestingParties: 2, mandates: 120 },
   threshold: { share: 0.0325 },
-  parties: [party],
+  parties: [party, secondParty],
   sources: { officialResultsUrl: 'https://example.com/results' },
 }
 
@@ -97,6 +107,50 @@ describe('multilingual SEO routes', () => {
     expect(html).toContain('https://www.gov.il/he/pages/26elections-info')
   })
 
+  it.each(LANGUAGES)('publishes advanced feature copy in $code', async ({ code }) => {
+    const response = await request(`/isr-electionmap/${code}/features`)
+    const html = await response.text()
+    expect(response.status).toBe(200)
+    expect(html).toContain('WebApplication')
+    expect(html).toContain(`/isr-electionmap/${code}/features/party-comparison`)
+    expect(html).toContain(`/isr-electionmap/${code}/elections/2022/coalition`)
+    expect(html).not.toMatch(/\{[a-zA-Z]+\}/)
+  })
+
+  it('renders coalition, single-party, and comparison entry pages with stable app links', async () => {
+    const coalitionResponse = await request('/isr-electionmap/en/elections/2022/coalition')
+    const coalitionHtml = await coalitionResponse.text()
+    expect(coalitionResponse.status).toBe(200)
+    expect(coalitionHtml).toContain('Coalition results · 2022')
+    expect(coalitionHtml).toContain('view=coalition')
+    expect(coalitionHtml).toContain('Likud')
+    expect(coalitionHtml).toContain('Shas')
+
+    const partyResponse = await request('/isr-electionmap/en/elections/2022/parties/%D7%9E%D7%97%D7%9C')
+    const partyHtml = await partyResponse.text()
+    expect(partyResponse.status).toBe(200)
+    expect(partyHtml).toContain('Likud · 2022 election')
+    expect(partyHtml).toContain('view=party-map')
+    expect(partyHtml).toContain('party=%D7%9E%D7%97%D7%9C')
+
+    const comparisonResponse = await request('/isr-electionmap/en/features/party-comparison')
+    const comparisonHtml = await comparisonResponse.text()
+    expect(comparisonResponse.status).toBe(200)
+    expect(comparisonHtml).toContain('view=party-comparison')
+    expect(comparisonHtml).toContain('party1=%D7%9E%D7%97%D7%9C')
+    expect(comparisonHtml).toContain('party2=%D7%A9%D7%A1')
+  })
+
+  it('publishes complete social metadata for share previews', async () => {
+    const response = await request('/isr-electionmap/en')
+    const html = await response.text()
+    expect(html).toContain('property="og:image:width" content="1440"')
+    expect(html).toContain('property="og:locale" content="en_US"')
+    expect(html).toContain('name="twitter:title"')
+    expect(html).toContain('name="twitter:description"')
+    expect(html).toContain('name="twitter:image:alt"')
+  })
+
   it('renders national and exact local result pages from validated data', async () => {
     const electionResponse = await request('/isr-electionmap/en/elections/2022')
     const electionHtml = await electionResponse.text()
@@ -121,6 +175,7 @@ describe('multilingual SEO routes', () => {
     const indexResponse = await request('/isr-electionmap/sitemap.xml')
     const index = await indexResponse.text()
     expect(index).toContain('/sitemaps/he-k25-localities.xml')
+    expect(index).toContain('/sitemaps/he-k25-analysis.xml')
     expect(index).toContain('/sitemaps/pl-k17-statistical-areas.xml')
 
     const dataResponse = await request('/isr-electionmap/en/sitemaps/nope.xml')
@@ -130,6 +185,12 @@ describe('multilingual SEO routes', () => {
     const resultSitemap = await resultSitemapResponse.text()
     expect(resultSitemapResponse.status).toBe(200)
     expect(resultSitemap).toContain('/en/elections/2022/localities/loc%3A3000')
+
+    const analysisSitemapResponse = await request('/isr-electionmap/sitemaps/en-k25-analysis.xml')
+    const analysisSitemap = await analysisSitemapResponse.text()
+    expect(analysisSitemapResponse.status).toBe(200)
+    expect(analysisSitemap).toContain('/en/elections/2022/coalition')
+    expect(analysisSitemap).toContain('/en/elections/2022/parties/%D7%9E%D7%97%D7%9C')
   })
 
   it('supports HEAD without sending the HTML body', async () => {
