@@ -39,7 +39,7 @@ build workflow.
    `/isr-electionmap/` base path and prepares `cloudflare-dist/`.
 2. `wrangler deploy` uploads the static files and `worker/index.mjs` to the
    `israel-election-map-origin` Worker.
-3. `https://yoavfried.com/isr-electionmap/` proxies that origin through the
+3. `https://yoavfried.com/isr-electionmap` proxies that origin through the
    existing canonical Vercel domain.
 4. `assets.run_worker_first` invokes the Worker only for the ten language
    families, robots, and sitemap routes. Map assets remain static.
@@ -69,7 +69,8 @@ rebuilds the production payload before upload.
 
 ### Domain And Network Setup
 
-- The canonical public base is `https://yoavfried.com/isr-electionmap/`.
+- The canonical public base is `https://yoavfried.com/isr-electionmap` and
+  follows the host's no-trailing-slash convention.
 - SEO responses always emit that owned-domain canonical rather than the Worker
   origin URL.
 - The Worker development hostname is an origin, not an indexable canonical
@@ -91,13 +92,13 @@ The Worker serves useful initial HTML in Hebrew (`he`), English (`en`), French
 (`ar`), German (`de`), Ukrainian (`uk`), and Polish (`pl`). The route families
 are identical in every language:
 
-- `/{lang}/` - project and map overview;
-- `/{lang}/elections/2026/` - truthful future-election and official-voter
+- `/{lang}` - project and map overview;
+- `/{lang}/elections/2026` - truthful future-election and official-voter
   information without invented results;
-- `/{lang}/elections/{year}/` - national historical election result;
-- `/{lang}/elections/{year}/localities/{encoded-result-id}/` - one election
+- `/{lang}/elections/{year}` - national historical election result;
+- `/{lang}/elections/{year}/localities/{encoded-result-id}` - one election
   and locality;
-- `/{lang}/elections/{year}/statistical-areas/{encoded-result-id}/` - one
+- `/{lang}/elections/{year}/statistical-areas/{encoded-result-id}` - one
   election and displayed statistical result unit.
 
 Each result page links to the interactive application with validated query

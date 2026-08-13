@@ -79,17 +79,17 @@ async function request(path, method = 'GET') {
 
 describe('multilingual SEO routes', () => {
   it.each(LANGUAGES)('renders a complete $code overview with reciprocal hreflang', async ({ code, hreflang }) => {
-    const response = await request(`/isr-electionmap/${code}/`)
+    const response = await request(`/isr-electionmap/${code}`)
     const html = await response.text()
     expect(response.status).toBe(200)
     expect(html).toContain(`<html lang="${hreflang}"`)
-    expect(html).toContain(`rel="canonical" href="https://yoavfried.com/isr-electionmap/${code}/"`)
+    expect(html).toContain(`rel="canonical" href="https://yoavfried.com/isr-electionmap/${code}"`)
     expect(html.match(/rel="alternate" hreflang=/g)).toHaveLength(LANGUAGES.length + 1)
     expect(html).not.toMatch(/\{[a-zA-Z]+\}/)
   })
 
   it('renders localized 2026 information without claiming results exist', async () => {
-    const response = await request('/isr-electionmap/he/elections/2026/')
+    const response = await request('/isr-electionmap/he/elections/2026')
     const html = await response.text()
     expect(response.status).toBe(200)
     expect(html).toContain('בחירות ישראל 2026')
@@ -98,12 +98,12 @@ describe('multilingual SEO routes', () => {
   })
 
   it('renders national and exact local result pages from validated data', async () => {
-    const electionResponse = await request('/isr-electionmap/en/elections/2022/')
+    const electionResponse = await request('/isr-electionmap/en/elections/2022')
     const electionHtml = await electionResponse.text()
     expect(electionHtml).toContain('Israel election results · 2022')
     expect(electionHtml).toContain('Likud')
 
-    const localResponse = await request('/isr-electionmap/fr/elections/2022/localities/loc%3A3000/')
+    const localResponse = await request('/isr-electionmap/fr/elections/2022/localities/loc%3A3000')
     const localHtml = await localResponse.text()
     expect(localResponse.status).toBe(200)
     expect(localHtml).toContain('Comment Jerusalem a-t-elle voté en 2022')
@@ -111,7 +111,7 @@ describe('multilingual SEO routes', () => {
   })
 
   it('returns a real noindex 404 for an unknown result', async () => {
-    const response = await request('/isr-electionmap/de/elections/2022/localities/missing/')
+    const response = await request('/isr-electionmap/de/elections/2022/localities/missing')
     const html = await response.text()
     expect(response.status).toBe(404)
     expect(html).toContain('content="noindex, follow"')
@@ -123,18 +123,24 @@ describe('multilingual SEO routes', () => {
     expect(index).toContain('/sitemaps/he-k25-localities.xml')
     expect(index).toContain('/sitemaps/pl-k17-statistical-areas.xml')
 
-    const dataResponse = await request('/isr-electionmap/en/sitemaps/nope.xml/')
+    const dataResponse = await request('/isr-electionmap/en/sitemaps/nope.xml')
     expect(dataResponse.status).toBe(404)
 
     const resultSitemapResponse = await request('/isr-electionmap/sitemaps/en-k25-localities.xml')
     const resultSitemap = await resultSitemapResponse.text()
     expect(resultSitemapResponse.status).toBe(200)
-    expect(resultSitemap).toContain('/en/elections/2022/localities/loc%3A3000/')
+    expect(resultSitemap).toContain('/en/elections/2022/localities/loc%3A3000')
   })
 
   it('supports HEAD without sending the HTML body', async () => {
-    const response = await request('/isr-electionmap/ru/', 'HEAD')
+    const response = await request('/isr-electionmap/ru', 'HEAD')
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('')
+  })
+
+  it('normalizes trailing slashes to the canonical host convention', async () => {
+    const response = await request('/isr-electionmap/en/')
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://yoavfried.com/isr-electionmap/en')
   })
 })

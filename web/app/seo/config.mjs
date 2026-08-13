@@ -37,7 +37,7 @@ export const BUILD_DATE = '2026-08-13'
 
 export function localizedPath(languageCode, suffix = '') {
   const normalizedSuffix = suffix ? `/${String(suffix).replace(/^\/+|\/+$/g, '')}` : ''
-  return `${APP_PATH}/${languageCode}${normalizedSuffix}/`
+  return `${APP_PATH}/${languageCode}${normalizedSuffix}`
 }
 
 export function canonicalUrl(languageCode, suffix = '') {
@@ -63,5 +63,5 @@ export function mapUrl({ electionId = 'K25', mode = 'statistical-area', areaId, 
   if (areaId) {
     parameters.set('area', areaId)
   }
-  return `${CANONICAL_BASE}/?${parameters}`
+  return `${CANONICAL_BASE}?${parameters}`
 }

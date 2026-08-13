@@ -47,7 +47,7 @@ export async function handleSeoRequest(request, { readJson }) {
   if (!LANGUAGE_BY_CODE.has(languageCode)) {
     return null
   }
-  const canonicalPath = `${APP_PATH}/${segments.join('/')}/`
+  const canonicalPath = `${APP_PATH}/${segments.join('/')}`
   if (url.pathname !== canonicalPath) {
     return Response.redirect(`${CANONICAL_ORIGIN}${canonicalPath}`, 308)
   }
