@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-11
+Last updated: 2026-08-13
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -13,7 +13,7 @@ but open/complete workstream declarations belong here.
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
 | Locality-mode aggregation | Complete | Every geographic-scope result row is mapped. Twelve unsupported partial-presence cells across eight localities remain neutral under a closed policy; their effect is immaterial and no further matching work is planned. |
 | Historical statistical-area mode | Complete under the current evidence policy | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty-four high-confidence row-level continuity links are approved and labeled synthetic. The final K21-K25 display layer publishes 536 exact closed units and 1,728 disclosed representative units across 4,722 polygon-election memberships. Entirely unassigned localities use a display-only fallback. Visual refinement of all nine K17/K18 historical-composite components, all 33 effective K17 historical-identity fallback polygons, and the additional reviewed K17/K18 locality overlaps is complete. All 119 reviewed tiny West Bank proxies now have detailed display footprints; the final four use reviewed Peace Now polygons and do not alter assignments. A separate automated joined-locality display audit evaluates 180 election-specific continuity leads: 38 strict approvals are active and 142 are covered, contradicted, or unresolved; these never change ballot-level area assignments. A polling-register safety audit rejects 38 false K24 row-level stable-ballot candidates: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their complete final results publish only through reviewed exact closed area sets. All nine specific ordinary crosswalk omissions are likewise resolved at exact set level, including K25 Daliyat ballot 23; no internal area split is invented. Remaining source limitations have settled display and publication rules and are not an active repair queue. |
-| Party/list names | Complete | All published K17-K25 lists have reviewed display names. English labels may fall back to Hebrew where no separate translation is maintained. |
+| Party/list names | Complete | All 297 published K17-K25 lists have reviewed Hebrew and English display names; the English review is independent of Wikipedia-link selection. |
 | Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
 | Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
 | UX and accessibility | Complete for the current desktop and portrait-mobile scope | Bilingual desktop and portrait-mobile behavior is active, including document-level direction, properly shaped Hebrew/Arabic vector labels, a top-bar accessibility control, compact mobile navigation and selectors, a persistent map viewport, keyboard-aware search, closable result sheets, and short-screen scrolling that keeps the selected geography title visible. Landscape-phone support is outside the agreed scope. |
@@ -21,9 +21,9 @@ but open/complete workstream declarations belong here.
 | Product features | Complete for the current scope | Election-aware bilingual geography and numbered-address search, national results, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented on desktop and portrait mobile. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
 | Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 107 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Data releases now use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
 | Public repository hardening | Implemented | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The app links directly to this repository for downloads, sources, methodology, and legal notices, and publishes a bilingual privacy notice for current network and browser-storage behavior. Rebuilding the private-input pipeline from a fresh clone, hosted CI, continuous performance monitoring, and duplicate in-app Sources/Legal pages are not public-data deliverables. |
-| Production website launch | Planned | Use a local production build and Cloudflare Pages Wrangler Direct Upload so private processed inputs remain local. The current 84-file build fits the documented free Pages limits and requires no paid database or object storage. Domain, canonical-host, deployment, header, redirect, and rollback work remains open. |
-| SEO and discoverability | Planned | Add crawlable Hebrew/English election, locality, statistical-area, party, and data routes with useful initial HTML, stable map deep links, canonical/hreflang metadata, structured data, real 404s, robots, split sitemaps, Search Console verification, and Core Web Vitals validation. |
-| AdSense advertising | Planned | Use manual responsive units on content-rich pages and the national-results view. Keep mobile maps, result sheets, controls, search, and selectors ad-free. Implementation waits for the production domain, crawlable content, an AdSense publisher ID, an updated privacy notice, and a Google-certified consent flow. |
+| Production website launch | Implemented | The locally compiled deployment is live at `https://yoavfried.com/isr-electionmap/`. Cloudflare Workers Static Assets hosts the application and a selective Worker handles SEO routes; the owned-domain subpath proxies to that origin. No paid database or object storage is required. |
+| SEO and discoverability | Implemented; submission pending | Worker-rendered overview, 2026 information, historical-election, locality, and statistical-area pages are available in Hebrew, English, French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and Polish. Every language has the same route coverage, initial HTML, canonical and reciprocal hreflang links, structured data, exact map deep links, real 404s, and split sitemaps. Google Search Console verification/submission, the canonical host's root `robots.txt` sitemap declaration, and post-indexing performance review remain operational launch tasks. |
+| AdSense advertising | Planned | Use manual responsive units on content-rich pages and the national-results view. Keep mobile maps, result sheets, controls, search, and selectors ad-free. Hosting and crawlable content prerequisites are complete; implementation still requires an issued AdSense publisher/slot ID, the advertising update to the privacy notice, and a Google-certified consent flow. |
 
 ## Public Data Release
 
@@ -203,14 +203,16 @@ unallocated-register candidates remain withheld.
 
 ## Remaining Work
 
-The map and data scope is complete. Three website-launch workstreams are now
-active, in dependency order:
+The map, data, production deployment, and ten-language SEO implementation are
+complete. The remaining public-website work is operational:
 
-1. configure and deploy the production site on the owned domain without paid
-   storage;
-2. publish crawlable bilingual result pages and complete technical SEO;
+1. add the subpath sitemap to the canonical host's root `robots.txt`, verify the
+   domain in Google Search Console, submit the sitemap index, and inspect
+   representative pages in every language after indexing begins;
+2. monitor indexed coverage and real Core Web Vitals before changing the SEO
+   route or asset strategy;
 3. apply for and integrate AdSense using only the reviewed placements and
-   consent behavior.
+   consent behavior after Google supplies the publisher and slot IDs.
 
 The exact plan and completion criteria are in `WEBSITE_LAUNCH_PLAN.md`.
 Landscape-phone support, satellite imagery, and 3D buildings remain outside

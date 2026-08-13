@@ -1,6 +1,6 @@
 # Product Feature Plan
 
-Last updated: 2026-08-04
+Last updated: 2026-08-13
 
 This document records the delivered design of the map's feature set and the
 next public-website work. It is not a completion tracker; authoritative status
@@ -13,9 +13,10 @@ rewrite are complete under the current project scope and evidence policy.
 Closing a source gap never means forcing a ballot onto a polygon. Satellite
 imagery and 3D buildings are not planned product modes.
 
-The active expansion is production launch, crawlable bilingual SEO surfaces,
-and reviewed AdSense placement. Implementation order and acceptance criteria
-are defined in `WEBSITE_LAUNCH_PLAN.md`.
+The production map and ten-language crawlable SEO surfaces are deployed under
+the owned domain. The remaining website work is search-engine submission and
+monitoring followed by separately reviewed AdSense placement. Implementation
+order and acceptance criteria are defined in `WEBSITE_LAUNCH_PLAN.md`.
 
 The national-results view remains the reference surface for the completed
 party-name, color, and Wikipedia-link tables. Any future analysis mode should

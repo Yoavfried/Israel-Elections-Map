@@ -1,11 +1,28 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "israel-election-map-origin",
-  "compatibility_date": "2026-08-12",
+  "main": "./worker/index.mjs",
+  "compatibility_date": "2026-08-11",
   "workers_dev": true,
   "preview_urls": false,
   "assets": {
     "directory": "./cloudflare-dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/isr-electionmap/robots.txt",
+      "/isr-electionmap/sitemap.xml",
+      "/isr-electionmap/sitemaps/*",
+      "/isr-electionmap/he/*",
+      "/isr-electionmap/en/*",
+      "/isr-electionmap/fr/*",
+      "/isr-electionmap/es/*",
+      "/isr-electionmap/ru/*",
+      "/isr-electionmap/zh/*",
+      "/isr-electionmap/ar/*",
+      "/isr-electionmap/de/*",
+      "/isr-electionmap/uk/*",
+      "/isr-electionmap/pl/*"
+    ],
     "html_handling": "auto-trailing-slash"
   }
 }

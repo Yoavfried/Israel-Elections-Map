@@ -1,8 +1,8 @@
 # Israel Election Map
 
-Bilingual web application and reproducible data pipeline for exploring K17-K25
-Knesset election results nationally, by locality, and by
-election-appropriate statistical area.
+Bilingual interactive web application, ten-language crawlable result site, and
+reproducible data pipeline for exploring K17-K25 Knesset election results
+nationally, by locality, and by election-appropriate statistical area.
 
 The map includes offline election-aware search across Hebrew and English
 locality names, statistical areas, historical names, reviewed aliases, and

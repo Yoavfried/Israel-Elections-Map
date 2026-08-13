@@ -36,6 +36,14 @@ on-screen keyboard, and presents closable result sheets with a fixed result
 title and scrollable detail body. Landscape-phone support is outside the
 current scope.
 
+The deployed build also includes Worker-rendered SEO pages in Hebrew, English,
+French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and
+Polish. Every language has overview, 2026 information, historical-election,
+locality-result, and statistical-area-result routes. These responses contain
+their metadata, result facts, tables, canonical/hreflang links, structured
+data, and exact interactive-map deep links in the initial HTML. The React map
+interface itself remains bilingual.
+
 ## Run Locally
 
 Prerequisites:
@@ -57,7 +65,18 @@ npm run data:build
 npm test
 npm run check
 npm run build
+npm run build:deploy
 ```
+
+To preview the production static assets and Worker-rendered SEO routes locally:
+
+```powershell
+npm run build:deploy
+npx wrangler dev --local --port 8787
+```
+
+The production release command is `npm run deploy`. It uploads
+`cloudflare-dist/` plus `worker/index.mjs` to the configured Cloudflare Worker.
 
 To compile from another processed-data directory:
 

@@ -40,6 +40,7 @@ import {
 import type { PartyMapDisplayMode } from './domain/partyMap'
 import { translate } from './i18n/translations'
 import { loadPreferences, savePreferences } from './state/preferences'
+import { applyMapLinkPreferences, parseMapLinkSearch } from './state/mapLink'
 
 const MapCanvas = lazy(() => import('./components/MapCanvas'))
 
@@ -51,8 +52,9 @@ type Loadable<T> =
 const storage = safeStorage()
 
 export default function App() {
+  const [initialMapLink] = useState(() => parseMapLinkSearch(window.location.search))
   const [preferences, setPreferences] = useState(() =>
-    loadPreferences(storage, navigator.language),
+    applyMapLinkPreferences(loadPreferences(storage, navigator.language), initialMapLink),
   )
   const [catalogState, setCatalogState] = useState<Loadable<AppCatalog>>({ status: 'loading' })
   const [resultsState, setResultsState] = useState<Loadable<ElectionResults>>({ status: 'loading' })
@@ -62,7 +64,10 @@ export default function App() {
   const [searchState, setSearchState] = useState<Loadable<GeographySearchIndex>>({
     status: 'loading',
   })
-  const [activeView, setActiveView] = useState<AppView>('map')
+  const [activeView, setActiveView] = useState<AppView>(initialMapLink.view)
+  const [pendingDeepLinkAreaId, setPendingDeepLinkAreaId] = useState(
+    initialMapLink.areaId ?? null,
+  )
   const [selectedPartyId, setSelectedPartyId] = useState<string | null>(null)
   const [partyMapDisplayMode, setPartyMapDisplayMode] =
     useState<PartyMapDisplayMode>('areas')
@@ -220,6 +225,28 @@ export default function App() {
     searchState.status === 'ready' && searchState.data.electionId === electionId
       ? searchState.data
       : null
+
+  useEffect(() => {
+    if (!pendingDeepLinkAreaId || !searchIndex || !results) {
+      return
+    }
+    const item = searchIndex.items.find(
+      (candidate) =>
+        candidate.id === pendingDeepLinkAreaId && candidate.geographyMode === geographyMode,
+    )
+    setPendingDeepLinkAreaId(null)
+    if (!item) {
+      return
+    }
+    setSelectedId(item.id)
+    setSelectedSearchItem(item)
+    setSelectedAddress(null)
+    setFocusRequest((current) => ({
+      id: item.id,
+      bounds: item.bounds,
+      requestId: (current?.requestId ?? 0) + 1,
+    }))
+  }, [geographyMode, pendingDeepLinkAreaId, results, searchIndex])
   const selectableMapGeographyIds = useMemo(
     () =>
       (searchIndex?.items ?? [])

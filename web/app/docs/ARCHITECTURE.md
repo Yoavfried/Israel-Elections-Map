@@ -23,6 +23,8 @@ The web app supports:
 - A replaceable OSM-derived vector background with localized labels,
   attribution, and a persisted neutral fallback.
 - English and Hebrew, including document-level LTR/RTL switching.
+- A ten-language crawlable result surface rendered by the deployment Worker;
+  the interactive React controls remain Hebrew/English.
 - Desktop layout plus a map-first portrait-mobile interface.
 - Explicit mapped/unmapped vote coverage.
 - Custom reviewed geographic buckets when they have results in an election.
@@ -66,6 +68,29 @@ Zod-validated browser data client
             v
 MapLibre feature state + React detail panels
 ```
+
+## Crawlable SEO surface
+
+`worker/index.mjs` runs before static assets only for the configured language,
+robots, and sitemap route patterns. It imports the framework-independent
+renderer under `seo/`, reads the compiled catalog and result JSON through the
+Cloudflare `ASSETS` binding, and delegates every other request directly to
+static assets. The catalog and only the most recently used result payload are
+cached within the Worker isolate so sequential sitemap/page batches are fast
+without retaining every large election payload in memory.
+
+The renderer publishes identical route families in Hebrew, English, French,
+Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and Polish:
+overview, 2026 information, historical national results, locality results, and
+statistical-area results. Each response contains initial HTML, a unique title
+and description, canonical and reciprocal hreflang links, Open Graph metadata,
+JSON-LD, complete relevant result tables, geographic notices, and a validated
+deep link into the React map. Unknown entities return a real noindex `404`.
+
+The Worker also generates the sitemap index, core-language sitemap, and one
+result sitemap for each language/election/geography-mode combination. The SEO
+renderer never creates arbitrary map-state or party-comparison URLs, and the
+2026 route does not claim results before official publication.
 
 The browser loads the catalog first, then the selected election/mode result file and that election's search index. Each election carries `geographiesByMode`, so statistical geometry changes with the election: K17 loads 1995, K18 loads 2008, and K19-K25 load 2011. Locality mode uses dissolved 2022 geometry. The standard and party-analysis maps share these assets and the same result-detail contract. Single-party mode changes MapLibre feature-state colors, using a quadratic white-to-color scale from zero to the 95th percentile of positive selected-party shares in the current result set; higher outliers are capped at the full reviewed party color. Its circle option uses the same result IDs and search-index centers: color remains vote share with a minimum positive-vote tint, while circle area represents absolute party votes. One party-independent size scale is capped at the 99th percentile of each area's leading-party vote total, with a smaller maximum radius. Two-party mode colors the head-to-head share of the selected parties' combined vote from the first reviewed color through a white 50/50 midpoint to the second reviewed color. Coalition mode sums a reviewed fixed list of election-specific ballots and applies the same 95th-percentile sequential scale using the largest coalition member's color. K21 and K22 use the outgoing transitional coalition; partial joint-list membership in K21-K23 remains explicitly disclosed because ballot votes cannot be split by component party. A separate pale neutral identifies records where both selected comparison parties received zero votes, while missing results retain the standard unmapped grey. Statistical assets also declare a simplified, non-interactive 2022 land backdrop; MapLibre paints it neutral grey below the historical result polygons so changing vintage does not turn uncovered Israeli land into background. For a locality with zero supported area assignments, the compiler adds a display-only current locality or reviewed composite footprint to the historical asset, hides its empty statistical components only in that election, and attaches the locality aggregate. The compiler removes source-only fields and rounds web coordinates to six decimal places. Each geography asset also has marker GeoJSON for marker-capable custom buckets and point-like proxies. The marker layer filters that asset to exact IDs present in the selected result payload, while reviewed detailed settlement and custom footprints remain polygonal.
 
