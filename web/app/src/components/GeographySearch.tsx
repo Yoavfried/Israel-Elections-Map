@@ -56,6 +56,7 @@ export function GeographySearch({
   const listboxId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const optionPointerActiveRef = useRef(false)
   const previousSelectionRef = useRef<string | null>(null)
   const preserveQueryOnSelectionClearRef = useRef(false)
   const [query, setQuery] = useState('')
@@ -256,7 +257,10 @@ export function GeographySearch({
       ref={containerRef}
       className={`geography-search${mobileOpen ? ' geography-search--mobile-open' : ''}`}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        if (
+          !optionPointerActiveRef.current &&
+          !event.currentTarget.contains(event.relatedTarget as Node | null)
+        ) {
           setOpen(false)
         }
       }}
@@ -367,7 +371,23 @@ export function GeographySearch({
               {translate(language, 'searchNoResults')}
             </p>
           ) : (
-            <ul id={listboxId} role="listbox" aria-label={translate(language, 'searchResults')}>
+            <ul
+              id={listboxId}
+              role="listbox"
+              aria-label={translate(language, 'searchResults')}
+              onPointerDownCapture={() => {
+                // Mobile Safari can blur the input with a null relatedTarget before click.
+                optionPointerActiveRef.current = true
+              }}
+              onPointerUpCapture={() => {
+                window.setTimeout(() => {
+                  optionPointerActiveRef.current = false
+                }, 0)
+              }}
+              onPointerCancelCapture={() => {
+                optionPointerActiveRef.current = false
+              }}
+            >
               {options.map((option, index) => {
                 const item = option.kind === 'geography' ? option.item : option.match.area
                 return (
