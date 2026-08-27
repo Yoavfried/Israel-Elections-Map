@@ -10,7 +10,7 @@ const parties: Party[] = [
 ]
 
 describe('PartyComparisonPanel', () => {
-  it('renders two exclusive party selectors and explicit neutral states', () => {
+  it('renders two exclusive party selectors and the comparison gradient', () => {
     const html = renderToStaticMarkup(
       <PartyComparisonPanel
         language="en"
@@ -27,8 +27,8 @@ describe('PartyComparisonPanel', () => {
     expect(html).toContain('<option value="b" dir="auto" disabled="">Beta (b)</option>')
     expect(html).toContain('Share between selected parties')
     expect(html).toContain('Equal')
-    expect(html).toContain('Neither party received votes')
-    expect(html).toContain('No result')
+    expect(html).not.toContain('Neither party received votes')
+    expect(html).not.toContain('No result')
   })
 })
 

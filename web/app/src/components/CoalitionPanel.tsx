@@ -40,10 +40,6 @@ export function CoalitionPanel({
           <span>{formatPercent(midpoint, language)}</span>
           <span>&gt;{formatPercent(upperBoundShare, language)}</span>
         </div>
-        <span className="coalition-legend__missing">
-          <span aria-hidden="true" />
-          {translate(language, 'partyMapNoResult')}
-        </span>
       </div>
     </section>
   )

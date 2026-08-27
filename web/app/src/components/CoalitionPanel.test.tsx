@@ -21,6 +21,7 @@ describe('CoalitionPanel', () => {
     expect(html).toContain('0.0%')
     expect(html).toContain('40.0%')
     expect(html).toContain('&gt;80.0%')
+    expect(html).not.toContain('No result')
   })
 })
 

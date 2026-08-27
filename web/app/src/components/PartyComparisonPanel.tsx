@@ -1,9 +1,5 @@
 import type { CSSProperties } from 'react'
-import { UNMAPPED_GEOGRAPHY_COLOR } from '../domain/color'
-import {
-  PARTY_COMPARISON_NO_VOTES_COLOR,
-  PARTY_COMPARISON_TIE_COLOR,
-} from '../domain/partyComparison'
+import { PARTY_COMPARISON_TIE_COLOR } from '../domain/partyComparison'
 import type { Language, Party } from '../domain/schemas'
 import { translate } from '../i18n/translations'
 
@@ -30,8 +26,6 @@ export function PartyComparisonPanel({
     '--comparison-first': firstParty?.color ?? '#69736d',
     '--comparison-second': secondParty?.color ?? '#69736d',
     '--comparison-tie': PARTY_COMPARISON_TIE_COLOR,
-    '--comparison-no-votes': PARTY_COMPARISON_NO_VOTES_COLOR,
-    '--comparison-no-result': UNMAPPED_GEOGRAPHY_COLOR,
   } as CSSProperties
 
   return (
@@ -65,16 +59,6 @@ export function PartyComparisonPanel({
           <span dir="auto">{firstParty?.names[language] ?? ''}</span>
           <span>{translate(language, 'partyComparisonTie')}</span>
           <span dir="auto">{secondParty?.names[language] ?? ''}</span>
-        </div>
-        <div className="party-comparison-legend__states">
-          <span>
-            <i className="party-comparison-legend__no-votes" aria-hidden="true" />
-            {translate(language, 'partyComparisonNoVotes')}
-          </span>
-          <span>
-            <i className="party-comparison-legend__no-result" aria-hidden="true" />
-            {translate(language, 'partyMapNoResult')}
-          </span>
         </div>
       </div>
     </section>

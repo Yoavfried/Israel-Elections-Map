@@ -190,6 +190,8 @@ async function fetchAddressCandidates(
   }
   const response = await fetch(url, {
     signal,
+    cache: 'no-store',
+    referrerPolicy: 'no-referrer',
     headers: { Accept: 'application/json' },
   })
   if (!response.ok) {

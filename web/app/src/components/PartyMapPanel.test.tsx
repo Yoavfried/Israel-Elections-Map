@@ -35,7 +35,7 @@ describe('PartyMapPanel', () => {
     expect(html).toContain('20.0%')
     expect(html).toContain('&gt;40.0%')
     expect(html).toContain('Above the positive-share 95th percentile: 40.0%')
-    expect(html).toContain('No result')
+    expect(html).not.toContain('No result')
   })
 
   it('adds a vote-count size legend in circle mode', () => {

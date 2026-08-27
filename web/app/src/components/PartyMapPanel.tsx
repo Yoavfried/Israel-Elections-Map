@@ -95,10 +95,6 @@ export function PartyMapPanel({
             &gt;{formatPercent(upperBoundShare, language)}
           </span>
         </div>
-        <span className="party-map-legend__missing">
-          <span aria-hidden="true" />
-          {translate(language, 'partyMapNoResult')}
-        </span>
       </div>
 
       {displayMode === 'circles' && upperBoundVotes > 0 ? (
