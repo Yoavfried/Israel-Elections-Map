@@ -2,6 +2,7 @@ import type { Language } from '../domain/schemas'
 
 const messages = {
   en: {
+    portfolioAction: "Yoav Fried's portfolio",
     repositoryAction: 'Project repository and data downloads',
     privacyAction: 'Privacy notice',
     mobileMenuOpen: 'Open menu',
@@ -103,6 +104,7 @@ const messages = {
     thresholdDivider: 'Electoral threshold',
   },
   he: {
+    portfolioAction: 'האתר של יואב פריד',
     repositoryAction: '\u05de\u05d0\u05d2\u05e8 \u05d4\u05e4\u05e8\u05d5\u05d9\u05e7\u05d8 \u05d5\u05d4\u05d5\u05e8\u05d3\u05d5\u05ea \u05d4\u05e0\u05ea\u05d5\u05e0\u05d9\u05dd',
     privacyAction: '\u05d4\u05d5\u05d3\u05e2\u05ea \u05e4\u05e8\u05d8\u05d9\u05d5\u05ea',
     mobileMenuOpen: '\u05e4\u05ea\u05d7 \u05ea\u05e4\u05e8\u05d9\u05d8',

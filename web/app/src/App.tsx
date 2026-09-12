@@ -1,4 +1,4 @@
-import { Database, Languages, Shield } from 'lucide-react'
+import { Database, House, Languages, Shield } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { AccessibilityWidget } from './components/AccessibilityWidget'
 import { ControlPanel } from './components/ControlPanel'
@@ -573,6 +573,14 @@ export default function App() {
           onChange={handleViewChange}
         />
         <div className="header-actions">
+          <a
+            className="header-icon-link"
+            href="https://yoavfried.com/"
+            aria-label={translate(language, 'portfolioAction')}
+            title={translate(language, 'portfolioAction')}
+          >
+            <House size={19} strokeWidth={2} aria-hidden="true" />
+          </a>
           <a
             className="header-icon-link"
             href="https://github.com/Yoavfried/israel-election-map"

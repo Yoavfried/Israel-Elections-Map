@@ -23,6 +23,7 @@ import { electionDate, formatNumber, formatPercent, translateSeo as t } from './
 import coalitionDefinitions from '../config/coalitions.json' with { type: 'json' }
 
 const DATA_ROOT = 'data/v2/'
+const PORTFOLIO_URL = `${CANONICAL_ORIGIN}/`
 const REPOSITORY_URL = 'https://github.com/Yoavfried/israel-election-map'
 const VOTER_INFO_URL = 'https://www.gov.il/he/pages/26elections-info'
 const KNESSET_ELECTION_URL = 'https://m.knesset.gov.il/EN/mk/pages/elections.aspx'
@@ -646,7 +647,7 @@ function renderDocument({ languageCode, suffix, title, description, body, struct
     <a class="map-link" href="${escapeAttribute(mapUrl({ languageCode }))}">${escapeHtml(t(languageCode, 'openMap'))}</a>
   </header>
   ${body}
-  <footer><p>${escapeHtml(t(languageCode, 'footer'))}</p><p>${escapeHtml(t(languageCode, 'updated', { date: BUILD_DATE }))}</p></footer>
+  <footer><p>${escapeHtml(t(languageCode, 'footer'))}</p><p><a href="${escapeAttribute(PORTFOLIO_URL)}">${escapeHtml(t(languageCode, 'portfolioLink'))}</a></p><p>${escapeHtml(t(languageCode, 'updated', { date: BUILD_DATE }))}</p></footer>
 </body>
 </html>`
 }

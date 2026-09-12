@@ -94,8 +94,16 @@ describe('multilingual SEO routes', () => {
     expect(response.status).toBe(200)
     expect(html).toContain(`<html lang="${hreflang}"`)
     expect(html).toContain(`rel="canonical" href="https://yoavfried.com/isr-electionmap/${code}"`)
+    expect(html).toContain('<a href="https://yoavfried.com/">')
     expect(html.match(/rel="alternate" hreflang=/g)).toHaveLength(LANGUAGES.length + 1)
     expect(html).not.toMatch(/\{[a-zA-Z]+\}/)
+  })
+
+  it('labels the portfolio return link in Hebrew and English', async () => {
+    const hebrew = await (await request('/isr-electionmap/he')).text()
+    const english = await (await request('/isr-electionmap/en')).text()
+    expect(hebrew).toContain('<a href="https://yoavfried.com/">האתר של יואב פריד</a>')
+    expect(english).toContain('<a href="https://yoavfried.com/">Yoav Fried&#39;s portfolio</a>')
   })
 
   it('renders localized 2026 information without claiming results exist', async () => {
