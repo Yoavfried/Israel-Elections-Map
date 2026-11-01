@@ -128,6 +128,12 @@ describe('multilingual SEO routes', () => {
     expect(html).not.toContain('עדיין אין במאגר תוצאות רשמיות')
   })
 
+  it('returns a real 404 for the not-yet-formed K26 coalition', async () => {
+    const response = await request('/isr-electionmap/en/elections/2026/coalition')
+    expect(response.status).toBe(404)
+    expect(await response.text()).toContain('Page not found')
+  })
+
   it.each(LANGUAGES)('discloses K26 publication and geography limits in $code', async ({ code }) => {
     const response = await request(`/isr-electionmap/${code}/elections/2026`)
     expect(response.status).toBe(200)

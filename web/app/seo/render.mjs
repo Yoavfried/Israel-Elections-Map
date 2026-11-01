@@ -111,6 +111,9 @@ export async function handleSeoRequest(request, { readJson }) {
   }
 
   if (segments.length === 4 && segments[3] === 'coalition') {
+    if (!coalitionDefinitions[election.id]) {
+      return htmlResponse(renderNotFoundPage(languageCode), 404, request.method)
+    }
     const nationalResults = await readJson(`${DATA_ROOT}${catalogElection.resultUrls.national}`)
     return htmlResponse(
       renderCoalitionPage(languageCode, election, nationalResults),
