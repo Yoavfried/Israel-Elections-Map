@@ -47,6 +47,19 @@ class K26ReleaseTests(unittest.TestCase):
             self.assertEqual(election["missing_stat_geometry_ids"], 0)
             self.assertEqual(election["missing_locality_geometry_ids"], 0)
 
+    def test_wikipedia_review_covers_every_below_threshold_list(self):
+        parties = rows(ROOT / "public-data" / "v2" / "metadata" / "parties.csv")
+        eligible = {row["source_column"] for row in parties if row["election"] == "K26" and 0 < int(row["total_votes"]) < 5690685 * 0.0325}
+        reviews = rows(ROOT / "public-data" / "v2" / "metadata" / "party-wikipedia-reviews" / "k26.csv")
+        self.assertEqual(len(reviews), 25)
+        self.assertEqual({row["source_column"] for row in reviews}, eligible)
+        self.assertTrue(all(row["notes"] and row["evidence_urls"] for row in reviews))
+
+    def test_previous_election_party_metadata_is_unchanged(self):
+        before = rows(ROOT / "public-data" / "v1" / "metadata" / "parties.csv")
+        after = rows(ROOT / "public-data" / "v2" / "metadata" / "parties.csv")
+        self.assertEqual(before, [row for row in after if row["election"] != "K26"])
+
 
 if __name__ == "__main__":
     unittest.main()

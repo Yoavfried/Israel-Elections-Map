@@ -12,6 +12,13 @@ Current project scope starts at K17 / 2006 and runs through K26 / 2026.
 
 ### K26 Snapshot
 
+The 2026-11-01 K26 below-threshold Wikipedia review covers all 25 positive-vote
+lists below the threshold. Evidence and deliberate blanks are published in
+`public-data/v2/metadata/party-wikipedia-reviews/k26.csv`. Direct party articles
+are preferred; verified founder/leader or related-movement pages are identified
+as context, not presented in the data as standalone party articles. Similar
+names and registration vehicles are not sufficient identity evidence.
+
 The government catalogue above currently ends at K25. K26 is imported directly
 from the CEC's [ballot CSV](https://media26.bechirot.gov.il/files/expb.csv) and
 [locality CSV](https://media26.bechirot.gov.il/files/expc.csv), using the complete

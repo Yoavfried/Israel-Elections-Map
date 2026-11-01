@@ -794,6 +794,14 @@ def build_metadata_and_aggregates(
         )
     )
 
+    reviews = pd.read_csv(MANUAL_DIR / "k26_party_wikipedia_reviews.csv", dtype=str).fillna("")
+    reviews_path = OUT_ROOT / "metadata" / "party-wikipedia-reviews" / "k26.csv"
+    write_bytes(reviews_path, csv_bytes(reviews))
+    manifest.append(manifest_row(
+        reviews_path, "metadata", "K26 below-threshold Wikipedia identity review including contextual links and deliberate blanks.",
+        rows=len(reviews), election="K26",
+    ))
+
     election_rows = []
     geographic_aggregate_rows = 0
     for number in sorted(ELECTIONS):
@@ -890,7 +898,7 @@ def write_manifests(
             json.dumps(
                 {
                     "schema_version": 2,
-                    "data_release": "v2.0",
+                    "data_release": "v2.1",
                     "election_range": {"first": "K17", "last": "K26"},
                     "files": manifest,
                 },

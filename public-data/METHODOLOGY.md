@@ -2,6 +2,14 @@
 
 ## K26 / 2026 Publication Policy
 
+Version v2.1 adds K26 party-link metadata only. The 25 below-threshold lists
+are reviewed in `v2/metadata/party-wikipedia-reviews/k26.csv`. The review records
+whether each link is a dedicated party article, a component-party article, a
+founder/leader page, or a related political movement. A blank means that no
+useful verified link was accepted; it is not a claim that no article could ever
+exist. K17-K25 party metadata, all ballot values, and all geographic assignments
+remain unchanged. Website colors are not part of the data release.
+
 Release v2.0 adds the official complete-count snapshot dated 2026-10-30,
 pending certification. Every original party vote, eligible-voter count, actual
 voter, valid vote, and invalid vote is preserved. The raw ballot and locality

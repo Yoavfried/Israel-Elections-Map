@@ -13,6 +13,24 @@ import {
 const dataRoot = resolve(import.meta.dirname, '..', '..', 'public', 'data', 'v2')
 
 describe('generated web data', () => {
+  it('uses the reviewed K26 colors and researched links in every results view', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const election = catalog.elections.find((entry) => entry.id === 'K26')!
+    const expectedColors = { 'דרך': '#7B2CBF', 'רק': '#B54E12', 'די': '#7B2CBF', 'ך': '#B08D00', 'זך': '#8B5A2B', 'נר': '#202020', 'ני': '#4B5563' }
+    for (const mode of ['national', 'locality', 'statistical-area'] as const) {
+      const payload = await readJson(resolve(dataRoot, election.resultUrls[mode])) as { parties: Array<{ id: string; color: string; colorStatus: string; wikipedia: { he: string | null; en: string | null } }> }
+      const parties = new Map(payload.parties.map((party) => [party.id, party]))
+      for (const [id, color] of Object.entries(expectedColors)) expect(parties.get(id), `${mode}/${id}`).toMatchObject({ color, colorStatus: 'reviewed' })
+      expect(parties.get('ך')?.wikipedia.en).toBe('https://en.wikipedia.org/wiki/Amcha_Yisrael')
+      expect(parties.get('זך')?.wikipedia.en).toBe('https://en.wikipedia.org/wiki/Haredi_Public')
+      expect(parties.get('ד')?.wikipedia.en).toBe('https://en.wikipedia.org/wiki/Ihud_Bnei_HaBrit')
+      expect(parties.get('די')?.wikipedia.en).toBe('https://en.wikipedia.org/wiki/The_Reservists_(political_party)')
+      expect(parties.get('יק')?.wikipedia.en).toBe('https://en.wikipedia.org/wiki/Bible_Bloc_Party')
+      expect(parties.get('ק')?.wikipedia.en).toBeNull()
+      expect(parties.get('קה')?.wikipedia.en).toBeNull()
+    }
+  })
+
   it('keeps K26 supplements election-specific and hides the replaced Shaar Shomron components', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const supplements = ['1362', '3815', '3826', '3861', '3864', '3869']
@@ -1386,7 +1404,7 @@ describe('generated web data', () => {
 
     for (const [electionId, payload] of payloads) {
       if (electionId === 'K26') {
-        expect(payload.parties.some((candidate) => candidate.colorStatus === 'provisional')).toBe(true)
+        expect(payload.parties.every((candidate) => candidate.colorStatus === 'reviewed')).toBe(true)
         continue
       }
       expect(

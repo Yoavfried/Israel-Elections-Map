@@ -16,7 +16,8 @@ Public-data versions have exactly two numeric levels: `major.minor`.
   or another substantial expansion changes the data contract.
 - There is no patch-level public-data version.
 
-The current release is `v2.0` in `public-data/v2/`, adding K26 / 2026.
+The current release is `v2.1` in `public-data/v2/`. Version v2.0 added K26 / 2026;
+v2.1 enriches K26 party article metadata and records the Wikipedia review.
 The preceding `public-data/v1/` snapshot remains available and is not rewritten.
 Exact published snapshots should be identified with Git tags or GitHub
 releases such as `data-v1.1`; a tagged snapshot is never silently rewritten.

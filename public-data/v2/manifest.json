@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "data_release": "v2.0",
+  "data_release": "v2.1",
   "election_range": {
     "first": "K17",
     "last": "K26"
@@ -1278,9 +1278,20 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 347,
-      "bytes": 166556,
-      "sha256": "acbba3b9a39ca0254a04ea0c6c8379e9964598f5bad5ea0170cd4e3d0c160abf",
+      "bytes": 171724,
+      "sha256": "eabde014c3e6a220b9778c442289f6b027208076e61c9cef6b16811602043a6e",
       "description": "Election-specific party/list lookup keyed by election and source_column; no map colors."
+    },
+    {
+      "path": "metadata/party-wikipedia-reviews/k26.csv",
+      "category": "metadata",
+      "election": "K26",
+      "stat_area_vintage": "",
+      "format": "csv",
+      "rows_or_features": 25,
+      "bytes": 6387,
+      "sha256": "1129558b56474fe8660f81b4f9ff0ee53154c1b3cca078eb596eae1ea5a1a832",
+      "description": "K26 below-threshold Wikipedia identity review including contextual links and deliberate blanks."
     },
     {
       "path": "sources/k26/ballots.csv",

@@ -8,6 +8,12 @@ polygon aggregates, full-resolution geography packages, election and party
 metadata, row-level assignment provenance, checksums, and a machine-readable
 validation report. The ballot-table contract is schema version 2.
 
+The current data release is **v2.1**. This metadata-only update adds researched
+K26 Wikipedia links and a [25-list review](v2/metadata/party-wikipedia-reviews/k26.csv?raw=1)
+that distinguishes party articles from component-party, founder, and related-
+movement links. Deliberate blanks are recorded rather than filled with unrelated
+articles. Ballot values and geographic assignments are unchanged.
+
 K26 is the complete-count snapshot from 30 October 2026, before certification.
 Locality totals are complete. Its statistical-area assignments are deliberately
 limited to independently known single-area localities and reviewed custom

@@ -114,7 +114,8 @@ metadata/assignment-provenance/stable_ballot_transition_audit.csv,assignment-pro
 metadata/coverage.csv,metadata,,,csv,10,2585,b6b7b32b822e92b47149d97b9f69d0923b9d07352790da404dc0a1a2ece94e99,Per-election statistical and locality mapping coverage.
 metadata/elections.csv,metadata,,,csv,10,1661,c9ca855bb9e118d3fba70bb8ac724eab5a6540a6b9d2b4a56be68bca4a0452e1,"Election years, active statistical-area vintages, and principal download paths."
 metadata/geographies.csv,metadata,,,csv,14294,3817997,635a49d12a987e9d230cd6e922d1f54aa7a6ce08844776743b3077ffc13aca11,Combined lookup for every published geography ID and package.
-metadata/parties.csv,metadata,,,csv,347,166556,acbba3b9a39ca0254a04ea0c6c8379e9964598f5bad5ea0170cd4e3d0c160abf,Election-specific party/list lookup keyed by election and source_column; no map colors.
+metadata/parties.csv,metadata,,,csv,347,171724,eabde014c3e6a220b9778c442289f6b027208076e61c9cef6b16811602043a6e,Election-specific party/list lookup keyed by election and source_column; no map colors.
+metadata/party-wikipedia-reviews/k26.csv,metadata,K26,,csv,25,6387,1129558b56474fe8660f81b4f9ff0ee53154c1b3cca078eb596eae1ea5a1a832,K26 below-threshold Wikipedia identity review including contextual links and deliberate blanks.
 sources/k26/ballots.csv,official-source-snapshot,K26,,csv,,1825336,858b87d94c409759ea6ab2d22cc1c61fc9ff8bf3b77be669ba83e498c2cea021,Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json.
 sources/k26/crosswalk.xlsx,official-source-snapshot,K26,,xlsx,,347862,d984da021eb50c9a91e63d0cc50a78af73f3e0df2f9ccc1d898fb33ec2d702c8,Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json.
 sources/k26/crosswalk_readme.pdf,official-source-snapshot,K26,,pdf,,209015,5826f717c98f284a76d979cfa3e8ac3f681f904b20324732b47c3a3b44b03120,Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json.
