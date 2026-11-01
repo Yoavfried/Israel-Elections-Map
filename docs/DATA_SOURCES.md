@@ -41,6 +41,18 @@ come from CBS's `statisticalareas_demography_2025.gdb.zip`, whose geometry
 fields are explicitly `STAT22` / `YISHUV_STAT22`; existing boundaries are not
 replaced. See `k26_geography_supplements.csv` in assignment provenance.
 
+The K26 statistical display also uses the CEC's pre-election Form A register
+from the [committee's transparency guide](https://www.gov.il/he/pages/cec-headquarter?chapterIndex=7)
+and the final [Polling Station workbook](https://www.gov.il/BlobFolder/guide/26elections-info/he/Polling%20Station.xlsx)
+from the [K26 voter guide](https://www.gov.il/he/pages/26elections-info?chapterIndex=2).
+Both source files and their SHA-256 hashes are archived in the v2.2 data release.
+The final register reconciles exactly to all 12,018 ordinary ballot identities
+and eligible counts. The additional 4,081 row links are explicitly synthetic,
+not relabeled direct CBS keys. Mixed final groups reuse the existing disclosed
+polling-group display policy on 2022 geometry. Govmap's current detailed layer
+was inspected but is a named-neighborhood layer, not a CBS statistical-area
+crosswalk, and was not imported for this fix.
+
 - Locality totals are generated from normalized ballot rows and reviewed
   locality identities; official locality summaries are validation evidence.
 - Party columns are election-specific ballot letters and are never treated as

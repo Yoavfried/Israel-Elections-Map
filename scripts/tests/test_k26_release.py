@@ -31,7 +31,16 @@ class K26ReleaseTests(unittest.TestCase):
         self.assertEqual(len(ballots), 12926)
         self.assertEqual(sum(int(row["valid_votes"]) for row in ballots), 5690685)
         self.assertEqual(sum(int(row["actual_voters"]) for row in ballots), 5716673)
-        self.assertFalse(any(row["assignment_is_synthetic_link"].lower() == "true" for row in ballots))
+        links = {row["source_row_uid"]: row for row in rows(ROOT / "public-data" / "v2" / "metadata" / "assignment-provenance" / "k26_validated_register_links.csv")}
+        inferred = [row for row in ballots if row["assignment_is_synthetic_link"].lower() == "true"]
+        self.assertGreater(len(inferred), 3800)
+        for row in inferred:
+            evidence = links[row["source_row_uid"]]
+            self.assertEqual(row["stat_area_id"], evidence["stat_area_id"])
+            self.assertEqual(row["assignment_evidence_class"], "official_polling_register_inferred_link")
+            self.assertEqual(row["source_locality_code"], evidence["source_locality_code"])
+            self.assertEqual(row["source_kalpi"], evidence["source_kalpi"])
+            self.assertNotEqual(row["source_kalpi"].split(".")[0], "990")
         for row in ballots:
             if row["stat_area_id"]:
                 self.assertTrue(row["stat_area_id"].startswith("stat2022:"))
@@ -59,6 +68,17 @@ class K26ReleaseTests(unittest.TestCase):
         before = rows(ROOT / "public-data" / "v1" / "metadata" / "parties.csv")
         after = rows(ROOT / "public-data" / "v2" / "metadata" / "parties.csv")
         self.assertEqual(before, [row for row in after if row["election"] != "K26"])
+
+    def test_final_register_reconciles_to_every_ordinary_ballot(self):
+        import openpyxl
+        from decimal import Decimal
+        normalize = lambda value: format(Decimal(str(value)).normalize(), "f")
+        book = openpyxl.load_workbook(ROOT / "public-data" / "v2" / "sources" / "k26" / "final_register.xlsx", read_only=True, data_only=True)
+        registered = {(str(int(row[3])), normalize(row[5])): int(row[12]) for row in book.worksheets[0].iter_rows(values_only=True) if isinstance(row[3], (int, float))}
+        book.close()
+        ballots = rows(ROOT / "public-data" / "v2" / "ballots" / "k26.csv")
+        ordinary = {(row["source_locality_code"], normalize(row["source_kalpi"])): int(row["eligible_voters"]) for row in ballots if row["is_envelope"].lower() == "false"}
+        self.assertEqual(registered, ordinary)
 
 
 if __name__ == "__main__":

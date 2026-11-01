@@ -8,18 +8,19 @@ polygon aggregates, full-resolution geography packages, election and party
 metadata, row-level assignment provenance, checksums, and a machine-readable
 validation report. The ballot-table contract is schema version 2.
 
-The current data release is **v2.1**. This metadata-only update adds researched
-K26 Wikipedia links and a [25-list review](v2/metadata/party-wikipedia-reviews/k26.csv?raw=1)
-that distinguishes party articles from component-party, founder, and related-
-movement links. Deliberate blanks are recorded rather than filled with unrelated
-articles. Ballot values and geographic assignments are unchanged.
+The current data release is **v2.2**. It adds 4,081 validated, explicitly
+synthetic K26 ballot-to-area links and archives both official polling registers.
+Votes are unchanged, as are all K17-K25 ballot values and assignments. The v2.1
+[25-list Wikipedia review](v2/metadata/party-wikipedia-reviews/k26.csv?raw=1)
+is retained.
 
 K26 is the complete-count snapshot from 30 October 2026, before certification.
-Locality totals are complete. Its statistical-area assignments are deliberately
-limited to independently known single-area localities and reviewed custom
-buckets; multi-area localities remain unsplit. The pre-balance CBS workbook is
-published as unaccepted candidates, not reliable final assignments. See the
-methodology for the exact scope. The previous [v1 snapshot](v1/) is preserved.
+Locality totals are complete. Statistical-area links include independently
+known single-area localities, reviewed custom buckets, and high-confidence
+register-based inference. The pre-balance CBS workbook is not used as a final
+assignment without additional evidence. Mixed groups can be shown together on
+the website without inventing one area per ballot. See the methodology for the
+exact scope. The previous [v1 snapshot](v1/) is preserved.
 
 Read the [public data methodology](METHODOLOGY.md) for the exact assignment
 precedence, synthetic-link counts, unresolved-row policy, validation rules, and
@@ -37,7 +38,7 @@ per registered ballot letter, and both statistical-area and locality join IDs.
 
 | Election | Rows | Statistical vintage | Ballot rows | Statistical aggregates | Locality aggregates | Statistical polygons |
 |---|---:|---:|---|---|---|---|
-| K26 (2026; provisional) | 12,926 | 2022 | [CSV](v2/ballots/k26.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k26.csv?raw=1) | [CSV](v2/aggregates/localities/k26.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2022.zip?raw=1) |
+| K26 (2026) | 12,926 | 2022 | [CSV](v2/ballots/k26.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k26.csv?raw=1) | [CSV](v2/aggregates/localities/k26.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2022.zip?raw=1) |
 | K17 (2006) | 8,426 | 1995 | [CSV](v2/ballots/k17.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k17.csv?raw=1) | [CSV](v2/aggregates/localities/k17.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_1995.zip?raw=1) |
 | K18 (2009) | 9,264 | 2008 | [CSV](v2/ballots/k18.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k18.csv?raw=1) | [CSV](v2/aggregates/localities/k18.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2008.zip?raw=1) |
 | K19 (2013) | 10,109 | 2011 | [CSV](v2/ballots/k19.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k19.csv?raw=1) | [CSV](v2/aggregates/localities/k19.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
@@ -153,7 +154,8 @@ assign any ballot or change coverage. The historical map substitutions and their
 represented totals are disclosed in
 [`historical_municipality_display_fallbacks.csv`](v2/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
 
-K26 adds 145 whole-locality display fallbacks. Its source policy is recorded in
+K26 retains 52 whole-locality display fallbacks after the register-based update.
+Its source policy is recorded in
 [`k26_source_audit.json`](v2/metadata/assignment-provenance/k26_source_audit.json?raw=1)
 and its underlying assignment counts in [`coverage.csv`](v2/metadata/coverage.csv?raw=1).
 Its Sha'ar Shomron display reuses the reviewed Etz Efrayim/Sha'are Tikva union;

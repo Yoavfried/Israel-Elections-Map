@@ -759,8 +759,11 @@ def build_assignment_provenance(manifest: list[dict[str, Any]]) -> None:
         )
     copy_json_artifact(AUDIT_DIR / "k26_source_audit.json", target_dir / "k26_source_audit.json", manifest,
                        "K26 source reconciliation, certification status, and conservative area-assignment policy.")
+    copy_table(AUDIT_DIR / "k26_validated_register_links.csv", target_dir / "k26_validated_register_links.csv", manifest,
+               "assignment-provenance", "High-confidence synthetic K26 ballot links validated against official planned and final polling registers.")
     for filename in ["ballots.csv", "localities.csv", "crosswalk.xlsx", "stable_ballots.xlsx",
-                     "crosswalk_readme.pdf", "stable_ballots_readme.pdf", "parties.json", "sources.json"]:
+                     "crosswalk_readme.pdf", "stable_ballots_readme.pdf", "parties.json", "sources.json",
+                     "planned_register.xlsx", "final_register.xlsx"]:
         source = RAW_DIR / "k26" / filename
         target = OUT_ROOT / "sources" / "k26" / filename
         write_bytes(target, source.read_bytes())
@@ -898,7 +901,7 @@ def write_manifests(
             json.dumps(
                 {
                     "schema_version": 2,
-                    "data_release": "v2.1",
+                    "data_release": "v2.2",
                     "election_range": {"first": "K17", "last": "K26"},
                     "files": manifest,
                 },

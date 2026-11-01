@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sys
 import urllib.parse
 import urllib.request
@@ -19,6 +20,8 @@ SOURCES = {
     "stable_ballots_readme.pdf": CBS + "ReadMe_Stable_Kalpi_October2026.pdf",
     "parties.json": "https://elections.govmap.gov.il/data/votes/elections.json",
     "statisticalareas_demography_2025.gdb.zip": CBS + "statisticalareas_demography_2025.gdb.zip",
+    "planned_register.xlsx": "https://www.gov.il/BlobFolder/guide/cec-headquarter/he/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA%20%D7%A7%D7%9C%D7%A4%D7%99%D7%95%D7%AA%20%D7%98%D7%95%D7%A4%D7%A1%20%D7%90.xlsx",
+    "final_register.xlsx": "https://www.gov.il/BlobFolder/guide/26elections-info/he/Polling%20Station.xlsx",
 }
 OUT = RAW_DIR / "k26"
 
@@ -41,7 +44,11 @@ def main() -> None:
             path.write_bytes(data)
         data = path.read_bytes()
         rows.append({"file": name, "url": url, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
-    write_json(OUT / "sources.json", rows)
+    (OUT / "sources.json").write_text(
+        json.dumps(rows, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     geography = OUT / "geography"
     if not list(geography.glob("*.gdb")):
         ensure_dir(geography)

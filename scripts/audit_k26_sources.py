@@ -81,8 +81,13 @@ def main() -> None:
         "locality_reconciliation": "exact_for_every_party_and_core_count",
         "crosswalk_keys": len(crosswalk), "crosswalk_candidates_are_assignments": False,
         "candidate_key_types": dict(Counter(row["candidate_key_type"] for row in candidates)),
-        "area_policy": "Only independently identified single-area localities and reviewed custom buckets are mapped. Multi-area locality totals use the disclosed municipality display fallback until final balancing is audited.",
+        "area_policy": "Independently identified single-area localities and reviewed custom buckets are retained. Additional high-confidence synthetic row links are validated against the official planned and final registers. Mixed groups use the disclosed polling-group display policy; remaining unsupported localities use municipality fallbacks. Bare pre-balance crosswalk keys are never promoted on their own.",
     }
+    register_links = PROCESSED_DIR / "audits" / "k26_validated_register_links.csv"
+    if register_links.exists():
+        verified = read_csv(register_links)
+        summary["validated_register_link_rows"] = len(verified)
+        summary["validated_register_link_actual_voters"] = sum(int(row["actual_voters"]) for row in verified)
     write_json(PROCESSED_DIR / "audits" / "k26_source_audit.json", summary)
     print(summary)
 

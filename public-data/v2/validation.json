@@ -2,7 +2,7 @@
   "schema_version": 2,
   "total_ballot_rows": 109455,
   "aggregate_joins": {
-    "geographic_aggregate_rows": 36284,
+    "geographic_aggregate_rows": 37592,
     "missing_aggregate_geometry_ids": 0
   },
   "elections": [
@@ -227,13 +227,14 @@
       "rows": 12926,
       "party_columns": 38,
       "stat_area_vintage": 2022,
-      "statistically_mapped_rows": 1783,
+      "statistically_mapped_rows": 5864,
       "reconstructed_stat_assignment_rows": 0,
       "reconstructed_stat_assignment_actual_voters": 0,
-      "synthetic_assignment_rows": 0,
-      "synthetic_assignment_actual_voters": 0,
+      "synthetic_assignment_rows": 4081,
+      "synthetic_assignment_actual_voters": 1769051,
       "assignment_evidence_classes": {
-        "unresolved": 10157,
+        "unresolved": 6076,
+        "official_polling_register_inferred_link": 4081,
         "deterministic_single_area_locality": 1783,
         "non_geographic": 915,
         "reviewed_custom_geography": 71

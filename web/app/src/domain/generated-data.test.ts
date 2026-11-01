@@ -13,6 +13,17 @@ import {
 const dataRoot = resolve(import.meta.dirname, '..', '..', 'public', 'data', 'v2')
 
 describe('generated web data', () => {
+  it('shows K26 Tel Aviv statistical areas instead of replacing the city with one fallback', async () => {
+    const statistical = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, 'results/k26/statistical-areas.json')))
+    expect(statistical.records.some((row) => row.id === 'municipality-fallback:2022:loc:5000')).toBe(false)
+    const telAviv = statistical.records.filter((row) => row.localityId === 'loc:5000' || row.id.includes('K26:5000:'))
+    expect(telAviv.length).toBeGreaterThan(80)
+    expect(statistical.records.find((row) => row.id === 'stat2022:50000223')?.totals.actualVoters).toBe(3331)
+    expect(telAviv.some((row) => row.id.startsWith('display:polling-'))).toBe(true)
+    const locality = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, 'results/k26/localities.json')))
+    expect(locality.records.find((row) => row.id === 'loc:5000')?.totals.actualVoters).toBe(309971)
+  })
+
   it('uses the reviewed K26 colors and researched links in every results view', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const election = catalog.elections.find((entry) => entry.id === 'K26')!
@@ -595,7 +606,7 @@ describe('generated web data', () => {
   it('publishes zero-assignment result units as documented display-only totals', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedFallbackCounts: Record<string, number> = {
-      K26: 145,
+      K26: 52,
       K17: 52,
       K18: 36,
       K19: 33,
@@ -1659,6 +1670,7 @@ describe('generated web data', () => {
   it('publishes nationwide polling-group placement only where evidence qualifies', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
+      K26: 648,
       K21: 92,
       K22: 427,
       K23: 424,
@@ -1666,6 +1678,7 @@ describe('generated web data', () => {
       K25: 407,
     }
     const expectedExactClosedCounts: Record<string, number> = {
+      K26: 226,
       K21: 134,
       K22: 4,
       K23: 2,

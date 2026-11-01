@@ -10,7 +10,7 @@ but open/complete workstream declarations belong here.
 
 | Workstream | Status | Current boundary |
 |---|---|---|
-| K26 / 2026 addition | Initial complete-count snapshot implemented; area audit remains open | All 12,926 source rows reconcile exactly to 5,690,685 valid votes. National results, 120 provisional mandates, locality results, and double envelopes are included. K26 uses 2022 geography. Only 1,783 single-area ballots plus 71 established custom-bucket rows receive supported geographic assignments; 10,157 rows remain municipality-only and are displayed through 145 disclosed whole-locality fallback units. Pre-balance crosswalk candidates are archived, not accepted. The requested K26 colors and neutral defaults are approved; all 25 below-threshold lists have a documented Wikipedia research pass. Final-register balancing, certification refresh, and final K26 party-name/article selections remain open; completed K17-K25 reviews are unchanged. No K26 coalition is invented before one is formed. |
+| K26 / 2026 addition | Complete-count snapshot and register-based area display implemented; remaining evidence gaps disclosed | All 12,926 source rows reconcile exactly to 5,690,685 valid votes. National results, the 120-seat allocation, locality results, and double envelopes are included. K26 uses 2022 geography. Both official polling registers are archived; the final one reconciles exactly to all 12,018 ordinary result ballots and their eligible counts. There are 5,864 row-level statistical assignments plus 71 custom-bucket rows, including 4,081 explicit synthetic register links. Mixed results use 874 display groups (226 exact closed, 648 representative) across 91 localities and 1,766 polygon memberships. Fifty-two unsupported localities retain whole-locality fallback displays. Bare pre-balance keys remain unaccepted. K17-K25 results and assignments are unchanged. Certification refresh and final K26 party-name/article review remain open; no coalition is invented before one is formed. |
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
 | Locality-mode aggregation | Complete | Every geographic-scope result row is mapped. Twelve unsupported partial-presence cells across eight localities remain neutral under a closed policy; their effect is immaterial and no further matching work is planned. |
 | Historical statistical-area mode | Complete under the current evidence policy | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty-four high-confidence row-level continuity links are approved and labeled synthetic. The final K21-K25 display layer publishes 537 exact closed units and 1,732 disclosed representative units across 4,731 polygon-election memberships. Entirely unassigned localities use a display-only fallback. Visual refinement of all nine K17/K18 historical-composite components, all 33 effective K17 historical-identity fallback polygons, and the additional reviewed K17/K18 locality overlaps is complete. All 119 reviewed tiny West Bank proxies now have detailed display footprints; the final four use reviewed Peace Now polygons and do not alter assignments. A separate automated joined-locality display audit evaluates 175 election-specific continuity leads: 38 strict approvals are active and 137 are covered, contradicted, or unresolved; these never change ballot-level area assignments. A polling-register safety audit rejects 38 false K24 row-level stable-ballot candidates: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their complete final results publish only through reviewed exact closed area sets. All nine specific ordinary crosswalk omissions are likewise resolved at exact set level, including K25 Daliyat ballot 23; no internal area split is invented. Remaining source limitations have settled display and publication rules and are not an active repair queue. |
@@ -20,7 +20,7 @@ but open/complete workstream declarations belong here.
 | UX and accessibility | Complete for the current desktop and portrait-mobile scope | Bilingual desktop and portrait-mobile behavior is active, including document-level direction, properly shaped Hebrew/Arabic vector labels, a top-bar accessibility control, compact mobile navigation and selectors, a persistent map viewport, keyboard-aware search, closable result sheets, and short-screen scrolling that keeps the selected geography title visible. The map uses the portfolio favicon and the browser-tab title "Israeli Election Map" in both UI languages. Landscape-phone support is outside the agreed scope. |
 | National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K26 election with official national votes, election-specific threshold, mandates, current color, and separate Hebrew/English Wikipedia controls. K26 uses the normal election label and results subtitle without a public provisional/certification badge; archived snapshot provenance is unchanged. The 14 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
 | Product features | Complete for the current scope | Election-aware bilingual geography and numbered-address search, national results, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented on desktop and portrait mobile. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
-| Public data distribution | Implemented | `public-data/v2` is data release v2.1 with schema version 2 and 125 manifest-listed files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. The preceding v1 snapshot is preserved. Data releases use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
+| Public data distribution | Implemented | `public-data/v2` is data release v2.2 with schema version 2 and 128 manifest-listed files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. The preceding v1 snapshot is preserved. Data releases use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
 | Public repository hardening | Implemented | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The app links directly to this repository for downloads, sources, methodology, and legal notices, and publishes a bilingual privacy notice for current network and browser-storage behavior. Rebuilding the private-input pipeline from a fresh clone, hosted CI, continuous performance monitoring, and duplicate in-app Sources/Legal pages are not public-data deliverables. |
 | Production website launch | Implemented | The locally compiled deployment is live at `https://yoavfried.com/isr-electionmap`. Cloudflare Workers Static Assets hosts the application and a selective Worker handles SEO routes; the owned-domain subpath proxies to that origin. No paid database or object storage is required. |
 | SEO and discoverability | Implemented; submission pending | Worker-rendered overview, feature overview, party-comparison, coalition, election-specific single-party, 2026 results, historical-election, locality, and statistical-area pages are available in Hebrew, English, French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and Polish. Every language has equivalent descriptions, initial HTML, complete Open Graph/social metadata, canonical and reciprocal hreflang links, WebApplication/WebPage/Dataset structured data as appropriate, exact map deep links including party selections, real 404s, and split sitemaps. Deliberately, arbitrary party-pair combinations do not create indexable pages. Google Search Console verification/submission, the canonical host's root `robots.txt` sitemap declaration, and post-indexing performance review remain operational launch tasks. |
@@ -28,7 +28,7 @@ but open/complete workstream declarations belong here.
 
 ## Public Data Release
 
-The committed `public-data/v2` release (data version v2.1) can be used without the private working
+The committed `public-data/v2` release (data version v2.2) can be used without the private working
 data. It includes:
 
 - ten ballot-row CSVs covering all 109,455 normalized rows;
@@ -36,27 +36,26 @@ data. It includes:
 - full-resolution 1995, 2008, 2011, and 2022 statistical-area packages;
 - current locality, reviewed composite-locality, and custom-geography packages;
 - direct `geography_id` joins, party/election metadata, checksums, and validation;
-- 38 machine-readable provenance and audit artifacts under
+- 39 machine-readable provenance and audit artifacts under
   `metadata/assignment-provenance/`.
 
-The v2 manifest lists 125 files, including the unmodified K26 source snapshot
-and the 25-list K26 Wikipedia review.
+The v2 manifest lists 128 files, including the unmodified K26 source snapshot,
+both polling registers, the validated-link table, and the Wikipedia review.
 The preceding `public-data/v1` release is preserved. K26 is a complete-count,
 pre-certification snapshot dated 2026-10-30; it is not described as certified.
 
-K26's incomplete statistical-area display is an integration gap, not missing
-2022 polygon files: those are loaded. The current assignment policy withholds
-unvalidated pre-balance ballot keys, and the polling-register linkage audit is
-configured only for K20-K25. Adding and validating K26 in that workflow is still
-required before its multi-area municipality fallbacks can be split. Removing
-the public provisional label does not change these assignments or source metadata.
+K26 now participates in the register-linkage and mixed-group display workflow
+using 2022 geometry. Matching uses official site identity or a unique normalized
+polling-place identity, not a reused ballot number alone. Individual area links
+are labeled inferred; mixed groups retain directional uncertainty notices.
+Election-scoped rebuild options preserve previously reviewed elections.
 
 `public-data/METHODOLOGY.md` now states the exact assignment precedence,
 synthetic-link counts, unresolved-row policy, validation rules, and audit path
 under the MIT data licence.
 
-The release marks 164 ballot-to-area links as synthetic links, representing
-52,804 actual voters. The ballot rows and votes themselves are never synthetic:
+The release marks 4,245 ballot-to-area links as synthetic links, representing
+1,821,855 actual voters. The ballot rows and votes themselves are never synthetic:
 
 | Evidence | Rows | Actual voters |
 |---|---:|---:|
@@ -64,7 +63,8 @@ The release marks 164 ballot-to-area links as synthetic links, representing
 | Reviewed exact ArcGIS residual inference | 9 | 3,599 |
 | Reviewed cross-election correction | 5 | 2,024 |
 | Reviewed polling-register continuity | 54 | 19,420 |
-| **Total** | **164** | **52,804** |
+| K26 planned/final register inference | 4,081 | 1,769,051 |
+| **Total** | **4,245** | **1,821,855** |
 
 The separate 74 K23 AGS assignments, representing 29,685 actual voters, are
 direct official evidence and are therefore not marked synthetic. Users can
@@ -81,10 +81,10 @@ areas because its official crosswalk still targets 2011.
 
 Across K17-K25, 5,583 rows representing 2,086,436 actual voters remain
 without a defensible statistical-area target. Supported statistical-mode voter
-coverage is 94.00% for those elections. K26 currently has 14.44% supported
-statistical/custom coverage; its remaining geographic votes are visible as
-disclosed municipality totals, not claimed area assignments. Locality coverage
-is 100% in every election.
+coverage is 94.00% for those elections. K26 has 48.05% row-level
+statistical/custom coverage, with additional votes shown through disclosed
+mixed-group displays. A display-group total does not assign each contributing
+ballot to one polygon. Locality coverage is 100% in every election.
 
 | Election | Vintage | Statistical-area rows | Custom rows | Pending rows | Pending actual voters | Supported voter share |
 |---|---:|---:|---:|---:|---:|---:|
@@ -97,8 +97,9 @@ is 100% in every election.
 | K23 | 2011 | 10,007 | 0 | 616 | 295,946 | 93.09% |
 | K24 | 2011 | 11,213 | 0 | 906 | 219,524 | 94.53% |
 | K25 | 2011 | 10,893 | 0 | 806 | 259,533 | 94.01% |
+| K26 | 2022 | 5,864 | 71 | 6,076 | 2,734,670 | 48.05% |
 
-The unresolved rows are classified rather than silently estimated:
+The K17-K25 unresolved rows are classified rather than silently estimated:
 
 | Current explanation | Rows |
 |---|---:|

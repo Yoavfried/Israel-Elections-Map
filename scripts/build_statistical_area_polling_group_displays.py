@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import sys
@@ -14,6 +15,7 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import mapping
 from shapely.ops import unary_union
+from pipeline_common import preserve_other_elections
 
 from build_public_outputs import (
     NUMERIC_CORE,
@@ -696,6 +698,9 @@ def build_election(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--election")
+    args = parser.parse_args()
     with CONFIG_PATH.open(encoding="utf-8-sig", newline="") as handle:
         configured_groups = list(csv.DictReader(handle))
     if not configured_groups:
@@ -707,6 +712,8 @@ def main() -> None:
             configured_groups,
             review_groups,
         )
+    if args.election:
+        configured_groups = [row for row in configured_groups if clean(row["election"]) == args.election]
 
     display_ids = [clean(row["display_geography_id"]) for row in configured_groups]
     duplicates = sorted(
@@ -721,6 +728,9 @@ def main() -> None:
     if source_geometry.crs is None:
         source_geometry = source_geometry.set_crs("EPSG:4326")
     source_geometry = source_geometry.to_crs("EPSG:4326")
+    current_geometry = gpd.read_file(SOURCE_GEOMETRY_PATH.with_name("statistical_areas_2022.display.simplified.geojson"), engine="pyogrio").to_crs("EPSG:4326")
+    current_geometry["stat_area_number"] = current_geometry["stat_2022"]
+    source_geometry = pd.concat([source_geometry, current_geometry], ignore_index=True)
     geometry_by_id = source_geometry.set_index("stat_area_id", drop=False)
 
     groups_by_scope: dict[tuple[str, str], list[dict[str, str]]] = defaultdict(list)
@@ -801,6 +811,11 @@ def main() -> None:
         "name": "statistical_area_polling_group_displays",
         "features": geometry_features,
     }
+    if args.election:
+        previous = json.loads(OUTPUT_GEOMETRY_PATH.read_text(encoding="utf-8"))
+        feature_collection["features"] = [feature for feature in previous["features"] if feature["properties"]["elections"] != args.election] + geometry_features
+        metadata_rows = preserve_other_elections(OUTPUT_METADATA_PATH, metadata_rows, args.election)
+        result_rows = preserve_other_elections(OUTPUT_RESULTS_PATH, result_rows, args.election)
     OUTPUT_GEOMETRY_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_GEOMETRY_PATH.write_text(
         f"{json.dumps(feature_collection, ensure_ascii=False, separators=(',', ':'))}\n",

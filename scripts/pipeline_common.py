@@ -52,6 +52,14 @@ def read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def preserve_other_elections(path: Path, rows: list[dict[str, Any]], election: str | None) -> list[dict[str, Any]]:
+    if not election or not path.exists():
+        return rows
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        retained = [row for row in csv.DictReader(handle) if row.get("election", row.get("elections", "")) != election]
+    return retained + rows
+
+
 def normalize_spaces(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
 

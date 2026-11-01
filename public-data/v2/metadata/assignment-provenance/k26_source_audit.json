@@ -1,5 +1,5 @@
 {
-  "area_policy": "Only independently identified single-area localities and reviewed custom buckets are mapped. Multi-area locality totals use the disclosed municipality display fallback until final balancing is audited.",
+  "area_policy": "Independently identified single-area localities and reviewed custom buckets are retained. Additional high-confidence synthetic row links are validated against the official planned and final registers. Mixed groups use the disclosed polling-group display policy; remaining unsupported localities use municipality fallbacks. Bare pre-balance crosswalk keys are never promoted on their own.",
   "candidate_key_types": {
     "base_only": 4316,
     "exact": 6609,
@@ -18,5 +18,7 @@
   },
   "party_columns": 38,
   "snapshot_date": "2026-10-30",
-  "source_rows": 12926
+  "source_rows": 12926,
+  "validated_register_link_actual_voters": 1769051,
+  "validated_register_link_rows": 4081
 }

@@ -36,11 +36,12 @@ historical geometry.
 K26 uses the complete-count official snapshot published on 30 October 2026,
 before final certification. National votes, all 120 seats, double envelopes,
 and locality results are included. Its statistical geography is **2022**, not
-2011. Only single-area localities and established custom buckets currently
-receive supported area assignments; multi-area municipalities are shown as
-disclosed whole-locality fallbacks while the final ballot balancing is audited.
-The CBS pre-balance key matches are published as **unaccepted candidates**, not
-synthetic assignments. Existing K17-K25 results and assignments are unchanged.
+2011. Data v2.2 adds 4,081 high-confidence synthetic links checked against the
+official planned and final polling registers. Their method, source, and
+synthetic flag are explicit in every ballot row. Mixed final groups use the
+website's disclosed area-group displays; unsupported municipalities retain
+whole-locality fallbacks. Bare CBS pre-balance key matches remain **unaccepted
+candidates**. K17-K25 results and assignments are unchanged.
 
 Ready-to-use files are committed under [`public-data/v2`](public-data/v2/). No
 pipeline run is required.

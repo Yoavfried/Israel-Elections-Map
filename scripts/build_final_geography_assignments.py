@@ -145,6 +145,10 @@ def assignment_evidence_metadata(row: dict[str, Any]) -> dict[str, Any]:
         evidence_class = "reviewed_polling_register_continuity_inferred_link"
         confidence = "high"
         synthetic = True
+    elif method.startswith("validated_k26_register_"):
+        evidence_class = "official_polling_register_inferred_link"
+        confidence = "high"
+        synthetic = True
     elif method in {"single_historical_stat_locality", "single_stat_locality"}:
         evidence_class = "deterministic_single_area_locality"
         confidence = "high"
@@ -816,6 +820,7 @@ def main() -> None:
     k23_cec_ags_assignments = load_k23_cec_ags_assignments()
     arcgis_reconstructions = load_approved_arcgis_reconstructions()
     stable_ballot_assignments = load_stable_ballot_assignments()
+    k26_register_links = {row["source_row_uid"]: row for row in read_csv(PROCESSED_DIR / "audits" / "k26_validated_register_links.csv")}
     stat_metadata = {
         row["stat_area_id"]: row for row in read_csv(STAT_AREA_METADATA)
     }
@@ -833,6 +838,26 @@ def main() -> None:
     for row in assignment_rows:
         method = row["assignment_method"]
         historical = historical_assignments.get(row["source_row_uid"])
+
+        k26_link = k26_register_links.get(row["source_row_uid"])
+        if k26_link and method not in {"single_stat_locality", "custom_point_size_polygon", "special_non_geographic", "official_envelope"}:
+            if row["election"] != "K26" or any(
+                str(row[field]) != str(k26_link[field])
+                for field in ("source_locality_code", "source_kalpi", "eligible_voters", "actual_voters")
+            ):
+                raise ValueError(f"K26 register link source identity changed: {row['source_row_uid']}")
+            stat = stat_metadata[k26_link["stat_area_id"]]
+            if normalize_locality_code(stat["locality_code"]) != normalize_locality_code(row["source_locality_code"]):
+                raise ValueError(f"K26 register link crosses locality boundaries: {row['source_row_uid']}")
+            output.append(mapped_assignment(
+                row=row, stat_area_id=stat["stat_area_id"], vintage=2022,
+                yishuv_stat=stat["yishuv_stat_2022"], stat_area_number=stat["stat_2022"],
+                locality_code=stat["locality_code"], locality_name=stat["locality_name_he"],
+                status="statistical_area_assigned",
+                method=f"validated_k26_register_{k26_link['evidence_method']}",
+                source="CBS K26 crosswalk; CEC planned and final registers; audit=k26_validated_register_links.csv",
+            ))
+            continue
 
         override = historical_overrides.get(row["source_row_uid"])
         if override:

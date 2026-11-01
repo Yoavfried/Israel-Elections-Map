@@ -1,71 +1,20 @@
 ﻿election,stat_area_vintage,fallback_geography_id,locality_id,locality_code,locality_name,contributing_rows,contributing_kalpis,eligible_voters,actual_voters,valid_votes,invalid_votes,fallback_reason,boundary_source
-K26,2022,municipality-fallback:2022:loc:1015,loc:1015,1015,מבשרת ציון,34,34,21525,16363,16322,41,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1020,loc:1020,1020,אור עקיבא,34,34,20431,14507,14442,65,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1031,loc:1031,1031,שדרות,46,46,28473,20595,20474,121,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1034,loc:1034,1034,קריית מלאכי,33,33,19578,14619,14509,110,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1054,loc:1054,1054,תל שבע,19,19,12686,10302,10265,37,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1059,loc:1059,1059,כסיפה,17,17,11623,9977,9926,51,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1060,loc:1060,1060,לקיה,15,15,10391,8554,8529,25,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1061,loc:1061,1061,נוף הגליל,73,73,42425,26230,25961,269,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1063,loc:1063,1063,מעלות-תרשיחא,33,33,19870,13749,13632,117,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1113,loc:1113,1113,צור הדסה,11,11,6879,5392,5383,9,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1139,loc:1139,1139,כרמיאל,72,72,43159,27734,27534,200,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1161,loc:1161,1161,רהט,71,71,44768,37959,37770,189,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1192,loc:1192,1192,ערערה-בנגב,18,18,11587,9456,9428,28,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1200,loc:1200,1200,מודיעין-מכבים-רעות*,132,132,80113,63397,63276,121,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1224,loc:1224,1224,כוכב יאיר,14,14,7782,6171,6160,11,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1247,loc:1247,1247,חריש,35,35,22677,17393,17309,84,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1268,loc:1268,1268,מיתר,13,13,8564,6607,6590,17,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1286,loc:1286,1286,שגב-שלום,11,11,7365,6143,6110,33,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1292,loc:1292,1292,ג'דיידה-מכר,22,22,16241,12753,12678,75,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1296,loc:1296,1296,כסרא-סמיע,10,10,6756,4142,4092,50,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1303,loc:1303,1303,חורה,18,18,11435,9216,9165,51,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1304,loc:1304,1304,שוהם,32,32,18501,15121,15097,24,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:1309,loc:1309,1309,אלעד,42,42,27122,22956,22902,54,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1326,loc:1326,1326,"בסמ""ה",11,11,8071,6533,6504,29,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:1327,loc:1327,1327,מעלה עירון,17,17,11512,9180,9134,46,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:154,loc:154,154,תל מונד,19,19,11820,9463,9445,18,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:166,loc:166,166,גן יבנה,30,30,19836,15660,15610,50,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:168,loc:168,168,כפר יונה,34,34,21282,16731,16672,59,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:182,loc:182,182,אבן יהודה,20,20,11788,9178,9160,18,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:195,loc:195,195,קדימה-צורן,27,27,17300,13630,13597,33,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2034,loc:2034,2034,חצור הגלילית,14,14,7699,5733,5710,23,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2100,loc:2100,2100,טירת כרמל,41,41,24646,18328,18237,91,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2200,loc:2200,2200,דימונה,54,54,30758,21119,20976,143,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:229,loc:229,229,גני תקווה,30,30,18440,15029,14994,35,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2300,loc:2300,2300,קריית טבעון,29,29,16061,12070,12041,29,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:240,loc:240,240,יקנעם עילית,34,34,20559,15278,15200,78,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2400,loc:2400,2400,אור יהודה,52,52,30880,23889,23733,156,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:246,loc:246,246,נתיבות,59,59,35616,28455,28354,101,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2500,loc:2500,2500,נשר,37,37,20336,13987,13914,73,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2530,loc:2530,2530,באר יעקב,39,39,24222,19886,19829,57,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2550,loc:2550,2550,גדרה,35,35,22213,17532,17462,70,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2560,loc:2560,2560,ערד,36,36,22630,14901,14806,95,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2600,loc:2600,2600,אילת,88,88,54065,27728,27546,182,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2610,loc:2610,2610,בית שמש,156,156,97124,65804,65511,293,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2620,loc:2620,2620,קריית אונו,60,60,36260,28647,28587,60,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2630,loc:2630,2630,קריית גת,90,90,51138,37476,37231,245,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2640,loc:2640,2640,ראש העין,90,90,54059,44569,44447,122,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2650,loc:2650,2650,רמת השרון,64,64,40559,31065,31011,54,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2660,loc:2660,2660,יבנה,65,65,39980,31927,31802,125,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:2710,loc:2710,2710,אום אל-פחם,63,63,42238,33696,33532,164,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:2720,loc:2720,2720,טירה,31,31,20878,17007,16912,95,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:2730,loc:2730,2730,טייבה,46,46,33570,27077,26942,135,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:28,loc:28,28,מזכרת בתיה,19,19,12276,9868,9835,33,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:2800,loc:2800,2800,קריית שמונה,32,32,19846,12331,12259,72,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3000,loc:3000,3000,ירושלים,735,735,455862,300647,299415,1232,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:31,loc:31,31,אופקים,47,47,27648,20684,20555,129,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3570,loc:3570,3570,אריאל,28,28,17087,11578,11510,68,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3616,loc:3616,3616,מעלה אדומים,48,48,29095,21351,21274,77,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3640,loc:3640,3640,קרני שומרון,12,12,7014,5448,5440,8,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3650,loc:3650,3650,אפרת,14,14,8328,6334,6321,13,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3730,loc:3730,3730,גבעת זאב,22,22,14400,11484,11446,38,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3760,loc:3760,3760,אורנית,11,11,7249,5733,5720,13,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3780,loc:3780,3780,ביתר עילית,55,55,34945,28157,28028,129,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:3797,loc:3797,3797,מודיעין עילית,62,62,39393,33158,32938,220,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:4000,loc:4000,4000,חיפה,437,437,267725,165672,164847,825,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:4201,loc:4201,4201,מג'דל שמס,6,6,3720,1495,1485,10,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:469,loc:469,469,קריית עקרון,14,14,8246,6339,6301,38,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:473,loc:473,473,אבו סנאן,15,15,10904,7984,7912,72,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:478,loc:478,478,אכסאל,17,17,11295,9274,9231,43,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:480,loc:480,480,בית ג'ן,14,14,9800,5372,5306,66,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
@@ -77,7 +26,6 @@ K26,2022,municipality-fallback:2022:loc:492,loc:492,492,דייר חנא,12,12,84
 K26,2022,municipality-fallback:2022:loc:494,loc:494,494,דאלית אל-כרמל,20,20,14181,9544,9457,87,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:498,loc:498,498,טורעאן,16,16,11045,9138,9100,38,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:499,loc:499,499,יפיע,20,20,14839,11719,11614,105,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:5000,loc:5000,5000,תל אביב -יפו,766,766,473868,309971,309040,931,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:502,loc:502,502,ירכא,19,19,12422,7765,7652,113,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:504,loc:504,504,כאבול,13,13,9549,8193,8169,24,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:507,loc:507,507,כפר יאסיף,13,13,8459,6599,6563,36,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
@@ -86,63 +34,22 @@ K26,2022,municipality-fallback:2022:loc:510,loc:510,510,כפר מנדא,23,23,15
 K26,2022,municipality-fallback:2022:loc:516,loc:516,516,מג'ד אל-כרום,17,17,12108,10336,10297,39,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:522,loc:522,522,נחף,15,15,10163,8381,8354,27,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:529,loc:529,529,אעבלין,14,14,10352,8025,7982,43,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:53,loc:53,53,עתלית,13,13,7991,6214,6201,13,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:531,loc:531,531,עראבה,28,28,20155,16170,16137,33,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:532,loc:532,532,עין מאהל,15,15,10465,8787,8759,28,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:534,loc:534,534,עספיא,15,15,10137,7374,7326,48,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:537,loc:537,537,פוריידיס,14,14,9909,7764,7723,41,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:541,loc:541,541,ג'סר א-זרקא,15,15,10382,7352,7276,76,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:542,loc:542,542,ריינה,19,19,12792,10126,10056,70,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:565,loc:565,565,אזור,16,16,10050,7341,7301,40,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:6000,loc:6000,6000,באקה אל-גרביה,31,31,22611,18156,18034,122,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6100,loc:6100,6100,בני ברק,198,198,126100,97942,97462,480,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6200,loc:6200,6200,בת ים,216,216,129754,71633,71087,546,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:627,loc:627,627,ג'לג'וליה,11,11,7567,6357,6335,22,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:628,loc:628,628,ג'ת,14,14,9485,7333,7305,28,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6300,loc:6300,6300,גבעתיים,80,80,50889,37650,37579,71,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:634,loc:634,634,כפר קאסם,25,25,18243,15676,15616,60,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:637,loc:637,637,ערערה,24,24,15493,12314,12266,48,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:638,loc:638,638,קלנסווה,24,24,16919,13492,13425,67,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6400,loc:6400,6400,הרצלייה,157,157,96812,69085,68906,179,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6500,loc:6500,6500,חדרה,130,130,84925,58690,58351,339,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:654,loc:654,654,כפר קרע,22,22,15145,12511,12461,50,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6600,loc:6600,6600,חולון,260,260,161840,111620,111064,556,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6700,loc:6700,6700,טבריה,66,66,38154,25451,25323,128,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6800,loc:6800,6800,קריית אתא,82,82,50389,36493,36308,185,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:681,loc:681,681,גבעת שמואל,36,36,22653,17983,17944,39,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:6900,loc:6900,6900,כפר סבא,138,138,84325,63112,62920,192,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:70,loc:70,70,אשדוד,312,312,186687,127845,127121,724,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7000,loc:7000,7000,לוד,110,110,64239,45655,45317,338,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7100,loc:7100,7100,אשקלון,223,223,137440,94758,94137,621,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7200,loc:7200,7200,נס ציונה,59,59,36627,28915,28814,101,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7300,loc:7300,7300,נצרת,94,94,60548,44487,44260,227,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7400,loc:7400,7400,נתניה,335,335,214856,130245,129557,688,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:7500,loc:7500,7500,סח'נין,36,36,25311,22052,22004,48,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7600,loc:7600,7600,עכו,78,78,45652,30779,30540,239,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7700,loc:7700,7700,עפולה,81,81,50565,35827,35586,241,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7800,loc:7800,7800,פרדס חנה-כרכור,56,56,36116,27430,27357,73,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:7900,loc:7900,7900,פתח תקווה,327,327,206499,150699,149996,703,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8000,loc:8000,8000,צפת,41,41,25110,16110,16021,89,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8200,loc:8200,8200,קריית מוצקין,70,70,43292,30691,30500,191,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8300,loc:8300,8300,ראשון לציון,361,361,223020,159883,159205,678,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:831,loc:831,831,ירוחם,15,15,8475,6102,6054,48,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8400,loc:8400,8400,רחובות,187,187,118062,86675,86319,356,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8500,loc:8500,8500,רמלה,105,105,61713,44581,44211,370,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8600,loc:8600,8600,רמת גן,236,236,149635,106594,106321,273,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:8700,loc:8700,8700,רעננה,118,118,75107,53542,53414,128,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:874,loc:874,874,מגדל העמק,39,39,23412,16283,16173,110,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:8800,loc:8800,8800,שפרעם,49,49,33128,25421,25231,190,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:8900,loc:8900,8900,טמרה,39,39,26870,22559,22476,83,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9000,loc:9000,9000,באר שבע,289,289,171623,114730,113940,790,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9100,loc:9100,9100,נהרייה,100,100,61429,41568,41347,221,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9200,loc:9200,9200,בית שאן,26,26,15507,11675,11612,63,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:922,loc:922,922,רכסים,14,14,7836,6858,6825,33,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9300,loc:9300,9300,זכרון יעקב,30,30,19593,15030,14995,35,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9400,loc:9400,9400,יהוד,43,43,24921,19570,19502,68,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9500,loc:9500,9500,קריית ביאליק,64,64,39396,27559,27393,166,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9600,loc:9600,9600,קריית ים,63,63,39676,24666,24486,180,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9700,loc:9700,9700,הוד השרון,81,81,52664,41859,41771,88,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
-K26,2022,municipality-fallback:2022:loc:9800,loc:9800,9800,בנימינה-גבעת עדה*,18,18,12196,9441,9426,15,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K26,2022,municipality-fallback:2022:loc:998,loc:998,998,ביר אל-מכסור,11,11,7704,6180,6148,32,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K25,2011,municipality-fallback:2011:loc:1292,loc:1292,1292,ג'דיידה-מכר,25,25,15255,8182,8115,67,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only
 K25,2011,municipality-fallback:2011:loc:1327,loc:1327,1327,מעלה עירון,17,17,10678,4599,4542,57,no_ballot_has_a_supported_statistical_area_assignment,cbs_2022_locality_geometry_display_only

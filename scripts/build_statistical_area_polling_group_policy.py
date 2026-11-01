@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import sys
@@ -22,6 +23,7 @@ from build_statistical_area_result_aggregates import (
     METRIC_CRS,
 )
 from polling_group_flow import analyze_exact_flow
+from pipeline_common import preserve_other_elections
 from polling_group_ownership import solve_polling_group_ownership
 from polling_group_partition import (
     PartitionUnit,
@@ -1291,16 +1293,24 @@ def validate_generated_policy(
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--election")
+    args = parser.parse_args()
     sites = pd.read_csv(SITE_AUDIT_PATH, dtype=str, encoding="utf-8-sig").fillna("")
     components = pd.read_csv(
         COMPONENT_AUDIT_PATH,
         dtype=str,
         encoding="utf-8-sig",
     ).fillna("")
+    if args.election:
+        sites = sites.loc[sites["election"].eq(args.election)].copy()
+        components = components.loc[components["election"].eq(args.election)].copy()
     geometry = gpd.read_file(GEOMETRY_PATH, engine="pyogrio")
     if geometry.crs is None:
         geometry = geometry.set_crs("EPSG:4326")
     geometry = geometry.to_crs("EPSG:4326")
+    current_geometry = gpd.read_file(GEOMETRY_PATH.with_name("statistical_areas_2022.display.simplified.geojson"), engine="pyogrio").to_crs("EPSG:4326")
+    geometry = pd.concat([geometry, current_geometry], ignore_index=True)
     geometry_by_id = geometry.set_index("stat_area_id").geometry.to_dict()
 
     assignments = pd.read_csv(
@@ -1312,6 +1322,8 @@ def main() -> None:
         "stat_area_id"
     ].to_dict()
     results_by_election: dict[str, pd.DataFrame] = {}
+    current_assignments = pd.read_csv(ROOT / "data" / "processed" / "assignments" / "ballot_geography_assignments.csv", dtype=str, encoding="utf-8-sig").fillna("")
+    assignment_lookup.update(current_assignments.loc[current_assignments["election"].eq("K26")].set_index("source_row_uid")["stat_area_id"].to_dict())
     for election in sorted(set(components["election"])):
         result_frame = pd.read_csv(
             RESULTS_DIR / f"{election.lower()}_ballot_votes.csv",
@@ -2027,7 +2039,7 @@ def main() -> None:
             )
 
     continuity_policy, continuity_fallbacks, continuity_audit = (
-        build_continuity_candidates(sites, geometry_by_id, policy_rows)
+        ([], [], []) if args.election == "K26" else build_continuity_candidates(sites, geometry_by_id, policy_rows)
     )
     policy_rows.extend(continuity_policy)
     fallback_rows.extend(continuity_fallbacks)
@@ -2035,14 +2047,21 @@ def main() -> None:
 
     validate_generated_policy(policy_rows, fallback_rows, output_rows)
 
+    output_rows = preserve_other_elections(OUTPUT_PATH, output_rows, args.election)
+    policy_rows = preserve_other_elections(POLICY_PATH, policy_rows, args.election)
+    fallback_rows = preserve_other_elections(FALLBACK_PATH, fallback_rows, args.election)
+    exact_group_rows = preserve_other_elections(EXACT_GROUP_PATH, exact_group_rows, args.election)
+
     write_rows(OUTPUT_PATH, output_rows)
     write_rows(POLICY_PATH, policy_rows)
     write_rows(FALLBACK_PATH, fallback_rows, FALLBACK_FIELDS)
     write_rows(EXACT_GROUP_PATH, exact_group_rows)
     frame = pd.DataFrame(output_rows)
-    supported = frame.loc[frame["network_supported"].eq(True)].copy()
+    supported = frame.loc[frame["network_supported"].map(lambda value: clean(value).lower() == "true")].copy()
     policy_frame = pd.DataFrame(policy_rows)
     exact_frame = pd.DataFrame(exact_group_rows)
+    for field in ("stat_area_count", "polling_group_count"):
+        exact_frame[field] = pd.to_numeric(exact_frame[field])
     representative_frame = policy_frame.loc[
         ~policy_frame["review_status"].eq("approved-exact-closed")
     ].copy()
@@ -2065,7 +2084,7 @@ def main() -> None:
     summary = {
         "scope": (
             "All testable statistical-area polling networks: direct official "
-            "pre-election evidence in K21, K24, and K25; strict two-reference "
+            "pre-election evidence in K21, K24, K25, and K26; strict two-reference "
             "site continuity for consolidated subdivisions in K21-K23; "
             "site-and-ballot continuity for remaining K22-K23 groups"
         ),

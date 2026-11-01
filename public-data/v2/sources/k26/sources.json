@@ -46,5 +46,17 @@
     "file": "statisticalareas_demography_2025.gdb.zip",
     "sha256": "87f5d230693d7119df0c9393424d1c0f1a09a0cb498a37e11f6d09281cc3d84f",
     "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/statisticalareas_demography_2025.gdb.zip"
+  },
+  {
+    "bytes": 989284,
+    "file": "planned_register.xlsx",
+    "sha256": "8d119dc7d9520e026336e0e8873f3d05589b59860f447f52446d6d9fe48ac44c",
+    "url": "https://www.gov.il/BlobFolder/guide/cec-headquarter/he/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA%20%D7%A7%D7%9C%D7%A4%D7%99%D7%95%D7%AA%20%D7%98%D7%95%D7%A4%D7%A1%20%D7%90.xlsx"
+  },
+  {
+    "bytes": 907534,
+    "file": "final_register.xlsx",
+    "sha256": "efadd7743bc702208ebe3acff14d1df37b2e724b1b06b2a545b5ade7f5f993d0",
+    "url": "https://www.gov.il/BlobFolder/guide/26elections-info/he/Polling%20Station.xlsx"
   }
 ]

@@ -1,5 +1,5 @@
 ﻿election,rows,actual_voters,mapped_rows,mapped_actual_voters,stat_area_rows,custom_geography_rows,arcgis_reconstructed_rows,arcgis_reconstructed_actual_voters,stable_ballot_assigned_rows,stable_ballot_assigned_actual_voters,official_cec_ags_assigned_rows,official_cec_ags_assigned_actual_voters,reviewed_historical_override_rows,reviewed_historical_override_actual_voters,locality_mapped_rows,locality_mapped_actual_voters,statistical_area_pending_rows,statistical_area_pending_actual_voters,envelope_rows,special_non_geographic_rows,unresolved_rows,historical_unresolved_rows
-K26,12926,5716673,1854,760208,1783,71,0,0,0,0,0,0,0,0,12011,5263929,10157,4503721,908,7,10157,0
+K26,12926,5716673,5935,2529259,5864,71,0,0,0,0,0,0,0,0,12011,5263929,6076,2734670,908,7,6076,0
 K25,12545,4794593,10893,4071493,10893,0,0,0,1,490,0,0,0,0,11699,4331026,806,259533,838,8,0,806
 K24,12926,4436365,11213,3790490,11213,0,0,0,49,9714,0,0,0,0,12119,4010014,906,219524,799,8,0,906
 K23,11179,4615135,10007,3988068,10007,0,0,0,0,0,74,29685,0,0,10623,4284014,616,295946,548,8,0,616

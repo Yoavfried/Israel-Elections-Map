@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "data_release": "v2.1",
+  "data_release": "v2.2",
   "election_range": {
     "first": "K17",
     "last": "K26"
@@ -441,9 +441,9 @@
       "election": "K26",
       "stat_area_vintage": 2022,
       "format": "csv",
-      "rows_or_features": 1051,
-      "bytes": 240588,
-      "sha256": "508937deb7ee9d3c8e58c64a8e0970f9f1a0aff606f5ec5174a6804ec0295dc5",
+      "rows_or_features": 2359,
+      "bytes": 555100,
+      "sha256": "7f34c5f31e3c91c19b485384a07efd110381534b3e9538cbc97e71d12645ecd3",
       "description": "K26 statistical-areas aggregate or review table."
     },
     {
@@ -551,9 +551,9 @@
       "election": "K26",
       "stat_area_vintage": 2022,
       "format": "csv",
-      "rows_or_features": 11072,
-      "bytes": 2882762,
-      "sha256": "fdc3208b771b20a62e6f6593b660a3c4783a0b6b1db0725b40d8b81a3fcbedfc",
+      "rows_or_features": 6991,
+      "bytes": 1844957,
+      "sha256": "d2e540acc7d47b3d831e83a2922f5db8d95a716a3fad824860f056a671358198",
       "description": "K26 unresolved aggregate or review table."
     },
     {
@@ -662,8 +662,8 @@
       "stat_area_vintage": 2022,
       "format": "csv",
       "rows_or_features": 12926,
-      "bytes": 5067518,
-      "sha256": "d13b2707b2322361e26dc596185a56e9a921c2f12a78295d343af00a90868779",
+      "bytes": 5788444,
+      "sha256": "fd235642eccd0bf936c40a87eb680ca058034387073fc7e80a1a8d3f0f8e4067",
       "description": "Complete ballot-row vote table with statistical and locality join IDs."
     },
     {
@@ -904,8 +904,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 10,
-      "bytes": 1522,
-      "sha256": "c307735f153b4175d50419badb0759f8fc41e99fef556de14fb256c74a599dc8",
+      "bytes": 1521,
+      "sha256": "47178f3d26fc0f52c1372397ac7d49b19060a8ad0f36754d57bc815c0f344dce",
       "description": "Per-election row and voter coverage for final geography assignments."
     },
     {
@@ -991,9 +991,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 459,
-      "bytes": 88373,
-      "sha256": "3756735152a6729f54cf46aa65f1bab2837085216ae3284c94d9a286317267c2",
+      "rows_or_features": 366,
+      "bytes": 70175,
+      "sha256": "3f3ea4c133dd9695bf3af5a09e393d96db8b3f350556a97e340523efca48b893",
       "description": "Display-only municipality or reviewed-component totals used when no ballot has a supported statistical-area assignment."
     },
     {
@@ -1124,9 +1124,20 @@
       "stat_area_vintage": "",
       "format": "json",
       "rows_or_features": "",
-      "bytes": 734,
-      "sha256": "4be2f0a51949227e519e9df129f8988f0b24a6a6cf0390fbeaa72181c6a68d11",
+      "bytes": 1012,
+      "sha256": "88dbea5884539b44f19c5e438ce7ba9e7da631899e086b4551abf368be0ee864",
       "description": "K26 source reconciliation, certification status, and conservative area-assignment policy."
+    },
+    {
+      "path": "metadata/assignment-provenance/k26_validated_register_links.csv",
+      "category": "assignment-provenance",
+      "election": "",
+      "stat_area_vintage": "",
+      "format": "csv",
+      "rows_or_features": 4081,
+      "bytes": 490998,
+      "sha256": "8e054b26f2f3a5f0e69b7d20e53aa52bbc4df64f56c4b4565db2b32f76810610",
+      "description": "High-confidence synthetic K26 ballot links validated against official planned and final polling registers."
     },
     {
       "path": "metadata/assignment-provenance/official_historical_ballot_crosswalk.csv",
@@ -1245,8 +1256,8 @@
       "stat_area_vintage": "",
       "format": "csv",
       "rows_or_features": 10,
-      "bytes": 2585,
-      "sha256": "b6b7b32b822e92b47149d97b9f69d0923b9d07352790da404dc0a1a2ece94e99",
+      "bytes": 2583,
+      "sha256": "6929004b607b61028da835bbf2a537bea9ae5c170892dcf93db343e8c971ed84",
       "description": "Per-election statistical and locality mapping coverage."
     },
     {
@@ -1327,6 +1338,17 @@
       "description": "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json."
     },
     {
+      "path": "sources/k26/final_register.xlsx",
+      "category": "official-source-snapshot",
+      "election": "K26",
+      "stat_area_vintage": "",
+      "format": "xlsx",
+      "rows_or_features": "",
+      "bytes": 907534,
+      "sha256": "efadd7743bc702208ebe3acff14d1df37b2e724b1b06b2a545b5ade7f5f993d0",
+      "description": "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json."
+    },
+    {
       "path": "sources/k26/localities.csv",
       "category": "official-source-snapshot",
       "election": "K26",
@@ -1349,14 +1371,25 @@
       "description": "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json."
     },
     {
+      "path": "sources/k26/planned_register.xlsx",
+      "category": "official-source-snapshot",
+      "election": "K26",
+      "stat_area_vintage": "",
+      "format": "xlsx",
+      "rows_or_features": "",
+      "bytes": 989284,
+      "sha256": "8d119dc7d9520e026336e0e8873f3d05589b59860f447f52446d6d9fe48ac44c",
+      "description": "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json."
+    },
+    {
       "path": "sources/k26/sources.json",
       "category": "official-source-snapshot",
       "election": "K26",
       "stat_area_vintage": "",
       "format": "json",
       "rows_or_features": "",
-      "bytes": 2236,
-      "sha256": "7d359599aae560b9c58e91811cd2d10b1566063431f7913f12eb96448f475162",
+      "bytes": 2753,
+      "sha256": "621ec33eb9bc84fcc9bf68ac3047aa66ab77fbb2792949007b737d029e012f2a",
       "description": "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json."
     },
     {

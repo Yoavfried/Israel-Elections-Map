@@ -2,13 +2,35 @@
 
 ## K26 / 2026 Publication Policy
 
+Version v2.2 adds 4,081 high-confidence synthetic K26 ballot-to-area links,
+representing 1,769,051 actual voters, without changing any vote count or any
+K17-K25 assignment. The evidence is published in
+`v2/metadata/assignment-provenance/k26_validated_register_links.csv`.
+Both unmodified CEC registers are archived under `v2/sources/k26/`.
+
+The final register matches all 12,018 ordinary final-result ballot identities
+and eligible-voter counts exactly. Planned and final sites are linked by the
+official locality/site identifier or a unique normalized polling-place identity;
+reused ballot numbers alone do not link K26 sites. A row-level inferred link
+is accepted only when its site has one supported source area, when its unique
+source-area ballot base retains its eligible count within three, or when only
+one supported source area remains after those preserved ballots are removed.
+Unknown planned-area rows block the single-area site/residual inference, and
+ballot 990 is not promoted. No address is geocoded or used to decide which
+statistical polygon contains voters.
+
+Mixed groups do not receive invented one-area-per-ballot assignments. Their
+votes can appear on the website's disclosed polygon-group displays under the
+existing ownership and uncertainty rules, independently of the row-level
+assignment flag. Unsupported localities retain whole-locality fallbacks.
+
 Version v2.1 adds K26 party-link metadata only. The 25 below-threshold lists
 are reviewed in `v2/metadata/party-wikipedia-reviews/k26.csv`. The review records
 whether each link is a dedicated party article, a component-party article, a
 founder/leader page, or a related political movement. A blank means that no
 useful verified link was accepted; it is not a claim that no article could ever
-exist. K17-K25 party metadata, all ballot values, and all geographic assignments
-remain unchanged. Website colors are not part of the data release.
+exist. That metadata-only release did not alter ballot values or assignments.
+Website colors are not part of the data release.
 
 Release v2.0 adds the official complete-count snapshot dated 2026-10-30,
 pending certification. Every original party vote, eligible-voter count, actual
@@ -19,18 +41,18 @@ the data, although the website omits them.
 
 K26 uses 2022 statistical areas. No K25/2011 assignment is carried into the
 new vintage. Independently identified single-area localities and the existing
-reviewed non-geographic/custom rules are applied. Multi-area localities do not
-receive an unverified internal split: their totals remain municipality-only
-and the website displays the whole municipality with its standard disclosure.
-This does not make the underlying statistical assignment complete.
+reviewed non-geographic/custom rules are applied. The validated register-based
+rules above add supported multi-area links; remaining rows retain their
+locality and an explicit unresolved reason. This does not make every ballot's
+statistical assignment complete.
 
 The CBS K26 workbook was prepared before final balancing. The exported
 `k26_crosswalk_candidates.csv` distinguishes exact, base-only, and missing keys;
 **none of those candidates is accepted as an assignment**. A single-area
 locality may independently be mapped to the same area, without relying on its
 candidate key. The archived stable-ballot workbook likewise does not authorize
-a transfer across statistical-area vintages. Final-register composition
-validation is required before activating more detailed K26 assignments.
+a transfer across statistical-area vintages. More detailed assignments instead
+require the separate register validation described above.
 
 Six missing exact-ID 2022 areas/localities were supplemented from the official
 CBS 2025 demographic publication (`STAT22` / `YISHUV_STAT22`). Existing
@@ -104,7 +126,7 @@ that station live in the address's statistical area.
 
 ## Inferred Links
 
-The release marks 164 ballot-to-area links as inferred. The vote rows remain
+The release marks 4,245 ballot-to-area links as inferred. The vote rows remain
 official; only their geographic link is synthetic.
 
 | Evidence class | Rows | Actual voters |
@@ -113,7 +135,8 @@ official; only their geographic link is synthetic.
 | Reviewed exact ArcGIS residual inference | 9 | 3,599 |
 | Reviewed cross-election correction | 5 | 2,024 |
 | Reviewed polling-register continuity | 54 | 19,420 |
-| **Total** | **164** | **52,804** |
+| K26 planned/final polling-register inference | 4,081 | 1,769,051 |
+| **Total** | **4,245** | **1,821,855** |
 
 The separate 74 K23 AGS links, representing 29,685 actual voters, are direct
 official evidence and are not marked synthetic.
@@ -131,8 +154,8 @@ To analyze only direct assignments, filter
 
 ## Explicit Unresolved Rows
 
-The release leaves 5,583 rows without a statistical-area target rather than
-guessing:
+Across K17-K25, the release leaves 5,583 rows without a statistical-area target
+rather than guessing:
 
 | Source limitation | Rows |
 |---|---:|
@@ -146,6 +169,9 @@ guessing:
 
 These rows are available under `v2/aggregates/unresolved/` and retain their
 locality result. They are not counted as statistical-area assignments.
+
+K26 separately retains 6,076 geographic-scope rows without a row-level area
+assignment. Mixed-group map displays do not silently populate those blank IDs.
 
 Row-level unresolved does not always mean map-level missing. Thirty-eight K24
 mixed-batch rows and nine specific omitted rows have reviewed exact set-level

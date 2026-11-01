@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import unicodedata
@@ -13,6 +14,7 @@ if LOCAL_AUDIT_PYTHON.exists():
     sys.path.insert(0, str(LOCAL_AUDIT_PYTHON))
 
 import pandas as pd
+from pipeline_common import preserve_other_elections
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +48,7 @@ class Source:
     filename: str
     layout: Layout
     kind: str = "excel"
+    sheet_name: str = "DataSheet"
 
 
 @dataclass(frozen=True)
@@ -53,9 +56,18 @@ class ElectionSources:
     planned: Source
     final: Source | None
     evidence: str
+    vintage: int = 2011
+    strict_balancing: bool = False
 
 
 SOURCES = {
+    "K26": ElectionSources(
+        planned=Source("k26/planned_register.xlsx", Layout(2, 3, 4, 5, 6, 7, 13), sheet_name="רשימת קלפיות"),
+        final=Source("k26/final_register.xlsx", Layout(3, 4, 5, 6, 7, 8, 12), sheet_name="קובץ קלפיות"),
+        evidence="official_pre_and_post_balance_registers",
+        vintage=2022,
+        strict_balancing=True,
+    ),
     "K20": ElectionSources(
         planned=Source(
             "archive_knesset20_tell_the_polls_9_3.xls",
@@ -227,7 +239,7 @@ def read_source(source: Source) -> pd.DataFrame:
     if source.kind == "csv":
         frame = pd.read_csv(path, dtype=str, encoding="cp1255").fillna("")
     else:
-        frame = pd.read_excel(path, sheet_name="DataSheet", dtype=str).fillna("")
+        frame = pd.read_excel(path, sheet_name=source.sheet_name, dtype=str).fillna("")
 
     layout = source.layout
     output = pd.DataFrame(
@@ -310,7 +322,7 @@ def unique_sets(
 
 
 def link_site_components(
-    planned: pd.DataFrame, final: pd.DataFrame
+    planned: pd.DataFrame, final: pd.DataFrame, *, link_ballot_bases: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     planned = planned.copy()
     final = final.copy()
@@ -325,7 +337,7 @@ def link_site_components(
 
     planned_sites_by_base = unique_sets(planned, "ballot_base", "site_key")
     final_sites_by_base = unique_sets(final, "ballot_base", "site_key")
-    for base in sorted(set(planned_sites_by_base) & set(final_sites_by_base)):
+    for base in sorted(set(planned_sites_by_base) & set(final_sites_by_base)) if link_ballot_bases else []:
         planned_sites = planned_sites_by_base[base]
         final_sites = final_sites_by_base[base]
         if len(planned_sites) == 1:
@@ -381,8 +393,34 @@ def balance_class(difference: int, planned: int) -> str:
     return "mismatch"
 
 
+def preserved_base_keys(comparison: pd.DataFrame, *, strict_balancing: bool) -> set[str]:
+    unsplit = comparison["planned_has_unsplit"].astype(int).eq(1) & comparison["final_has_unsplit"].astype(int).eq(1)
+    if strict_balancing:
+        unsplit[:] = False
+    return set(comparison.loc[
+        comparison["stat_area_count"].eq(1) & (unsplit | comparison["difference"].abs().le(3)),
+        "ballot_base",
+    ])
+
+
+def k26_crosswalk() -> pd.DataFrame:
+    frame = pd.read_excel(RAW / "k26" / "crosswalk.xlsx", sheet_name="kalpi_October2026_stat2022", header=None)
+    frame = frame.loc[pd.to_numeric(frame.iloc[:, 0], errors="coerce").notna()].copy()
+    return pd.DataFrame({
+        "election": "K26",
+        "locality_code": frame.iloc[:, 0].map(lambda value: str(int(value))),
+        "locality_name": frame.iloc[:, 1].map(clean),
+        "ballot_number": frame.iloc[:, 2].map(lambda value: str(int(value))),
+        "stat_area_id": frame.iloc[:, 4].map(lambda value: f"stat2022:{int(value)}"),
+    })
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--election", choices=sorted(SOURCES))
+    args = parser.parse_args()
+    selected_sources = {key: value for key, value in SOURCES.items() if not args.election or key == args.election}
     AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 
     crosswalk = pd.read_csv(
@@ -390,6 +428,7 @@ def main() -> None:
         dtype=str,
         encoding="utf-8-sig",
     ).fillna("")
+    crosswalk = pd.concat([crosswalk, k26_crosswalk()], ignore_index=True)
     crosswalk["locality_code"] = crosswalk["locality_code"].map(clean)
     crosswalk["ballot_base"] = crosswalk["ballot_number"].map(ballot_base)
 
@@ -402,19 +441,13 @@ def main() -> None:
         "stat_area_id"
     ].to_dict()
 
-    metadata = pd.read_csv(
-        PROCESSED / "geographies" / "statistical_areas_2011.metadata.csv",
-        dtype=str,
-        encoding="utf-8-sig",
-    ).fillna("")
-    metadata["locality_code"] = metadata["locality_code"].map(clean)
-    planned_area_reviews = load_planned_area_reviews(metadata)
-    locality_area_counts = metadata.groupby("locality_code")[
-        "stat_area_id"
-    ].nunique()
-    multi_area_localities = set(locality_area_counts[locality_area_counts > 1].index)
+    metadata_by_vintage = {
+        vintage: pd.read_csv(PROCESSED / "geographies" / f"statistical_areas_{vintage}.metadata.csv", dtype=str, encoding="utf-8-sig").fillna("")
+        for vintage in {source.vintage for source in SOURCES.values()}
+    }
+    planned_area_reviews = load_planned_area_reviews(pd.concat(list(metadata_by_vintage.values())))
     public_area_ids: dict[str, set[str]] = {}
-    for election in SOURCES:
+    for election in selected_sources:
         public = pd.read_csv(
             PROCESSED
             / "public"
@@ -428,8 +461,13 @@ def main() -> None:
     site_rows: list[dict[str, Any]] = []
     area_context: dict[tuple[str, str, str], dict[str, Any]] = {}
     ambiguous_edges: list[dict[str, Any]] = []
+    k26_links: list[dict[str, Any]] = []
 
-    for election, config in SOURCES.items():
+    for election, config in selected_sources.items():
+        metadata = metadata_by_vintage[config.vintage]
+        known_area_ids = set(metadata["stat_area_id"])
+        locality_area_counts = metadata.groupby("locality_code")["stat_area_id"].nunique()
+        multi_area_localities = set(locality_area_counts[locality_area_counts > 1].index)
         planned_all = read_source(config.planned)
         final_all = (
             planned_all.copy()
@@ -459,6 +497,17 @@ def main() -> None:
         result_rows["current_stat_area_id"] = result_rows["source_row_uid"].map(
             assignment_lookup
         ).fillna("")
+        if config.strict_balancing:
+            ordinary = result_rows.loc[result_rows["is_envelope"].str.lower().eq("false")]
+            registered = final_all.set_index(["locality_code", "source_kalpi"])["eligible"]
+            if not registered.index.is_unique:
+                raise ValueError("K26 final register has duplicate ballot keys")
+            expected = ordinary.set_index(["source_locality_code", "source_kalpi"])["eligible_voters"]
+            if set(expected.index) != set(registered.index) or not expected.eq(registered.reindex(expected.index)).all():
+                raise ValueError("K26 final register must reconcile exactly to every ordinary result ballot and eligible count")
+            result_rows = ordinary.loc[ordinary["ballot_base"].ne("990")].copy()
+            planned_all = planned_all.loc[planned_all["ballot_base"].ne("990")].copy()
+            final_all = final_all.loc[final_all["ballot_base"].ne("990")].copy()
 
         locality_codes = sorted(
             (
@@ -528,6 +577,8 @@ def main() -> None:
                 if len(area_ids) == 1
                 and ballot in set(locality_results["source_kalpi"])
             }
+            if config.strict_balancing:
+                exact_direct_area = {}
             locality_results["exact_direct_area_id"] = locality_results[
                 "source_kalpi"
             ].map(exact_direct_area).fillna("")
@@ -547,7 +598,7 @@ def main() -> None:
                 )
             ].copy()
             planned, final_register = link_site_components(
-                planned, linkable_final_register
+                planned, linkable_final_register, link_ballot_bases=not config.strict_balancing
             )
             locality_results = result_site(locality_results, final_register)
             active_result_bases = set(locality_results["ballot_base"])
@@ -652,19 +703,7 @@ def main() -> None:
                     base_comparison["final_eligible"]
                     - base_comparison["planned_eligible"]
                 )
-                preserved_bases = set(
-                    base_comparison.loc[
-                        base_comparison["stat_area_count"].eq(1)
-                        & (
-                            (
-                                base_comparison["planned_has_unsplit"].astype(int).eq(1)
-                                & base_comparison["final_has_unsplit"].astype(int).eq(1)
-                            )
-                            | base_comparison["difference"].abs().le(3)
-                        ),
-                        "ballot_base",
-                    ]
-                )
+                preserved_bases = preserved_base_keys(base_comparison, strict_balancing=config.strict_balancing)
 
                 direct_bases: set[str] = set()
                 for base, final_base_rows in final_site.groupby("ballot_base"):
@@ -694,6 +733,33 @@ def main() -> None:
                         direct_bases.add(clean(base))
                 preserved_bases.update(direct_bases)
 
+                if config.strict_balancing:
+                    site_areas = set(planned_site["stat_area_id"]) - {""}
+                    unknown = planned.loc[planned["site_component"].eq(component), "stat_area_id"].eq("").any()
+                    for final_row in final_site.to_dict("records"):
+                        if len(site_areas) == 1 and not unknown:
+                            target = next(iter(site_areas))
+                            link_method = "single_area_polling_site"
+                        elif final_row["ballot_base"] in preserved_bases:
+                            target = clean(planned_by_base.set_index("ballot_base").loc[final_row["ballot_base"], "stat_area_id"])
+                            link_method = "balanced_ballot_within_polling_site"
+                        else:
+                            continue
+                        if target not in known_area_ids:
+                            continue
+                        k26_links.append({
+                            "source_row_uid": final_row["source_row_uid"],
+                            "election": election,
+                            "source_locality_code": locality_code,
+                            "source_kalpi": final_row["source_kalpi"],
+                            "eligible_voters": final_row["eligible_voters"],
+                            "actual_voters": final_row["actual_voters"],
+                            "stat_area_id": target,
+                            "evidence_method": link_method,
+                            "source_site_component": component,
+                            "source_evidence": config.evidence,
+                        })
+
                 residual_planned = planned_site.loc[
                     ~planned_site["ballot_base"].isin(preserved_bases)
                 ]
@@ -718,6 +784,23 @@ def main() -> None:
                 residual_balance = balance_class(
                     difference, planned_residual_eligible
                 )
+                if config.strict_balancing and len(all_area_ids) > 1 and len(residual_area_ids) == 1:
+                    unknown = planned.loc[planned["site_component"].eq(component), "stat_area_id"].eq("").any()
+                    target = residual_area_ids[0]
+                    if not unknown and target in known_area_ids:
+                        for final_row in residual_final.to_dict("records"):
+                            k26_links.append({
+                                "source_row_uid": final_row["source_row_uid"],
+                                "election": election,
+                                "source_locality_code": locality_code,
+                                "source_kalpi": final_row["source_kalpi"],
+                                "eligible_voters": final_row["eligible_voters"],
+                                "actual_voters": final_row["actual_voters"],
+                                "stat_area_id": target,
+                                "evidence_method": "single_area_register_residual",
+                                "source_site_component": component,
+                                "source_evidence": config.evidence,
+                            })
                 current_hosts = sorted(
                     set(residual_final["current_stat_area_id"]) - {""}
                 )
@@ -920,8 +1003,13 @@ def main() -> None:
                     if area_id in residual_area_ids and len(residual_area_ids) > 1:
                         context["ambiguous_site_ids"].add(site_id)
 
-    site_frame = pd.DataFrame(site_rows)
+    site_frame = pd.DataFrame(preserve_other_elections(OUTPUT_SITES, site_rows, args.election))
     site_frame.to_csv(OUTPUT_SITES, index=False, encoding="utf-8-sig")
+    if "K26" in selected_sources:
+        link_frame = pd.DataFrame(k26_links)
+        if link_frame.empty or link_frame["source_row_uid"].duplicated().any():
+            raise ValueError("K26 register links are empty or claim a result ballot twice")
+        link_frame.to_csv(AUDIT_DIR / "k26_validated_register_links.csv", index=False, encoding="utf-8-sig")
 
     component_rows: list[dict[str, Any]] = []
     component_by_area: dict[tuple[str, str, str], str] = {}
@@ -1057,7 +1145,9 @@ def main() -> None:
                 }
             )
 
-    component_frame = pd.DataFrame(component_rows)
+    component_frame = pd.DataFrame(preserve_other_elections(OUTPUT_COMPONENTS, component_rows, args.election))
+    for column in ("area_count", "eligible_voters_in_ambiguous_sites", "actual_voters_in_ambiguous_sites"):
+        component_frame[column] = pd.to_numeric(component_frame[column])
     component_frame.to_csv(
         OUTPUT_COMPONENTS, index=False, encoding="utf-8-sig"
     )
@@ -1090,7 +1180,7 @@ def main() -> None:
                 ],
             }
         )
-    area_frame = pd.DataFrame(area_rows)
+    area_frame = pd.DataFrame(preserve_other_elections(OUTPUT_AREAS, area_rows, args.election))
     area_frame.to_csv(OUTPUT_AREAS, index=False, encoding="utf-8-sig")
 
     summary = {

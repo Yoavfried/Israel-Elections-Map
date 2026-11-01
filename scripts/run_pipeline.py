@@ -26,6 +26,8 @@ STAGES = [
     ["scripts/audit_historical_assignment_gaps.py"],
     ["scripts/build_public_outputs.py"],
     ["scripts/audit_statistical_area_polling_group_evidence.py"],
+    ["scripts/build_final_geography_assignments.py"],
+    ["scripts/build_public_outputs.py"],
     ["scripts/audit_stable_ballot_site_safety.py"],
     ["scripts/build_statistical_area_polling_group_policy.py"],
     ["scripts/build_reviewed_locality_statistical_displays.py"],
