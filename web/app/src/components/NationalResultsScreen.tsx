@@ -34,7 +34,7 @@ export function NationalResultsScreen({
       <div className="national-results-toolbar">
         <div>
           <h2 id="national-results-title">{translate(language, 'nationalResultsTitle')}</h2>
-          <p>{translate(language, electionId === 'K26' ? 'nationalResultsProvisionalSubtitle' : 'nationalResultsSubtitle')}</p>
+          <p>{translate(language, 'nationalResultsSubtitle')}</p>
         </div>
         <label className="national-election-field">
           <span>{translate(language, 'election')}</span>

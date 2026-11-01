@@ -16,6 +16,7 @@ describe('generated web data', () => {
   it('uses the reviewed K26 colors and researched links in every results view', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const election = catalog.elections.find((entry) => entry.id === 'K26')!
+    expect(election.label).toEqual({ en: 'Knesset 26 · 2026', he: 'הכנסת ה־26 · 2026' })
     const expectedColors = { 'דרך': '#7B2CBF', 'רק': '#B54E12', 'די': '#7B2CBF', 'ך': '#B08D00', 'זך': '#8B5A2B', 'נר': '#202020', 'ני': '#4B5563' }
     for (const mode of ['national', 'locality', 'statistical-area'] as const) {
       const payload = await readJson(resolve(dataRoot, election.resultUrls[mode])) as { parties: Array<{ id: string; color: string; colorStatus: string; wikipedia: { he: string | null; en: string | null } }> }

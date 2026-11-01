@@ -140,6 +140,8 @@ describe('multilingual SEO routes', () => {
     expect(response.status).toBe(200)
     const html = await response.text()
     expect(html).toContain(K26_PUBLICATION_STATUS[code])
+    expect(html).not.toContain('not yet certified')
+    expect(html).not.toContain('טרם אושרו סופית')
     expect(html).not.toContain('/elections/2026/coalition')
   })
 

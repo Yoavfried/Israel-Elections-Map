@@ -47,7 +47,7 @@ pipeline run is required.
 
 | Election | Full ballot-row CSV | Statistical-area results | Locality results |
 |---|---|---|---|
-| K26 (2026; provisional) | [Download](public-data/v2/ballots/k26.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k26.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k26.csv?raw=1) |
+| K26 (2026) | [Download](public-data/v2/ballots/k26.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k26.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k26.csv?raw=1) |
 | K17 (2006) | [Download](public-data/v2/ballots/k17.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k17.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k17.csv?raw=1) |
 | K18 (2009) | [Download](public-data/v2/ballots/k18.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k18.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k18.csv?raw=1) |
 | K19 (2013) | [Download](public-data/v2/ballots/k19.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k19.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k19.csv?raw=1) |
