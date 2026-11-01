@@ -105,6 +105,7 @@ describe('multilingual SEO routes', () => {
     const html = await response.text()
     expect(response.status).toBe(200)
     expect(html).toContain(`<html lang="${hreflang}"`)
+    expect(html).toContain('<link rel="icon" href="/isr-electionmap/favicon.svg" type="image/svg+xml" />')
     expect(html).toContain(`rel="canonical" href="https://yoavfried.com/isr-electionmap/${code}"`)
     expect(html).toContain('<a href="https://yoavfried.com/">')
     expect(html.match(/rel="alternate" hreflang=/g)).toHaveLength(LANGUAGES.length + 1)

@@ -584,6 +584,7 @@ function renderDocument({ languageCode, suffix, title, description, body, struct
   <meta name="robots" content="${robots}" />
   <meta name="description" content="${escapeAttribute(description)}" />
   <meta name="theme-color" content="#f4f1e8" />
+  <link rel="icon" href="${APP_PATH}/favicon.svg" type="image/svg+xml" />
   <title>${escapeHtml(title)}</title>
   <link rel="canonical" href="${escapeAttribute(canonical)}" />
   ${alternates}
