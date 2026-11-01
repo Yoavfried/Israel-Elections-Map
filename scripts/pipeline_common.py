@@ -14,6 +14,7 @@ MANUAL_DIR = DATA_DIR / "manual"
 PROCESSED_DIR = DATA_DIR / "processed"
 
 ELECTIONS: dict[int, dict[str, Any]] = {
+    26: {"key": "K26", "year": 2026, "label": "Knesset 26"},
     25: {"key": "K25", "year": 2022, "label": "Knesset 25"},
     24: {"key": "K24", "year": 2021, "label": "Knesset 24"},
     23: {"key": "K23", "year": 2020, "label": "Knesset 23"},

@@ -1,0 +1,22 @@
+{
+  "area_policy": "Only independently identified single-area localities and reviewed custom buckets are mapped. Multi-area locality totals use the disclosed municipality display fallback until final balancing is audited.",
+  "candidate_key_types": {
+    "base_only": 4316,
+    "exact": 6609,
+    "none": 2001
+  },
+  "certification_status": "pending",
+  "crosswalk_candidates_are_assignments": false,
+  "crosswalk_keys": 11467,
+  "election": "K26",
+  "locality_reconciliation": "exact_for_every_party_and_core_count",
+  "national_totals": {
+    "בזב": 7331981,
+    "כשרים": 5690685,
+    "מצביעים": 5716673,
+    "פסולים": 25988
+  },
+  "party_columns": 38,
+  "snapshot_date": "2026-10-30",
+  "source_rows": 12926
+}

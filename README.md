@@ -1,7 +1,7 @@
 # Israel Election Map
 
 Bilingual interactive web application, ten-language crawlable result site, and
-reproducible data pipeline for exploring K17-K25 Knesset election results
+reproducible data pipeline for exploring K17-K26 Knesset election results
 nationally, by locality, and by election-appropriate statistical area.
 
 The map includes offline election-aware search across Hebrew and English
@@ -33,20 +33,30 @@ historical geometry.
 
 ## Download The Data
 
-Ready-to-use files are committed under [`public-data/v1`](public-data/v1/). No
+K26 uses the complete-count official snapshot published on 30 October 2026,
+before final certification. National votes, all 120 seats, double envelopes,
+and locality results are included. Its statistical geography is **2022**, not
+2011. Only single-area localities and established custom buckets currently
+receive supported area assignments; multi-area municipalities are shown as
+disclosed whole-locality fallbacks while the final ballot balancing is audited.
+The CBS pre-balance key matches are published as **unaccepted candidates**, not
+synthetic assignments. Existing K17-K25 results and assignments are unchanged.
+
+Ready-to-use files are committed under [`public-data/v2`](public-data/v2/). No
 pipeline run is required.
 
 | Election | Full ballot-row CSV | Statistical-area results | Locality results |
 |---|---|---|---|
-| K17 (2006) | [Download](public-data/v1/ballots/k17.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k17.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k17.csv?raw=1) |
-| K18 (2009) | [Download](public-data/v1/ballots/k18.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k18.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k18.csv?raw=1) |
-| K19 (2013) | [Download](public-data/v1/ballots/k19.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k19.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k19.csv?raw=1) |
-| K20 (2015) | [Download](public-data/v1/ballots/k20.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k20.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k20.csv?raw=1) |
-| K21 (April 2019) | [Download](public-data/v1/ballots/k21.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k21.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k21.csv?raw=1) |
-| K22 (September 2019) | [Download](public-data/v1/ballots/k22.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k22.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k22.csv?raw=1) |
-| K23 (2020) | [Download](public-data/v1/ballots/k23.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k23.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k23.csv?raw=1) |
-| K24 (2021) | [Download](public-data/v1/ballots/k24.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k24.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k24.csv?raw=1) |
-| K25 (2022) | [Download](public-data/v1/ballots/k25.csv?raw=1) | [Download](public-data/v1/aggregates/statistical-areas/k25.csv?raw=1) | [Download](public-data/v1/aggregates/localities/k25.csv?raw=1) |
+| K26 (2026; provisional) | [Download](public-data/v2/ballots/k26.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k26.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k26.csv?raw=1) |
+| K17 (2006) | [Download](public-data/v2/ballots/k17.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k17.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k17.csv?raw=1) |
+| K18 (2009) | [Download](public-data/v2/ballots/k18.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k18.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k18.csv?raw=1) |
+| K19 (2013) | [Download](public-data/v2/ballots/k19.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k19.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k19.csv?raw=1) |
+| K20 (2015) | [Download](public-data/v2/ballots/k20.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k20.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k20.csv?raw=1) |
+| K21 (April 2019) | [Download](public-data/v2/ballots/k21.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k21.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k21.csv?raw=1) |
+| K22 (September 2019) | [Download](public-data/v2/ballots/k22.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k22.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k22.csv?raw=1) |
+| K23 (2020) | [Download](public-data/v2/ballots/k23.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k23.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k23.csv?raw=1) |
+| K24 (2021) | [Download](public-data/v2/ballots/k24.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k24.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k24.csv?raw=1) |
+| K25 (2022) | [Download](public-data/v2/ballots/k25.csv?raw=1) | [Download](public-data/v2/aggregates/statistical-areas/k25.csv?raw=1) | [Download](public-data/v2/aggregates/localities/k25.csv?raw=1) |
 
 The ballot CSVs contain every source result row, party-vote columns, and the
 corresponding statistical-area and locality IDs. Polygon ZIPs expose the same
@@ -58,7 +68,7 @@ confidence, source, and synthetic-link flag are published on every row.
 - [Complete download index and polygon packages](public-data/README.md)
 - [Data dictionary and join examples](public-data/DATA_DICTIONARY.md)
 - [Exact assignment and validation methodology](public-data/METHODOLOGY.md)
-- [Machine-readable manifest and checksums](public-data/v1/manifest.csv?raw=1)
+- [Machine-readable manifest and checksums](public-data/v2/manifest.csv?raw=1)
 - [Data release versioning policy](docs/VERSIONING.md)
 
 Map colors, UI labels, web-only polygon transformations, and interaction
@@ -68,7 +78,7 @@ reusable data tables.
 
 ## Geographic Assignment
 
-Statistical-area assignment precedence is:
+For K17-K25, statistical-area assignment precedence is:
 
 1. official envelope or reviewed non-geographic handling;
 2. reviewed historical overrides where independent evidence disproves a direct
@@ -85,7 +95,8 @@ Statistical-area assignment precedence is:
 10. reviewed custom geography where no supported historical area exists;
 11. explicit unresolved status.
 
-Statistical mode uses 1995 areas for K17, 2008 for K18, and 2011 for K19-K25.
+Statistical mode uses 1995 areas for K17, 2008 for K18, 2011 for K19-K25,
+and 2022 for K26 under the restricted initial-publication policy above.
 K25 remains on 2011 because its official crosswalk targets that vintage;
 forcing those results onto 2022 areas would invent precision.
 
@@ -93,7 +104,7 @@ The public CBS crosswalks consistently omit some localities and individual
 ballots. The release keeps these rows explicit rather than assigning them from
 polling-place addresses. Source inventories, recurring-omission tables, and
 component-locality evidence are included under
-`public-data/v1/metadata/assignment-provenance/`.
+`public-data/v2/metadata/assignment-provenance/`.
 
 When an election/locality or reviewed K17/K18 historical component has no
 supported ballot-to-area assignment at all, the web map shows its total on a

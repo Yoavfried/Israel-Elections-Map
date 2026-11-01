@@ -1,5 +1,12 @@
 [
   {
+    "id": "K26",
+    "number": 26,
+    "statisticalAreaVintage": 2022,
+    "dateLabel": "2026",
+    "label": { "en": "Knesset 26 · 2026 (provisional)", "he": "הכנסת ה־26 · 2026 (לא סופי)" }
+  },
+  {
     "id": "K25",
     "number": 25,
     "statisticalAreaVintage": 2011,

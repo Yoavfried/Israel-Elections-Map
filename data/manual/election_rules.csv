@@ -1,4 +1,4 @@
-election,electoral_threshold_share,total_mandates,official_results_url,threshold_source_url
+﻿election,electoral_threshold_share,total_mandates,official_results_url,threshold_source_url
 K17,0.02,120,https://www.gov.il/BlobFolder/guide/election-committee-history/he/knesset17-results.pdf,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
 K18,0.02,120,https://www.gov.il/BlobFolder/guide/election-committee-history/ar/history_election-dates_knesset18-results.pdf,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
 K19,0.02,120,https://www.gov.il/BlobFolder/guide/election-committee-history/he/knesset19-results.pdf,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
@@ -8,3 +8,4 @@ K22,0.0325,120,https://votes22.bechirot.gov.il/nationalresults,https://main.knes
 K23,0.0325,120,https://votes23.bechirot.gov.il/nationalresults,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
 K24,0.0325,120,https://votes24.bechirot.gov.il/,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
 K25,0.0325,120,https://votes25.bechirot.gov.il/nationalresults,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx
+K26,0.0325,120,https://votes26.bechirot.gov.il/nationalresults,https://main.knesset.gov.il/About/Lexicon/pages/qualifying-threshold.aspx

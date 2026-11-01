@@ -6,7 +6,6 @@ import {
   ELECTIONS,
   ELECTION_BY_ID,
   ELECTION_BY_SLUG,
-  FUTURE_ELECTION,
   LANGUAGES,
   LANGUAGE_BY_CODE,
   canonicalUrl,
@@ -21,12 +20,13 @@ import {
 } from './config.mjs'
 import { electionDate, formatNumber, formatPercent, translateSeo as t } from './translations.mjs'
 import coalitionDefinitions from '../config/coalitions.json' with { type: 'json' }
+import { K26_PUBLICATION_STATUS } from './publication-status.mjs'
+const COALITION_ELECTIONS = ELECTIONS.filter((election) => coalitionDefinitions[election.id])
 
 const DATA_ROOT = 'data/v2/'
 const PORTFOLIO_URL = `${CANONICAL_ORIGIN}/`
 const REPOSITORY_URL = 'https://github.com/Yoavfried/israel-election-map'
 const VOTER_INFO_URL = 'https://www.gov.il/he/pages/26elections-info'
-const KNESSET_ELECTION_URL = 'https://m.knesset.gov.il/EN/mk/pages/elections.aspx'
 const OPEN_GRAPH_LOCALES = {
   he: 'he_IL', en: 'en_US', fr: 'fr_FR', es: 'es_ES', ru: 'ru_RU',
   zh: 'zh_CN', ar: 'ar_IL', de: 'de_DE', uk: 'uk_UA', pl: 'pl_PL',
@@ -86,9 +86,6 @@ export async function handleSeoRequest(request, { readJson }) {
   }
   if (segments[1] !== 'elections') {
     return htmlResponse(renderNotFoundPage(languageCode), 404, request.method)
-  }
-  if (segments.length === 3 && segments[2] === FUTURE_ELECTION.slug) {
-    return htmlResponse(renderFutureElectionPage(languageCode), 200, request.method)
   }
 
   const election = ELECTION_BY_SLUG.get(segments[2])
@@ -166,9 +163,7 @@ export async function handleSeoRequest(request, { readJson }) {
 }
 
 function renderHomePage(languageCode) {
-  const futureSuffix = electionSuffix(FUTURE_ELECTION)
   const electionLinks = [
-    `<li class="future-link"><a href="${escapeAttribute(canonicalUrl(languageCode, futureSuffix))}"><strong>${escapeHtml(t(languageCode, 'futureHeading'))}</strong><span>${escapeHtml(t(languageCode, 'futureBody'))}</span></a></li>`,
     ...ELECTIONS.map((election) => `<li><a href="${escapeAttribute(canonicalUrl(languageCode, electionSuffix(election)))}"><strong>${escapeHtml(electionLabel(languageCode, election))}</strong></a></li>`),
   ].join('')
   const suffix = ''
@@ -178,7 +173,7 @@ function renderHomePage(languageCode) {
         <img class="hero-background" src="${APP_PATH}/seo/map-preview.png" width="1440" height="900" alt="${escapeAttribute(t(languageCode, 'siteName'))}" />
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="hero-copy">
-          <p class="eyebrow">2006–2022</p>
+          <p class="eyebrow">2006–2026</p>
           <h1>${escapeHtml(t(languageCode, 'homeH1'))}</h1>
           <p class="lead">${escapeHtml(t(languageCode, 'homeLead'))}</p>
           <a class="primary-action" href="${escapeAttribute(mapUrl({ languageCode }))}">${escapeHtml(t(languageCode, 'openMap'))}</a>
@@ -195,7 +190,7 @@ function renderHomePage(languageCode) {
       <section class="content-band">
         <div class="section-heading"><h2>${escapeHtml(t(languageCode, 'advancedHeading'))}</h2><p>${escapeHtml(t(languageCode, 'advancedBody'))}</p></div>
         <div class="feature-grid">
-          ${featureLink(t(languageCode, 'featureCoalitionHeading'), t(languageCode, 'featureCoalitionBody'), canonicalUrl(languageCode, coalitionSuffix(ELECTIONS[0])))}
+          ${featureLink(t(languageCode, 'featureCoalitionHeading'), t(languageCode, 'featureCoalitionBody'), canonicalUrl(languageCode, coalitionSuffix(COALITION_ELECTIONS[0])))}
           ${featureLink(t(languageCode, 'featurePartyHeading'), t(languageCode, 'featurePartyBody'), mapUrl({ view: 'party-map', languageCode }))}
           ${featureLink(t(languageCode, 'featureComparisonHeading'), t(languageCode, 'featureComparisonBody'), canonicalUrl(languageCode, comparisonSuffix()))}
         </div>
@@ -225,7 +220,7 @@ function renderHomePage(languageCode) {
       name: t(languageCode, 'homeH1'), description: t(languageCode, 'homeDescription'),
       url: canonicalUrl(languageCode), inLanguage: LANGUAGE_BY_CODE.get(languageCode).hreflang,
       license: 'https://github.com/Yoavfried/israel-election-map/blob/main/LICENSE-DATA',
-      temporalCoverage: '2006/2022', spatialCoverage: 'Israel',
+      temporalCoverage: '2006/2026', spatialCoverage: 'Israel',
       creator: { '@type': 'Person', name: 'Yoav Fried' },
     },
     webApplicationStructuredData(languageCode),
@@ -238,7 +233,7 @@ function renderHomePage(languageCode) {
 
 function renderFeaturesPage(languageCode) {
   const suffix = featuresSuffix()
-  const coalitionLinks = ELECTIONS.map((election) => `
+  const coalitionLinks = COALITION_ELECTIONS.map((election) => `
     <li><a href="${escapeAttribute(canonicalUrl(languageCode, coalitionSuffix(election)))}">${escapeHtml(electionLabel(languageCode, election))}</a></li>`).join('')
   const body = `
     <main>
@@ -256,7 +251,7 @@ function renderFeaturesPage(languageCode) {
         <div class="feature-grid">
           ${featureLink(t(languageCode, 'featureFullMapHeading'), t(languageCode, 'featureFullMapBody'), mapUrl({ languageCode }))}
           ${featureLink(t(languageCode, 'featureNationalHeading'), t(languageCode, 'featureNationalBody'), mapUrl({ view: 'national', languageCode }))}
-          ${featureLink(t(languageCode, 'featureCoalitionHeading'), t(languageCode, 'featureCoalitionBody'), canonicalUrl(languageCode, coalitionSuffix(ELECTIONS[0])))}
+          ${featureLink(t(languageCode, 'featureCoalitionHeading'), t(languageCode, 'featureCoalitionBody'), canonicalUrl(languageCode, coalitionSuffix(COALITION_ELECTIONS[0])))}
           ${featureLink(t(languageCode, 'featurePartyHeading'), t(languageCode, 'featurePartyBody'), mapUrl({ view: 'party-map', languageCode }))}
           ${featureLink(t(languageCode, 'featureComparisonHeading'), t(languageCode, 'featureComparisonBody'), canonicalUrl(languageCode, comparisonSuffix()))}
         </div>
@@ -437,39 +432,6 @@ function renderPartyPage(languageCode, election, party) {
   })
 }
 
-function renderFutureElectionPage(languageCode) {
-  const suffix = electionSuffix(FUTURE_ELECTION)
-  const archive = ELECTIONS.map((election) => `<li><a href="${escapeAttribute(canonicalUrl(languageCode, electionSuffix(election)))}">${escapeHtml(electionLabel(languageCode, election))}</a></li>`).join('')
-  const body = `
-    <main>
-      ${renderBreadcrumbs(languageCode, [
-        [t(languageCode, 'breadcrumbHome'), canonicalUrl(languageCode)],
-        [t(languageCode, 'breadcrumbElections'), canonicalUrl(languageCode, suffix)],
-      ])}
-      <section class="page-intro">
-        <p class="eyebrow">${FUTURE_ELECTION.year}</p>
-        <h1>${escapeHtml(t(languageCode, 'futureH1'))}</h1>
-        <p class="lead">${escapeHtml(t(languageCode, 'futureLead'))}</p>
-      </section>
-      <section class="content-band status-band"><strong>${escapeHtml(t(languageCode, 'noResultsYet'))}</strong><p>${escapeHtml(t(languageCode, 'archiveAvailable'))}</p></section>
-      <section class="content-band split-band">
-        <div><h2>${escapeHtml(t(languageCode, 'officialVoterInfo'))}</h2><p>${escapeHtml(t(languageCode, 'whereVoteA'))}</p><p><a href="${VOTER_INFO_URL}" rel="external">${escapeHtml(t(languageCode, 'officialVoterInfo'))}</a></p></div>
-        <div><h2>${escapeHtml(t(languageCode, 'historyHeading'))}</h2><ul class="archive-links">${archive}</ul></div>
-      </section>
-      <section class="content-band source-band"><a href="${KNESSET_ELECTION_URL}" rel="external">${escapeHtml(t(languageCode, 'officialVoterInfo'))}</a></section>
-    </main>`
-  return renderDocument({
-    languageCode, suffix, title: t(languageCode, 'futureTitle'),
-    description: t(languageCode, 'futureDescription'), body,
-    structuredData: [{
-      '@context': 'https://schema.org', '@type': 'WebPage',
-      name: t(languageCode, 'futureH1'), description: t(languageCode, 'futureDescription'),
-      url: canonicalUrl(languageCode, suffix), inLanguage: LANGUAGE_BY_CODE.get(languageCode).hreflang,
-      dateModified: BUILD_DATE,
-    }],
-  })
-}
-
 function renderElectionPage(languageCode, election, nationalResults, localityResults) {
   const suffix = electionSuffix(election)
   const date = electionDate(languageCode, election)
@@ -519,7 +481,7 @@ function renderElectionPage(languageCode, election, nationalResults, localityRes
       <section class="content-band">
         <div class="section-heading"><h2>${escapeHtml(t(languageCode, 'analysisHeading'))}</h2><p>${escapeHtml(t(languageCode, 'analysisBody'))}</p></div>
         <div class="analysis-actions">
-          <a class="primary-action" href="${escapeAttribute(canonicalUrl(languageCode, coalitionSuffix(election)))}">${escapeHtml(t(languageCode, 'openCoalition'))}</a>
+          ${coalitionDefinitions[election.id] ? `<a class="primary-action" href="${escapeAttribute(canonicalUrl(languageCode, coalitionSuffix(election)))}">${escapeHtml(t(languageCode, 'openCoalition'))}</a>` : ''}
           <a href="${escapeAttribute(mapUrl({ electionId: election.id, view: 'party-comparison', languageCode, comparisonPartyIds }))}">${escapeHtml(t(languageCode, 'openComparison'))}</a>
         </div>
         <ul class="party-link-list">${partyAnalysisLinks}</ul>
@@ -608,6 +570,9 @@ function renderDocument({ languageCode, suffix, title, description, body, struct
     : ''
   const languageNavigation = LANGUAGES.map((item) => `<a href="${escapeAttribute(canonicalUrl(item.code, suffix))}" lang="${item.hreflang}"${item.code === languageCode ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</a>`).join('')
   const jsonLd = structuredData.map((item) => `<script type="application/ld+json">${safeJson(item)}</script>`).join('')
+  const content = suffix.startsWith('elections/2026')
+    ? body.replace('<main>', `<main><section class="notice-band"><p>${escapeHtml(K26_PUBLICATION_STATUS[languageCode])}</p></section>`)
+    : body
   return `<!doctype html>
 <html lang="${language.hreflang}" dir="${language.dir}">
 <head>
@@ -646,7 +611,7 @@ function renderDocument({ languageCode, suffix, title, description, body, struct
     <nav class="language-nav" aria-label="${escapeAttribute(t(languageCode, 'languageNav'))}">${languageNavigation}</nav>
     <a class="map-link" href="${escapeAttribute(mapUrl({ languageCode }))}">${escapeHtml(t(languageCode, 'openMap'))}</a>
   </header>
-  ${body}
+  ${content}
   <footer><p>${escapeHtml(t(languageCode, 'footer'))}</p><p><a href="${escapeAttribute(PORTFOLIO_URL)}">${escapeHtml(t(languageCode, 'portfolioLink'))}</a></p><p>${escapeHtml(t(languageCode, 'updated', { date: BUILD_DATE }))}</p></footer>
 </body>
 </html>`
@@ -673,7 +638,7 @@ async function renderSitemap(fileName, readJson, method) {
     }
     const nationalResults = await readJson(`${DATA_ROOT}${catalogElection.resultUrls.national}`)
     const urls = [
-      canonicalUrl(languageCode, coalitionSuffix(election)),
+      ...(coalitionDefinitions[election.id] ? [canonicalUrl(languageCode, coalitionSuffix(election))] : []),
       ...nationalResults.parties
         .filter((party) => party.votes > 0)
         .map((party) => canonicalUrl(languageCode, partySuffix(election, party.id))),
@@ -721,7 +686,6 @@ function renderCoreSitemap() {
     urls.push(canonicalUrl(language.code))
     urls.push(canonicalUrl(language.code, featuresSuffix()))
     urls.push(canonicalUrl(language.code, comparisonSuffix()))
-    urls.push(canonicalUrl(language.code, electionSuffix(FUTURE_ELECTION)))
     for (const election of ELECTIONS) {
       urls.push(canonicalUrl(language.code, electionSuffix(election)))
     }

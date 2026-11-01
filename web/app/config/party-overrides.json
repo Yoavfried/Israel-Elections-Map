@@ -11,6 +11,10 @@
     "ל": "#5DADE2"
   },
   "ignoredResultColumns": {
+    "K26": {
+      "כן": "Withdrawn Blue and White list; every source row contains zero votes.",
+      "צבי": "Withdrawn Ahi list; every source row contains zero votes."
+    },
     "K18": {
       "פח": "The K18 source carries a zero-filled column for Mahapach BaHinuch, but the list withdrew and did not run; all 9,264 source rows contain zero.",
       "ת. עדכון": "Trailing K18 source metadata field whose value is not part of the valid-vote total; it is not a ballot list."
@@ -40,6 +44,46 @@
     }
   },
   "elections": {
+    "K26": {
+      "אמת": { "color": "#C62828" },
+      "ב": { "color": "#F5B800" },
+      "בד": { "color": "#4B5563", "colorStatus": "provisional" },
+      "בי": { "color": "#7B2CBF" },
+      "בקר": { "color": "#4B5563", "colorStatus": "provisional" },
+      "ג": { "color": "#8B5A2B" },
+      "ד": { "color": "#4B5563", "colorStatus": "provisional" },
+      "די": { "color": "#F4D96B", "colorStatus": "provisional" },
+      "דרך": { "color": "#3978BF", "colorStatus": "provisional" },
+      "ה": { "color": "#4B5563", "colorStatus": "provisional" },
+      "ודם": { "color": "#20A4A8" },
+      "ז": { "color": "#4B5563" },
+      "זך": { "color": "#4B5563", "colorStatus": "provisional" },
+      "זץ": { "color": "#4B5563" },
+      "ט": { "color": "#F5B800" },
+      "י": { "color": "#00A651" },
+      "יק": { "color": "#4B5563" },
+      "ך": { "color": "#4B5563", "colorStatus": "provisional" },
+      "כן": { "color": "#7B2CBF" },
+      "ל": { "color": "#5DADE2" },
+      "מחל": { "color": "#2455A4" },
+      "ני": { "color": "#F5B800", "colorStatus": "provisional" },
+      "נף": { "color": "#4B5563" },
+      "נץ": { "color": "#4B5563", "colorStatus": "provisional" },
+      "נקי": { "color": "#4B5563", "colorStatus": "provisional" },
+      "נר": { "color": "#4B5563", "colorStatus": "provisional" },
+      "עם": { "color": "#0B5D3B" },
+      "פה": { "color": "#4B5563" },
+      "צבי": { "color": "#4B5563", "colorStatus": "provisional" },
+      "צדק": { "color": "#4B5563", "colorStatus": "provisional" },
+      "צף": { "color": "#202020" },
+      "ק": { "color": "#4B5563", "colorStatus": "provisional" },
+      "קה": { "color": "#D94888" },
+      "קך": { "color": "#4B5563" },
+      "קץ": { "color": "#F5B800" },
+      "רץ": { "color": "#4B5563", "colorStatus": "provisional" },
+      "רק": { "color": "#7B2CBF", "colorStatus": "provisional" },
+      "שס": { "color": "#202020" }
+    },
     "K17": {
       "אמת": {
         "nameHe": "העבודה-מימד"

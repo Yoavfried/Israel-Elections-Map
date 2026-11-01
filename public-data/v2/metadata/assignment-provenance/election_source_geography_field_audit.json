@@ -1,0 +1,47 @@
+{
+  "cbs_catalog_in_scope_ballot_crosswalk_files": [
+    "Kalpi2006_stat1995.xls",
+    "kalpi2015_stat2011.xlsx",
+    "kalpi_April2019_stat2011.xlsx",
+    "kalpi_March2020_stat2011.xlsx",
+    "kalpi_March2021_stat2011.xlsx",
+    "kalpi_November2022_stat2011.xlsx",
+    "kalpi_September2019_stat2011.xlsx",
+    "‏‏kalpi2008_stat2008.xlsx",
+    "‏‏kalpi2013_stat2011.xlsx"
+  ],
+  "cbs_catalog_scope_note": "The downloaded CBS geography catalog contains exactly one in-scope direct crosswalk for each election K17-K25 and one stability workbook for each transition ending K19-K25; no alternate in-scope ballot geography workbook is listed.",
+  "cbs_catalog_stable_ballot_files": [
+    "Stable_kalp_2013.xlsx",
+    "Stable_kalp_2015.xls",
+    "Stable_kalp_April2019.xlsx",
+    "Stable_kalp_March2020.xlsx",
+    "Stable_kalp_March2021.xlsx",
+    "Stable_kalp_November2022.xlsx",
+    "Stable_kalp_September2019.xlsx"
+  ],
+  "cbs_crosswalk_elections": [
+    "K17",
+    "K18",
+    "K19",
+    "K20",
+    "K21",
+    "K22",
+    "K23",
+    "K24",
+    "K25"
+  ],
+  "cec_reports_with_ags": [
+    "K23"
+  ],
+  "cec_reports_without_ags": [
+    "K20",
+    "K21",
+    "K22",
+    "K24",
+    "K25"
+  ],
+  "interpretation": "The official CBS catalog supplies one direct ballot-to-statistical-area crosswalk for every election K17-K25. Among the separately archived CEC polling-place reports audited here, only K23 exposes an AGS field.",
+  "sources_audited": 18,
+  "status": "complete"
+}

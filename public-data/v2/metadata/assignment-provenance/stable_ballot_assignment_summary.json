@@ -1,0 +1,59 @@
+{
+  "available_source_workbooks": [
+    "stable_ballots_k19.xlsx",
+    "stable_ballots_k20.xls",
+    "stable_ballots_k21.xlsx",
+    "stable_ballots_k22.xlsx",
+    "stable_ballots_k23.xlsx",
+    "stable_ballots_k24.xlsx",
+    "stable_ballots_k25.xlsx"
+  ],
+  "ballot_key": "historical_ballot_base_including_decimal_subdivisions",
+  "by_election": {
+    "K17": {
+      "candidate_actual_voters": 0,
+      "candidate_rows": 0
+    },
+    "K18": {
+      "candidate_actual_voters": 0,
+      "candidate_rows": 0
+    },
+    "K19": {
+      "candidate_actual_voters": 537,
+      "candidate_rows": 2
+    },
+    "K20": {
+      "candidate_actual_voters": 16676,
+      "candidate_rows": 43
+    },
+    "K21": {
+      "candidate_actual_voters": 0,
+      "candidate_rows": 0
+    },
+    "K22": {
+      "candidate_actual_voters": 344,
+      "candidate_rows": 1
+    },
+    "K23": {
+      "candidate_actual_voters": 0,
+      "candidate_rows": 0
+    },
+    "K24": {
+      "candidate_actual_voters": 17082,
+      "candidate_rows": 87
+    },
+    "K25": {
+      "candidate_actual_voters": 490,
+      "candidate_rows": 1
+    }
+  },
+  "candidate_actual_voters": 35129,
+  "candidate_assignment_sha256": "83752714336c77b31e9d5e4a036716701ecc5046ea1da9280d629718f7917c2b",
+  "candidate_rows": 134,
+  "missing_source_workbooks": [],
+  "same_vintage_components": 12211,
+  "same_vintage_conflicts": 1,
+  "source": "official_cbs_stable_ballot_workbooks",
+  "status": "complete",
+  "transition_conflicts": 105
+}

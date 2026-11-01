@@ -1,0 +1,79 @@
+{
+  "elections": {
+    "K20": {
+      "approved_candidate_actual_voters": 0,
+      "approved_candidate_rows": 0,
+      "approved_localities": 0,
+      "evidence_tiers": {
+        "A": {
+          "candidate_actual_voters": 0,
+          "candidate_rows": 0,
+          "localities": 0
+        },
+        "B": {
+          "candidate_actual_voters": 0,
+          "candidate_rows": 0,
+          "localities": 0
+        },
+        "C": {
+          "candidate_actual_voters": 0,
+          "candidate_rows": 0,
+          "localities": 0
+        }
+      },
+      "pending_localities_tested": 37,
+      "pending_rows_tested": 634,
+      "status_counts": {
+        "residual_total_mismatch": 2,
+        "source_dissolved_locality_aggregate": 35
+      },
+      "unique_exact_candidate_actual_voters": 0,
+      "unique_exact_candidate_rows": 0,
+      "unique_exact_localities": 0
+    },
+    "K21": {
+      "approved_candidate_actual_voters": 3599,
+      "approved_candidate_rows": 9,
+      "approved_localities": 2,
+      "evidence_tiers": {
+        "A": {
+          "candidate_actual_voters": 965,
+          "candidate_rows": 3,
+          "localities": 1
+        },
+        "B": {
+          "candidate_actual_voters": 0,
+          "candidate_rows": 0,
+          "localities": 0
+        },
+        "C": {
+          "candidate_actual_voters": 2634,
+          "candidate_rows": 6,
+          "localities": 1
+        }
+      },
+      "pending_localities_tested": 36,
+      "pending_rows_tested": 607,
+      "status_counts": {
+        "residual_total_mismatch": 1,
+        "source_dissolved_locality_aggregate": 33,
+        "unique_exact_partition": 2
+      },
+      "unique_exact_candidate_actual_voters": 3599,
+      "unique_exact_candidate_rows": 9,
+      "unique_exact_localities": 2
+    }
+  },
+  "matching_metrics": [
+    "ballot_count",
+    "eligible_voters",
+    "actual_voters"
+  ],
+  "method": "unique exact partition after subtracting existing historical assignments",
+  "secondary_audit_metrics_not_used_for_matching": [
+    "valid_votes",
+    "invalid_votes"
+  ],
+  "source_caveat": "The ArcGIS item descriptions state that statistical areas in Arab localities were merged. Such locality-wide features are audited but never accepted as detailed statistical-area assignments.",
+  "status": "reviewed_arcgis_residual_assignments"
+}

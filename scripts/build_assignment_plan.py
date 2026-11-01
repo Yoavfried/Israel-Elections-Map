@@ -400,10 +400,14 @@ def assign_row(
         return assignment_from_composite_component(component)
 
     reviewed = find_crosswalk(row, crosswalk)
+    code = normalize_code(row["source_locality_code"])
+    if row["election"] == "K26" and code in localities_by_code and (
+        not reviewed or reviewed["solution"] not in {"custom_point_size_polygon", "special_non_geographic"}
+    ):
+        return assignment_from_locality(localities_by_code[code], "automatic_code_match")
     if reviewed:
         return assignment_from_crosswalk(row, reviewed, localities_by_name)
 
-    code = normalize_code(row["source_locality_code"])
     if code and code in localities_by_code:
         return assignment_from_locality(localities_by_code[code], "automatic_code_match")
 

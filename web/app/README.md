@@ -1,6 +1,6 @@
 # Israel Election Map Web App
 
-Local-first React/TypeScript client for the K17-K25 pipeline. Primary top-bar
+Local-first React/TypeScript client for the K17-K26 pipeline. Primary top-bar
 views expose the geographic map, a single-party vote-share map, and complete
 national results, plus two-party comparison and coalition-results maps. The
 app does not read working CSV files at runtime. A build-time compiler validates
@@ -102,10 +102,10 @@ npm run data:build -- --source C:\path\to\data\processed
 
 ## Coverage Boundary
 
-The compiler reads promoted public assignment outputs. Locality mode covers the complete K17-K25 geographic scope and includes reviewed election-specific composite municipalities and joined-register unions. Official envelope results appear as a separate selectable national aggregate.
+The compiler reads promoted public assignment outputs. Locality mode covers the complete K17-K26 geographic scope and includes reviewed election-specific composite municipalities and joined-register unions. Official envelope results appear as a separate selectable national aggregate.
 
 Statistical mode uses official ballot-to-area crosswalks and election-specific
-historical geometry: 1995 for K17, 2008 for K18, and 2011 for K19-K25. Result
+historical geometry: 1995 for K17, 2008 for K18, 2011 for K19-K25, and 2022 for K26. Result
 payloads disclose mapped-voter coverage and preserve pending rows instead of
 inferring their polygons.
 

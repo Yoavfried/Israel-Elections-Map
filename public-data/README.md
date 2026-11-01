@@ -1,21 +1,23 @@
 # Public Election Data
 
 The repository includes a versioned, ready-to-download data release under
-[`public-data/v1`](v1/). You do not need to run the pipeline to use these files.
+[`public-data/v2`](v2/). You do not need to run the pipeline to use these files.
 
-The release contains all 96,529 normalized K17-K25 ballot-result rows, separate
+The release contains all 109,455 normalized K17-K26 ballot-result rows, separate
 polygon aggregates, full-resolution geography packages, election and party
 metadata, row-level assignment provenance, checksums, and a machine-readable
 validation report. The ballot-table contract is schema version 2.
 
+K26 is the complete-count snapshot from 30 October 2026, before certification.
+Locality totals are complete. Its statistical-area assignments are deliberately
+limited to independently known single-area localities and reviewed custom
+buckets; multi-area localities remain unsplit. The pre-balance CBS workbook is
+published as unaccepted candidates, not reliable final assignments. See the
+methodology for the exact scope. The previous [v1 snapshot](v1/) is preserved.
+
 Read the [public data methodology](METHODOLOGY.md) for the exact assignment
 precedence, synthetic-link counts, unresolved-row policy, validation rules, and
 step-by-step audit procedure.
-
-Public releases use a two-level `major.minor` policy: minor releases correct
-values or documentation without changing the contract, while a new election,
-column change, or other major contract change starts the next major release.
-See the [data and website versioning policy](../docs/VERSIONING.md).
 
 Public releases use a two-level `major.minor` policy: minor releases correct
 values or documentation without changing the contract, while a new election,
@@ -29,20 +31,21 @@ per registered ballot letter, and both statistical-area and locality join IDs.
 
 | Election | Rows | Statistical vintage | Ballot rows | Statistical aggregates | Locality aggregates | Statistical polygons |
 |---|---:|---:|---|---|---|---|
-| K17 (2006) | 8,426 | 1995 | [CSV](v1/ballots/k17.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k17.csv?raw=1) | [CSV](v1/aggregates/localities/k17.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_1995.zip?raw=1) |
-| K18 (2009) | 9,264 | 2008 | [CSV](v1/ballots/k18.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k18.csv?raw=1) | [CSV](v1/aggregates/localities/k18.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2008.zip?raw=1) |
-| K19 (2013) | 10,109 | 2011 | [CSV](v1/ballots/k19.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k19.csv?raw=1) | [CSV](v1/aggregates/localities/k19.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K20 (2015) | 10,414 | 2011 | [CSV](v1/ballots/k20.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k20.csv?raw=1) | [CSV](v1/aggregates/localities/k20.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K21 (April 2019) | 10,765 | 2011 | [CSV](v1/ballots/k21.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k21.csv?raw=1) | [CSV](v1/aggregates/localities/k21.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K22 (September 2019) | 10,901 | 2011 | [CSV](v1/ballots/k22.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k22.csv?raw=1) | [CSV](v1/aggregates/localities/k22.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K23 (2020) | 11,179 | 2011 | [CSV](v1/ballots/k23.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k23.csv?raw=1) | [CSV](v1/aggregates/localities/k23.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K24 (2021) | 12,926 | 2011 | [CSV](v1/ballots/k24.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k24.csv?raw=1) | [CSV](v1/aggregates/localities/k24.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
-| K25 (2022) | 12,545 | 2011 | [CSV](v1/ballots/k25.csv?raw=1) | [CSV](v1/aggregates/statistical-areas/k25.csv?raw=1) | [CSV](v1/aggregates/localities/k25.csv?raw=1) | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) |
+| K26 (2026; provisional) | 12,926 | 2022 | [CSV](v2/ballots/k26.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k26.csv?raw=1) | [CSV](v2/aggregates/localities/k26.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2022.zip?raw=1) |
+| K17 (2006) | 8,426 | 1995 | [CSV](v2/ballots/k17.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k17.csv?raw=1) | [CSV](v2/aggregates/localities/k17.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_1995.zip?raw=1) |
+| K18 (2009) | 9,264 | 2008 | [CSV](v2/ballots/k18.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k18.csv?raw=1) | [CSV](v2/aggregates/localities/k18.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2008.zip?raw=1) |
+| K19 (2013) | 10,109 | 2011 | [CSV](v2/ballots/k19.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k19.csv?raw=1) | [CSV](v2/aggregates/localities/k19.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K20 (2015) | 10,414 | 2011 | [CSV](v2/ballots/k20.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k20.csv?raw=1) | [CSV](v2/aggregates/localities/k20.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K21 (April 2019) | 10,765 | 2011 | [CSV](v2/ballots/k21.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k21.csv?raw=1) | [CSV](v2/aggregates/localities/k21.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K22 (September 2019) | 10,901 | 2011 | [CSV](v2/ballots/k22.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k22.csv?raw=1) | [CSV](v2/aggregates/localities/k22.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K23 (2020) | 11,179 | 2011 | [CSV](v2/ballots/k23.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k23.csv?raw=1) | [CSV](v2/aggregates/localities/k23.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K24 (2021) | 12,926 | 2011 | [CSV](v2/ballots/k24.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k24.csv?raw=1) | [CSV](v2/aggregates/localities/k24.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
+| K25 (2022) | 12,545 | 2011 | [CSV](v2/ballots/k25.csv?raw=1) | [CSV](v2/aggregates/statistical-areas/k25.csv?raw=1) | [CSV](v2/aggregates/localities/k25.csv?raw=1) | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) |
 
 Other election-specific downloads are organized under
-[`aggregates/custom-geographies`](v1/aggregates/custom-geographies/),
-[`aggregates/envelopes`](v1/aggregates/envelopes/), and
-[`aggregates/unresolved`](v1/aggregates/unresolved/).
+[`aggregates/custom-geographies`](v2/aggregates/custom-geographies/),
+[`aggregates/envelopes`](v2/aggregates/envelopes/), and
+[`aggregates/unresolved`](v2/aggregates/unresolved/).
 
 ## Geography Packages
 
@@ -51,15 +54,15 @@ metadata. Every feature exposes `properties.geography_id`.
 
 | Package | Features | Archive | Metadata only |
 |---|---:|---|---|
-| 1995 statistical areas | 2,661 | [ZIP](v1/geographies/statistical_areas_1995.zip?raw=1) | [CSV](v1/geographies/statistical_areas_1995.csv?raw=1) |
-| 2008 statistical areas | 3,030 | [ZIP](v1/geographies/statistical_areas_2008.zip?raw=1) | [CSV](v1/geographies/statistical_areas_2008.csv?raw=1) |
-| 2011 statistical areas | 3,115 | [ZIP](v1/geographies/statistical_areas_2011.zip?raw=1) | [CSV](v1/geographies/statistical_areas_2011.csv?raw=1) |
-| 2022 statistical areas | 3,857 | [ZIP](v1/geographies/statistical_areas_2022.zip?raw=1) | [CSV](v1/geographies/statistical_areas_2022.csv?raw=1) |
-| 2022 locality footprints | 1,387 | [ZIP](v1/geographies/localities_2022.zip?raw=1) | [CSV](v1/geographies/localities_2022.csv?raw=1) |
-| Historical/reviewed locality composites | 104 | [ZIP](v1/geographies/composite_localities.zip?raw=1) | [CSV](v1/geographies/composite_localities.csv?raw=1) |
-| Reviewed custom geographies | 2 | [ZIP](v1/geographies/custom_geographies.zip?raw=1) | [CSV](v1/geographies/custom_geographies.csv?raw=1) |
+| 1995 statistical areas | 2,661 | [ZIP](v2/geographies/statistical_areas_1995.zip?raw=1) | [CSV](v2/geographies/statistical_areas_1995.csv?raw=1) |
+| 2008 statistical areas | 3,030 | [ZIP](v2/geographies/statistical_areas_2008.zip?raw=1) | [CSV](v2/geographies/statistical_areas_2008.csv?raw=1) |
+| 2011 statistical areas | 3,115 | [ZIP](v2/geographies/statistical_areas_2011.zip?raw=1) | [CSV](v2/geographies/statistical_areas_2011.csv?raw=1) |
+| 2022 statistical areas | 3,863 | [ZIP](v2/geographies/statistical_areas_2022.zip?raw=1) | [CSV](v2/geographies/statistical_areas_2022.csv?raw=1) |
+| 2022 locality footprints | 1,393 | [ZIP](v2/geographies/localities_2022.zip?raw=1) | [CSV](v2/geographies/localities_2022.csv?raw=1) |
+| Historical/reviewed locality composites | 104 | [ZIP](v2/geographies/composite_localities.zip?raw=1) | [CSV](v2/geographies/composite_localities.csv?raw=1) |
+| Reviewed custom geographies | 2 | [ZIP](v2/geographies/custom_geographies.zip?raw=1) | [CSV](v2/geographies/custom_geographies.csv?raw=1) |
 
-Use [`metadata/geographies.csv`](v1/metadata/geographies.csv?raw=1) as the
+Use [`metadata/geographies.csv`](v2/metadata/geographies.csv?raw=1) as the
 combined lookup from any `geography_id` to its geometry archive.
 
 ## Join Rules
@@ -100,23 +103,23 @@ marked synthetic. Users who require no inferred links can filter
 The complete evidence tables, accepted and rejected decisions, conflicts,
 source-schema inventory, unresolved-row classification, and polygon coverage
 audit are under
-[`metadata/assignment-provenance`](v1/metadata/assignment-provenance/).
+[`metadata/assignment-provenance`](v2/metadata/assignment-provenance/).
 
 ## Metadata And Integrity
 
-- [`metadata/elections.csv`](v1/metadata/elections.csv?raw=1) lists election
+- [`metadata/elections.csv`](v2/metadata/elections.csv?raw=1) lists election
   years, active statistical vintages, and principal paths.
-- [`metadata/parties.csv`](v1/metadata/parties.csv?raw=1) maps each
+- [`metadata/parties.csv`](v2/metadata/parties.csv?raw=1) maps each
   election/ballot-letter combination to its reviewed list name and article
   metadata.
-- [`metadata/coverage.csv`](v1/metadata/coverage.csv?raw=1) reports mapped and
+- [`metadata/coverage.csv`](v2/metadata/coverage.csv?raw=1) reports mapped and
   pending coverage by election.
-- [`metadata/assignment-provenance`](v1/metadata/assignment-provenance/)
-  contains 30 source, decision, conflict, gap, and polygon-audit artifacts.
-- [`manifest.csv`](v1/manifest.csv?raw=1) and
-  [`manifest.json`](v1/manifest.json?raw=1) contain file sizes, row counts, and
+- [`metadata/assignment-provenance`](v2/metadata/assignment-provenance/)
+  contains 38 source, decision, conflict, gap, and polygon-audit artifacts.
+- [`manifest.csv`](v2/manifest.csv?raw=1) and
+  [`manifest.json`](v2/manifest.json?raw=1) contain file sizes, row counts, and
   SHA-256 checksums.
-- [`validation.json`](v1/validation.json?raw=1) records the release checks.
+- [`validation.json`](v2/validation.json?raw=1) records the release checks.
 
 CSVs are UTF-8 with a byte-order mark for reliable Hebrew display in spreadsheet
 software. The release is generated by `scripts/build_public_data_release.py` and
@@ -130,7 +133,7 @@ colors, concise UI label overrides, web-only polygon unions and fallback
 boundaries, masks, marker placement, layout, map modes, and interaction
 configuration. Those are presentation choices owned by the map application.
 
-The map groups the K19-K25 tribal statistical-area results into one combined
+The map groups the K19-K26 tribal statistical-area results into one combined
 tribal marker because the available derivative footprints overlap surrounding
 areas and cannot be treated as exclusive geography. The release tables do not
 collapse those records: exact tribe statistical-area identifiers, results, and
@@ -140,9 +143,15 @@ When an election/locality or reviewed historical-composite component has no
 supported ballot-to-area assignment, the map can show its aggregate on a
 display-only reviewed boundary with an info notice. The K17/K18 component
 shapes retain the election-era composite's outer footprint. This does not
-assign any ballot or change coverage. The 314 map substitutions and their
+assign any ballot or change coverage. The historical map substitutions and their
 represented totals are disclosed in
-[`historical_municipality_display_fallbacks.csv`](v1/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
+[`historical_municipality_display_fallbacks.csv`](v2/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
+
+K26 adds 145 whole-locality display fallbacks. Its source policy is recorded in
+[`k26_source_audit.json`](v2/metadata/assignment-provenance/k26_source_audit.json?raw=1)
+and its underlying assignment counts in [`coverage.csv`](v2/metadata/coverage.csv?raw=1).
+Its Sha'ar Shomron display reuses the reviewed Etz Efrayim/Sha'are Tikva union;
+the source 2022 feature remains unchanged in the downloadable geometry package.
 
 The project-authored portions of this release, including its original
 selection, arrangement, normalization, annotations, and assignment metadata,

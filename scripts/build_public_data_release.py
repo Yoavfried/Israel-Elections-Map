@@ -11,10 +11,10 @@ from typing import Any
 
 import pandas as pd
 
-from pipeline_common import ELECTIONS, MANUAL_DIR, PROCESSED_DIR, ROOT
+from pipeline_common import ELECTIONS, MANUAL_DIR, PROCESSED_DIR, RAW_DIR, ROOT
 
 
-OUT_ROOT = ROOT / "public-data" / "v1"
+OUT_ROOT = ROOT / "public-data" / "v2"
 WIDE_DIR = PROCESSED_DIR / "normalized" / "ballot_votes_wide"
 ASSIGNMENTS = PROCESSED_DIR / "assignments" / "ballot_geography_assignments.csv"
 PUBLIC_DIR = PROCESSED_DIR / "public"
@@ -27,6 +27,7 @@ ARCGIS_RECONSTRUCTION_REVIEWS = (
 )
 
 ELECTION_VINTAGES = {
+    "K26": 2022,
     "K17": 1995,
     "K18": 2008,
     "K19": 2011,
@@ -143,6 +144,10 @@ AGGREGATE_EXPORTS = [
 ]
 
 PROVENANCE_TABLES = [
+    (AUDIT_DIR / "k26_crosswalk_candidates.csv", "k26_crosswalk_candidates.csv",
+     "Unaccepted pre-balance K26 crosswalk-key candidates; not ballot-to-area assignments."),
+    (GEOGRAPHY_DIR / "k26_geography_supplements.csv", "k26_geography_supplements.csv",
+     "Exact-ID 2022-area/locality supplements from the official CBS 2025 publication."),
     (
         MANUAL_DIR / "historical_composite_ballot_components.csv",
         "historical_composite_ballot_components.csv",
@@ -337,11 +342,11 @@ def manifest_row(
 
 
 def reset_generated_outputs() -> None:
-    expected = (ROOT / "public-data" / "v1").resolve()
+    expected = (ROOT / "public-data" / "v2").resolve()
     if OUT_ROOT.resolve() != expected or expected.parent != (ROOT / "public-data").resolve():
         raise ValueError(f"Unsafe public-data output path: {OUT_ROOT}")
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
-    for name in ["ballots", "aggregates", "geographies", "metadata"]:
+    for name in ["ballots", "aggregates", "geographies", "metadata", "sources"]:
         target = OUT_ROOT / name
         if target.exists():
             shutil.rmtree(target)
@@ -752,6 +757,15 @@ def build_assignment_provenance(manifest: list[dict[str, Any]]) -> None:
             manifest,
             "Machine-readable summary for the corresponding assignment audit.",
         )
+    copy_json_artifact(AUDIT_DIR / "k26_source_audit.json", target_dir / "k26_source_audit.json", manifest,
+                       "K26 source reconciliation, certification status, and conservative area-assignment policy.")
+    for filename in ["ballots.csv", "localities.csv", "crosswalk.xlsx", "stable_ballots.xlsx",
+                     "crosswalk_readme.pdf", "stable_ballots_readme.pdf", "parties.json", "sources.json"]:
+        source = RAW_DIR / "k26" / filename
+        target = OUT_ROOT / "sources" / "k26" / filename
+        write_bytes(target, source.read_bytes())
+        manifest.append(manifest_row(target, "official-source-snapshot",
+                                     "Unmodified official K26 source snapshot; source URLs and SHA-256 hashes are in sources.json.", election="K26"))
 
 
 def build_metadata_and_aggregates(
@@ -876,8 +890,8 @@ def write_manifests(
             json.dumps(
                 {
                     "schema_version": 2,
-                    "data_release": "v1",
-                    "election_range": {"first": "K17", "last": "K25"},
+                    "data_release": "v2.0",
+                    "election_range": {"first": "K17", "last": "K26"},
                     "files": manifest,
                 },
                 ensure_ascii=False,

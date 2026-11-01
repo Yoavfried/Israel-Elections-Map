@@ -1,0 +1,50 @@
+[
+  {
+    "bytes": 1825336,
+    "file": "ballots.csv",
+    "sha256": "858b87d94c409759ea6ab2d22cc1c61fc9ff8bf3b77be669ba83e498c2cea021",
+    "url": "https://media26.bechirot.gov.il/files/expb.csv"
+  },
+  {
+    "bytes": 153432,
+    "file": "localities.csv",
+    "sha256": "e1fe4e8aeb46f99dc6ca33ee1e937024d7083a70a7db5b07387574180c5aa799",
+    "url": "https://media26.bechirot.gov.il/files/expc.csv"
+  },
+  {
+    "bytes": 347862,
+    "file": "crosswalk.xlsx",
+    "sha256": "d984da021eb50c9a91e63d0cc50a78af73f3e0df2f9ccc1d898fb33ec2d702c8",
+    "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/kalpi_October2026_stat2022.xlsx"
+  },
+  {
+    "bytes": 180650,
+    "file": "stable_ballots.xlsx",
+    "sha256": "da9f62f6dc2257cffda4173da2764285a45aa4c236bf3a7ffd3a53d436535126",
+    "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/Stable_kalpi_october_2026.xlsx"
+  },
+  {
+    "bytes": 209015,
+    "file": "crosswalk_readme.pdf",
+    "sha256": "5826f717c98f284a76d979cfa3e8ac3f681f904b20324732b47c3a3b44b03120",
+    "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/ReadMe_Kalpi_October2026_Stat2022.pdf"
+  },
+  {
+    "bytes": 138243,
+    "file": "stable_ballots_readme.pdf",
+    "sha256": "890f444247723e645822198838aeaccdf6f6784c90b1fa42162b342b42f0acee",
+    "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/ReadMe_Stable_Kalpi_October2026.pdf"
+  },
+  {
+    "bytes": 6539,
+    "file": "parties.json",
+    "sha256": "fc856d05a3f2a084f0665c487d85a229ecd0e4dc8100325eac00d8582aaa57c0",
+    "url": "https://elections.govmap.gov.il/data/votes/elections.json"
+  },
+  {
+    "bytes": 9753491,
+    "file": "statisticalareas_demography_2025.gdb.zip",
+    "sha256": "87f5d230693d7119df0c9393424d1c0f1a09a0cb498a37e11f6d09281cc3d84f",
+    "url": "https://www.cbs.gov.il/he/publications/DocLib/2022/קטלוג/1. יישובים וחלוקות גאוגרפיות/statisticalareas_demography_2025.gdb.zip"
+  }
+]

@@ -1,11 +1,11 @@
 # Public Data Dictionary
 
 This dictionary describes ballot-table schema version 2 under
-[`public-data/v1`](v1/).
+[`public-data/v2`](v2/).
 
 ## Ballot Tables
 
-Files: `v1/ballots/k17.csv` through `v1/ballots/k25.csv`.
+Files: `v2/ballots/k17.csv` through `v2/ballots/k25.csv`.
 
 The grain is one official election-result source row, sometimes a ballot
 subdivision. `source_row_uid` is the unique repository key. A displayed ballot
@@ -27,7 +27,7 @@ number is not globally unique.
 
 Columns between `is_envelope` and `geography_assignment_status` are the
 election-specific party vote columns. Join their source-column names to
-[`metadata/parties.csv`](v1/metadata/parties.csv?raw=1) on
+[`metadata/parties.csv`](v2/metadata/parties.csv?raw=1) on
 `(election, source_column)`. They sum exactly to `valid_votes` on every row.
 
 ### Statistical-Mode Assignment
@@ -109,12 +109,12 @@ audit evidence only and never replace the official ballot values.
 | `is_geographic` | Whether the source row is an ordinary geographic result. |
 
 Join `locality_geography_id` to
-[`metadata/geographies.csv`](v1/metadata/geographies.csv?raw=1). Its
+[`metadata/geographies.csv`](v2/metadata/geographies.csv?raw=1). Its
 `geometry_archive` identifies the required locality, composite, or custom ZIP.
 
 ## Aggregate Tables
 
-Each election has separate tables under `v1/aggregates/`:
+Each election has separate tables under `v2/aggregates/`:
 
 | Directory | Grain |
 |---|---|
@@ -158,7 +158,7 @@ as a fabricated K25 conversion.
 
 ## Assignment Audit Package
 
-[`v1/metadata/assignment-provenance`](v1/metadata/assignment-provenance/)
+[`v2/metadata/assignment-provenance`](v2/metadata/assignment-provenance/)
 contains 30 inspectable artifacts:
 
 - official normalized crosswalk and final assignment summary;
@@ -185,8 +185,8 @@ import geopandas as gpd
 import pandas as pd
 import zipfile
 
-results = pd.read_csv("public-data/v1/aggregates/statistical-areas/k20.csv")
-with zipfile.ZipFile("public-data/v1/geographies/statistical_areas_2011.zip") as z:
+results = pd.read_csv("public-data/v2/aggregates/statistical-areas/k20.csv")
+with zipfile.ZipFile("public-data/v2/geographies/statistical_areas_2011.zip") as z:
     z.extract("statistical_areas_2011.geojson", "tmp")
 
 areas = gpd.read_file("tmp/statistical_areas_2011.geojson")

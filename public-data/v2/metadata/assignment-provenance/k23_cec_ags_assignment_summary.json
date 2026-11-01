@@ -1,0 +1,20 @@
+{
+  "candidate_actual_voters": 29685,
+  "candidate_assignment_sha256": "a23a3a346038117c16b74efb91989f035b5ca05803f93e7f22caa1d29cfdcffd",
+  "candidate_rows": 74,
+  "crosswalk_agreement_rate": 0.9998524203069658,
+  "crosswalk_comparisons": 6776,
+  "crosswalk_contradictions": 1,
+  "crosswalk_exact_agreements": 6775,
+  "election": "K23",
+  "pending_actual_voters_before": 326837,
+  "pending_rows_before": 693,
+  "source": "data/raw/archive_knesset23_kalpies_report_19_1_20_1.xlsx",
+  "source_sha256": "040af21c4f155adc85eca19a58ccaba2c988e1742e40d094c341e2b466566e7f",
+  "status": "complete",
+  "withheld_conflicts": 1,
+  "workbook_ballot_keys": 9388,
+  "workbook_keys_with_ags": 6849,
+  "workbook_keys_with_multiple_ags": 0,
+  "workbook_rows": 10631
+}

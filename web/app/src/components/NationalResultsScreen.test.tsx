@@ -61,6 +61,15 @@ const results: NationalResults = {
 }
 
 describe('NationalResultsScreen', () => {
+  it.each(['en', 'he'] as const)('labels the K26 snapshot as provisional in %s', (language) => {
+    const html = renderToStaticMarkup(
+      <NationalResultsScreen language={language} elections={[election]} electionId="K26"
+        results={null} loading={false} error={null} onElectionChange={vi.fn()} />,
+    )
+    expect(html).toContain(language === 'en' ? 'pending certification' : 'לפני אישור התוצאות')
+    expect(html).not.toContain(language === 'en' ? 'final votes' : 'הקולות הסופיים')
+  })
+
   it('renders every list, mandate total, threshold, colors, and wiki states', () => {
     const html = renderToStaticMarkup(
       <NationalResultsScreen

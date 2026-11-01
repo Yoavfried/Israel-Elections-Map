@@ -1,0 +1,27 @@
+{
+  "candidate_locality_election_cases": 8,
+  "candidate_rows": 134,
+  "decimal_candidate_rows": 70,
+  "definition": "Stable row-level assignments are checked against distinct official pre/post polling registers. A final decimal batch is unsafe when it belongs to a residual polling-site set spanning several planned areas.",
+  "mapping_output": "data\\processed\\audits\\stable_ballot_site_safety_planned_mappings.csv",
+  "missing_rejection_keys": [],
+  "output": "data\\processed\\audits\\stable_ballot_site_safety.csv",
+  "planned_mapping_rows": 188,
+  "planned_mapping_status_counts": {
+    "conflicting_official_crosswalks": 118,
+    "insufficient_official_crosswalk_references": 19,
+    "unanimous_two_or_more_official_crosswalks": 51
+  },
+  "publication_guard": "pass",
+  "status_counts": {
+    "no_decimal_batch_signal_without_distinct_pre_post_registers": 46,
+    "safe_final_only_integer_stable_link": 1,
+    "safe_preserved_ballot_base": 20,
+    "safe_single_area_site_peer_confirmation": 29,
+    "unsafe_mixed_final_batch": 38
+  },
+  "unresolved_safety_rows": 0,
+  "unsafe_candidate_actual_voters": 7368,
+  "unsafe_candidate_rows": 38,
+  "unsafe_rows_covered_by_review": 38
+}

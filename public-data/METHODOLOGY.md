@@ -1,18 +1,48 @@
 # Public Data Methodology
 
-This document explains how the downloadable K17-K25 release was built, which
+## K26 / 2026 Publication Policy
+
+Release v2.0 adds the official complete-count snapshot dated 2026-10-30,
+pending certification. Every original party vote, eligible-voter count, actual
+voter, valid vote, and invalid vote is preserved. The raw ballot and locality
+exports are archived under `v2/sources/k26/`; their totals reconcile exactly
+for every locality and party. The two zero-vote list columns are retained in
+the data, although the website omits them.
+
+K26 uses 2022 statistical areas. No K25/2011 assignment is carried into the
+new vintage. Independently identified single-area localities and the existing
+reviewed non-geographic/custom rules are applied. Multi-area localities do not
+receive an unverified internal split: their totals remain municipality-only
+and the website displays the whole municipality with its standard disclosure.
+This does not make the underlying statistical assignment complete.
+
+The CBS K26 workbook was prepared before final balancing. The exported
+`k26_crosswalk_candidates.csv` distinguishes exact, base-only, and missing keys;
+**none of those candidates is accepted as an assignment**. A single-area
+locality may independently be mapped to the same area, without relying on its
+candidate key. The archived stable-ballot workbook likewise does not authorize
+a transfer across statistical-area vintages. Final-register composition
+validation is required before activating more detailed K26 assignments.
+
+Six missing exact-ID 2022 areas/localities were supplemented from the official
+CBS 2025 demographic publication (`STAT22` / `YISHUV_STAT22`). Existing
+boundaries were not replaced. These new locality footprints are hidden in
+earlier elections. K17-K25 ballot values and assignments remain unchanged;
+the previous v1 data release remains available.
+
+This document explains how the downloadable K17-K26 release was built, which
 fields are official, which geographic links are inferred, and how to audit the
 result. It describes the data release, not the website's visual presentation.
 
 ## What The Release Preserves
 
-The release contains 96,529 normalized ballot-result rows. Vote counts,
+The release contains 109,455 normalized ballot-result rows. Vote counts,
 eligible voters, actual voters, valid and invalid votes, locality identity,
 ballot identity, and election identity come from the cited official result
 sources. The project does not estimate party votes or divide one ballot's votes
 between statistical areas.
 
-The files under `v1/ballots/` are normalized row-level exports, not copies of
+The files under `v2/ballots/` are normalized row-level exports, not copies of
 the original source workbooks or PDFs. Normalization standardizes encoding,
 column names, identifiers, and numeric types; it also adds locality and
 statistical-area join fields plus row-level provenance.
@@ -27,10 +57,11 @@ ballot crosswalk:
 | K17 | 1995 |
 | K18 | 2008 |
 | K19-K25 | 2011 |
+| K26 | 2022 |
 
 K25 is not converted to 2022 areas. Its official crosswalk still targets 2011
 areas, so a 2022 conversion would add unsupported precision. The 2022 package
-is published for future elections and independent analysis.
+is used for K26 and is also available for independent analysis.
 
 ## Assignment Procedure
 
@@ -105,7 +136,7 @@ guessing:
 | Specific ordinary ballot omitted from the official crosswalk | 9 |
 | **Total** | **5,583** |
 
-These rows are available under `v1/aggregates/unresolved/` and retain their
+These rows are available under `v2/aggregates/unresolved/` and retain their
 locality result. They are not counted as statistical-area assignments.
 
 Row-level unresolved does not always mean map-level missing. Thirty-eight K24
@@ -141,15 +172,15 @@ The release build fails when any of these checks fail:
 - aggregate totals do not reconcile to their contributing rows;
 - a manifest checksum or declared row count is wrong.
 
-See `v1/validation.json`, `v1/manifest.csv`, and `v1/manifest.json` for the
+See `v2/validation.json`, `v2/manifest.csv`, and `v2/manifest.json` for the
 machine-readable result of those checks.
 
 ## How To Audit A Link
 
-1. Locate the ballot row in `v1/ballots/<election>.csv`.
+1. Locate the ballot row in `v2/ballots/<election>.csv`.
 2. Read its assignment method, source, confidence, and synthetic flag.
 3. Inspect the matching evidence file under
-   `v1/metadata/assignment-provenance/`.
+   `v2/metadata/assignment-provenance/`.
 4. Join `stat_area_id` to the election's full-resolution geography package.
 5. Reaggregate the row set and compare it with the supplied aggregate and
    validation files.

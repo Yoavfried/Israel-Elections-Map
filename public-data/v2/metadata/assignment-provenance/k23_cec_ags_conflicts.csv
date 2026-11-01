@@ -1,0 +1,2 @@
+﻿conflict_type,source_locality_code,source_locality_name,ballot_base,source_kalpi,ags_values,candidate_stat_area_id,known_stat_area_id,reason
+official_crosswalk_contradiction,2100,טירת כרמל,3,3,2,stat2011:21000002,stat2011:21000003,The K23 AGS field contradicts the official CBS crosswalk

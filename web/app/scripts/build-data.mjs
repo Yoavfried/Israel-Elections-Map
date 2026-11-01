@@ -636,7 +636,7 @@ async function main() {
       source: {
         statisticalAreaVintages: [...statisticalGeographyAssetsByVintage.keys()].toSorted(),
         localityGeometryVintage: 2022,
-        electionRange: { first: 'K17', last: 'K25' },
+      electionRange: { first: electionConfig.at(-1).id, last: electionConfig[0].id },
         assignmentStatus: 'official-crosswalk-first-locality-complete-statistical-areas-partial',
         resultColumnExclusions: Object.entries(partyOverrideConfig.ignoredResultColumns).flatMap(
           ([electionId, columns]) =>

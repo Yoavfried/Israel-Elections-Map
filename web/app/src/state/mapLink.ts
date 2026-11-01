@@ -2,6 +2,7 @@ import type { AppView } from '../components/PrimaryTabs'
 import type { PartyMapDisplayMode } from '../domain/partyMap'
 import type { GeographyMode, Language } from '../domain/schemas'
 import type { AppPreferences } from './preferences'
+import electionDefinitions from '../../config/elections.json'
 
 const APP_VIEWS = new Set<AppView>([
   'map',
@@ -10,7 +11,7 @@ const APP_VIEWS = new Set<AppView>([
   'party-comparison',
   'coalition',
 ])
-const ELECTION_IDS = new Set(Array.from({ length: 9 }, (_, index) => `K${index + 17}`))
+const ELECTION_IDS = new Set(electionDefinitions.map((election) => election.id))
 
 export interface InitialMapLink {
   electionId?: string

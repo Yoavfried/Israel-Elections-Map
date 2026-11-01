@@ -1,0 +1,3 @@
+﻿geography_id,geography_type,geography_package,geometry_archive,custom_id,custom_key,name_he,name_en,lon,lat,radius_m,display_mode,geometry_source,note,source_stat_area_id
+custom:tribal_negev,custom_geography,custom_geographies,geographies/custom_geographies.zip,custom:tribal_negev,TRIBE,שבטים / פזורה בנגב,Negev tribal/dispersed-settlement bucket,34.93,31.22,3500.0,marker,reviewed_synthetic_buffer,Synthetic point-size polygon for reviewed tribal/dispersed-settlement rows.,
+custom:hebron,custom_geography,custom_geographies,geographies/custom_geographies.zip,custom:hebron,HEBRON,חברון,Hebron custom bucket,,,,polygon,arcgis_systematics_elections2015_exact_id_reuse,Detailed Hebron footprint reused from the audited 2011 exact-ID geometry.,stat2011:34000001

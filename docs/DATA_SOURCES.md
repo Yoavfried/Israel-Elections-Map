@@ -1,6 +1,6 @@
 # Data Sources
 
-Last updated: 2026-08-13
+Last updated: 2026-11-01
 
 ## Election Results
 
@@ -8,7 +8,31 @@ Official Knesset election results package:
 
 https://data.gov.il/api/3/action/package_show?id=26f9fa06-fcd7-4173-8df5-65797b63e857
 
-Current project scope starts at K17 / 2006 and runs through K25 / 2022.
+Current project scope starts at K17 / 2006 and runs through K26 / 2026.
+
+### K26 Snapshot
+
+The government catalogue above currently ends at K25. K26 is imported directly
+from the CEC's [ballot CSV](https://media26.bechirot.gov.il/files/expb.csv) and
+[locality CSV](https://media26.bechirot.gov.il/files/expc.csv), using the complete
+count published on 30 October 2026. These are not yet certified final results.
+The snapshot has 12,926 rows, 5,690,685 valid votes, and 5,716,673 actual voters.
+Every party and count reconciles exactly between the two source exports.
+
+Party names/letters are checked against the official
+[Govmap election metadata](https://elections.govmap.gov.il/data/votes/elections.json).
+The 120-seat allocation is the complete-count allocation, pending certification.
+Unmodified source files, their URLs, hashes, CBS explanatory PDFs, and the
+machine-readable reconciliation are included in `public-data/v2/`.
+
+CBS's `kalpi_October2026_stat2022.xlsx` explicitly targets 2022 statistical
+areas, but predates final ballot rebalancing. Exact-number and base-number
+matches are therefore retained as candidates, not accepted links. The official
+`Stable_kalpi_october_2026.xlsx` is archived but is not used to transfer old
+2011-area assignments into 2022 areas. Six exact-ID locality/area supplements
+come from CBS's `statisticalareas_demography_2025.gdb.zip`, whose geometry
+fields are explicitly `STAT22` / `YISHUV_STAT22`; existing boundaries are not
+replaced. See `k26_geography_supplements.csv` in assignment provenance.
 
 - Locality totals are generated from normalized ballot rows and reviewed
   locality identities; official locality summaries are validation evidence.

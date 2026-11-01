@@ -1,0 +1,3 @@
+﻿election,geography_mode,geography_type,custom_geography_id,geography_id,locality_name,contributing_rows,contributing_kalpis,eligible_voters,actual_voters,valid_votes,invalid_votes,אמת,ג,ודעם,ז,זך,זץ,טב,י,יז,ינ,יף,יק,יר,כ,כן,ל,מחל,נ,נז,ני,נץ,נק,פה,ףז,ץ,ק,קי,קך,קץ,שס,winning_ballot_letter,winning_votes,runner_up_votes,margin_votes,winning_vote_share
+K23,locality,custom_geography,custom:hebron,custom:hebron,custom:hebron,1,1,297,216,215,1,0,21,0,0,0,0,98,0,0,0,0,0,0,0,0,1,45,0,0,0,39,0,2,0,0,0,0,0,2,7,טב,98.0,45.0,53.0,0.455814
+K23,locality,custom_geography,custom:tribal_negev,custom:tribal_negev,custom:tribal_negev,60,60,35687,15666,15565,101,114,5,14948,7,4,0,6,1,4,11,4,1,3,2,3,12,74,4,9,5,14,13,210,6,13,14,12,16,30,20,ודעם,14948.0,210.0,14738.0,0.96036

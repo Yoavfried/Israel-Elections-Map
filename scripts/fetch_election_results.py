@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import re
 import sys
 import urllib.request
 from urllib.parse import urlencode
+from pathlib import Path
 
+from fetch_k26_sources import OUT as K26_SOURCE_DIR, SOURCES as K26_SOURCES, main as fetch_k26_sources
 from pipeline_common import ELECTIONS, PROCESSED_DIR, RAW_DIR, ensure_dir, read_json, safe_filename, write_csv, write_json
 
 
@@ -81,15 +84,20 @@ def main() -> None:
 
     if not args.overwrite and not args.metadata_only:
         rows = cached_manifest_rows()
-        if rows:
+        if rows and {row["election"] for row in rows} == {e["key"] for e in ELECTIONS.values()} and all((K26_SOURCE_DIR / name).exists() for name in K26_SOURCES):
             print(f"resources={len(rows)}")
             for row in rows:
                 print(f"{row['election']}: cached_manifest rows={row['row_count']} -> {row['local_path']}")
             return
 
-    package = fetch_json(PACKAGE_URL)
-    resources = package["result"]["resources"]
-    rows: list[dict] = []
+    cached = cached_manifest_rows() if not args.overwrite else []
+    if cached:
+        rows = [row for row in cached if row["election"] != "K26"]
+        resources = []
+    else:
+        package = fetch_json(PACKAGE_URL)
+        resources = package["result"]["resources"]
+        rows = []
 
     for resource in resources:
         name = resource.get("name") or ""
@@ -118,6 +126,19 @@ def main() -> None:
                 "row_count": row_count,
             }
         )
+
+    count = ""
+    if not args.metadata_only:
+        fetch_k26_sources()
+        path = K26_SOURCE_DIR / "ballots.csv"
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            count = sum(1 for _ in csv.DictReader(handle))
+    rows.append({
+        "election": "K26", "election_number": 26, "year": 2026,
+        "resource_id": "cec-k26-2026-10-30", "resource_name": "K26 CEC ballot results",
+        "format": "CSV", "url": "https://media26.bechirot.gov.il/files/expb.csv",
+        "local_path": "raw/k26/ballots.csv", "status": "metadata_only" if args.metadata_only else "cached", "row_count": count,
+    })
 
     rows.sort(key=lambda row: row["election_number"], reverse=True)
     write_csv(

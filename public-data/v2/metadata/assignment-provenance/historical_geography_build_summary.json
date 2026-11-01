@@ -1,0 +1,1155 @@
+{
+  "display_detail_localities_available": 128,
+  "historical_composite_component_display_geometries": {
+    "features": 9,
+    "geometry": "data\\processed\\geographies\\historical_composite_component_display_geometries.geojson",
+    "metadata": "data\\processed\\geographies\\historical_composite_component_display_geometries.metadata.csv",
+    "policy": "data\\manual\\historical_composite_component_display_geometries.csv"
+  },
+  "historical_locality_fallback_display_geometries": {
+    "features": 1,
+    "geometry": "data\\processed\\geographies\\historical_locality_fallback_display_geometries.geojson",
+    "metadata": "data\\processed\\geographies\\historical_locality_fallback_display_geometries.metadata.csv",
+    "policy": "data\\manual\\historical_locality_boundary_overrides.csv"
+  },
+  "vintages": {
+    "1995": {
+      "assignment_geometry_supplements": 2,
+      "boundary_override_hidden_ids": [
+        "stat1995:2039001"
+      ],
+      "bounds_wgs84": {
+        "max_lat": 33.33361425343364,
+        "max_lon": 35.89458091819831,
+        "min_lat": 29.490019358656745,
+        "min_lon": 34.22913268060952
+      },
+      "current_locality_boundary_overrides": {
+        "loc:1195": "reviewed_current_locality_no_overlap",
+        "loc:1287": "reviewed_current_locality_no_overlap",
+        "loc:1311": "reviewed_current_locality_no_overlap",
+        "loc:1314": "reviewed_current_locality_no_overlap",
+        "loc:1337": "reviewed_current_locality_no_overlap",
+        "loc:1349": "reviewed_current_locality_no_overlap",
+        "loc:2021": "reviewed_current_locality_no_overlap",
+        "loc:3777": "reviewed_current_locality_no_overlap",
+        "loc:3795": "reviewed_current_locality_no_overlap",
+        "loc:942": "reviewed_current_locality_no_overlap",
+        "loc:990": "reviewed_current_locality_no_overlap",
+        "stat1995:1020002": "reviewed_current_locality_cutout:loc:1167",
+        "stat1995:1020003": "reviewed_current_locality_cutout:loc:1167",
+        "stat1995:1020005": "reviewed_current_locality_cutout:loc:1167",
+        "stat1995:1031004": "reviewed_current_locality_cutout:loc:338",
+        "stat1995:1047001": "reviewed_current_locality_cutout:loc:481",
+        "stat1995:1128001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:1163001": "reviewed_current_locality_cutout:loc:1334",
+        "stat1995:1171001": "reviewed_current_locality_cutout:loc:481|reviewed_current_locality_cutout:loc:531",
+        "stat1995:1174001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:1178001": "reviewed_current_locality_cutout:loc:1317|reviewed_current_locality_cutout:loc:8900",
+        "stat1995:1179001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:1180001": "reviewed_current_locality_cutout:loc:1332|reviewed_current_locality_cutout:loc:531|reviewed_current_locality_cutout:loc:7500",
+        "stat1995:1188001": "reviewed_current_locality_cutout:loc:7500",
+        "stat1995:1201001": "reviewed_current_locality_cutout:loc:1331|reviewed_current_locality_cutout:loc:1334",
+        "stat1995:1202001": "reviewed_current_locality_cutout:loc:1331|reviewed_current_locality_cutout:loc:1332",
+        "stat1995:1203001": "reviewed_current_locality_cutout:loc:531",
+        "stat1995:1214001": "reviewed_current_locality_cutout:loc:481",
+        "stat1995:1222001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:1225001": "reviewed_current_locality_cutout:loc:481",
+        "stat1995:1247001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:1275001": "reviewed_current_locality_cutout:loc:531",
+        "stat1995:1310001": "reviewed_current_locality_cutout:loc:3796",
+        "stat1995:2200001": "reviewed_current_locality_cutout:loc:1347",
+        "stat1995:2200012": "reviewed_current_locality_cutout:loc:1347",
+        "stat1995:254001": "reviewed_current_locality_cutout:loc:1321",
+        "stat1995:2640001": "reviewed_current_locality_cutout:loc:634",
+        "stat1995:2640007": "reviewed_current_locality_cutout:loc:634",
+        "stat1995:297001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:313001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:327001": "reviewed_current_locality_cutout:loc:1167",
+        "stat1995:4008001": "reviewed_current_locality_cutout:loc:4028",
+        "stat1995:407001": "reviewed_current_locality_cutout:loc:1330",
+        "stat1995:434001": "reviewed_current_locality_cutout:loc:427",
+        "stat1995:4702001": "reviewed_current_locality_cutout:loc:4028",
+        "stat1995:472001": "reviewed_current_locality_boundary:loc:472",
+        "stat1995:492001": "reviewed_current_locality_cutout:loc:481|reviewed_current_locality_cutout:loc:531",
+        "stat1995:504001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:529001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:530001": "reviewed_current_locality_cutout:loc:481",
+        "stat1995:531001": "reviewed_current_locality_cutout:loc:7500",
+        "stat1995:531003": "reviewed_current_locality_cutout:loc:7500",
+        "stat1995:575001": "reviewed_current_locality_cutout:loc:8900",
+        "stat1995:633001": "reviewed_current_locality_cutout:loc:634",
+        "stat1995:637001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:639001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:643001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:657001": "reviewed_current_locality_cutout:loc:1326",
+        "stat1995:6600135": "reviewed_current_locality_cutout:loc:22",
+        "stat1995:666001": "reviewed_current_locality_cutout:loc:1358",
+        "stat1995:7100033": "reviewed_current_locality_cutout:loc:1323",
+        "stat1995:718001": "reviewed_current_locality_cutout:loc:1315",
+        "stat1995:7500001": "reviewed_current_locality_cutout:loc:531",
+        "stat1995:7500006": "reviewed_current_locality_cutout:loc:531",
+        "stat1995:758001": "reviewed_current_locality_cutout:loc:1319",
+        "stat1995:7800005": "reviewed_current_locality_cutout:loc:926",
+        "stat1995:7800006": "reviewed_current_locality_cutout:loc:926",
+        "stat1995:856001": "reviewed_current_locality_cutout:loc:1333",
+        "stat1995:885001": "reviewed_current_locality_cutout:loc:1140",
+        "stat1995:8900001": "reviewed_current_locality_cutout:loc:1317"
+      },
+      "current_locality_fallback_geometry_overrides": 0,
+      "display_geometry_rejected_codes": [],
+      "display_geometry_replacements": 116,
+      "display_geometry_representative_sources": {
+        "stat1995:9400008": "stat1995:1062001"
+      },
+      "display_geometry_simplified": false,
+      "features": 2661,
+      "localities": 1187,
+      "non_exclusive_display_markers": [
+        "stat1995:1062001"
+      ],
+      "source_area_aliases": 2661,
+      "source_inventory_audit": {
+        "additional_geometry_rows_sharing_an_area_id": 175,
+        "archive": "statistical_areas_1995.zip",
+        "assignable_source_geometry_rows": 2834,
+        "corrected_malformed_source_area_ids": 2,
+        "excluded_positive_locality_rows": [
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 3724,
+            "locality_name_en": "",
+            "locality_name_he": "נחל נגוהות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 3721,
+            "locality_name_en": "",
+            "locality_name_he": "נחל דורן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 477,
+            "locality_name_en": "",
+            "locality_name_he": "בתיר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 503,
+            "locality_name_en": "",
+            "locality_name_he": "מאקורה"
+          }
+        ],
+        "excluded_source_rows": 376,
+        "exclusion_reason_counts": {
+          "missing_or_nonpositive_locality_code": 372,
+          "missing_stat_area_number": 4
+        },
+        "gdb": "city_stat_95.gdb",
+        "layer": "city_stat_95",
+        "raw_feature_rows": 3210,
+        "unique_assignment_area_ids_before_supplements": 2659
+      }
+    },
+    "2008": {
+      "assignment_geometry_supplements": 0,
+      "boundary_override_hidden_ids": [],
+      "bounds_wgs84": {
+        "max_lat": 33.3285883093403,
+        "max_lon": 35.894625080008296,
+        "min_lat": 29.487516446747993,
+        "min_lon": 34.27873901954739
+      },
+      "current_locality_boundary_overrides": {
+        "stat2008:1020001": "reviewed_current_locality_cutout:loc:537",
+        "stat2008:1030001": "reviewed_current_locality_cutout:loc:478",
+        "stat2008:10470001": "reviewed_current_locality_cutout:loc:481",
+        "stat2008:10610031": "reviewed_current_locality_cutout:loc:478",
+        "stat2008:10610042": "reviewed_current_locality_cutout:loc:478",
+        "stat2008:11480001": "reviewed_current_locality_cutout:loc:1345",
+        "stat2008:11710001": "reviewed_current_locality_cutout:loc:481|reviewed_current_locality_cutout:loc:531",
+        "stat2008:11740001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:11780001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:11790001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:11800001": "reviewed_current_locality_cutout:loc:531|reviewed_current_locality_cutout:loc:7500",
+        "stat2008:11880001": "reviewed_current_locality_cutout:loc:7500",
+        "stat2008:12030001": "reviewed_current_locality_cutout:loc:531",
+        "stat2008:12140001": "reviewed_current_locality_cutout:loc:481",
+        "stat2008:12220001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:12250001": "reviewed_current_locality_cutout:loc:481",
+        "stat2008:12750001": "reviewed_current_locality_cutout:loc:531",
+        "stat2008:20350001": "reviewed_current_locality_cutout:loc:634",
+        "stat2008:26400001": "reviewed_current_locality_cutout:loc:634",
+        "stat2008:26400009": "reviewed_current_locality_cutout:loc:634",
+        "stat2008:26400010": "reviewed_current_locality_cutout:loc:634",
+        "stat2008:27300008": "reviewed_current_locality_cutout:loc:1345",
+        "stat2008:2970001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:3130001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:4070001": "reviewed_current_locality_cutout:loc:478",
+        "stat2008:4330001": "reviewed_current_locality_cutout:loc:537",
+        "stat2008:4920001": "reviewed_current_locality_cutout:loc:481|reviewed_current_locality_cutout:loc:531",
+        "stat2008:5040001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:5290001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:5290003": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:5300001": "reviewed_current_locality_cutout:loc:481",
+        "stat2008:5310001": "reviewed_current_locality_cutout:loc:7500",
+        "stat2008:5310004": "reviewed_current_locality_cutout:loc:7500",
+        "stat2008:5310005": "reviewed_current_locality_cutout:loc:7500",
+        "stat2008:5750001": "reviewed_current_locality_cutout:loc:8900",
+        "stat2008:75000001": "reviewed_current_locality_cutout:loc:531",
+        "stat2008:75000007": "reviewed_current_locality_cutout:loc:531",
+        "stat2008:93000001": "reviewed_current_locality_cutout:loc:537"
+      },
+      "current_locality_fallback_geometry_overrides": 1,
+      "display_geometry_rejected_codes": [],
+      "display_geometry_replacements": 105,
+      "display_geometry_representative_sources": {},
+      "display_geometry_simplified": false,
+      "features": 3030,
+      "localities": 1195,
+      "non_exclusive_display_markers": [],
+      "source_area_aliases": 3030,
+      "source_inventory_audit": {
+        "additional_geometry_rows_sharing_an_area_id": 0,
+        "archive": "statisticalareas_demography2008.gdb.zip",
+        "assignable_source_geometry_rows": 3030,
+        "corrected_malformed_source_area_ids": 0,
+        "excluded_positive_locality_rows": [
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10001,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. הגליל-העליון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10002,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מרום-הגליל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10003,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. הגליל-התחתון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10004,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מטה-אשר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10006,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. עמק הירדן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10007,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. בקעת בית שאן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10008,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. הגלבוע"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10009,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. עמק יזרעאל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10012,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. זבולון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10013,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מגידו"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10014,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מנשה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10015,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. חוף הכרמל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10016,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. עמק חפר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10018,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. לב השרון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10020,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. דרום השרון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10025,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. חבל מודיעין"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10026,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מטה יהודה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10029,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. חבל יבנה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10030,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. גזר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10031,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. נחל שורק"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10032,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. גדרות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10033,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. באר טוביה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10034,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. שפיר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10035,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. יואב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10036,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. חוף אשקלון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10037,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. שער הנגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10038,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. אשכול"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10039,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. שדות נגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10040,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. עמק לוד"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10041,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. בני שמעון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10042,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מרחבים"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10048,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. רמת נגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10050,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. לכיש"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10051,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. תמר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10052,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מעלה יוסף"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10053,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. חבל אילות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10054,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. הערבה התיכונה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10055,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. מבואות החרמון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10056,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. משגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 10071,
+            "locality_name_en": "",
+            "locality_name_he": "מ.א. גולן"
+          }
+        ],
+        "excluded_source_rows": 41,
+        "exclusion_reason_counts": {
+          "missing_or_nonpositive_locality_code": 1,
+          "missing_stat_area_number": 40
+        },
+        "gdb": "statisticalareas_demography2008.gdb",
+        "layer": "statisticalareas_demography2008",
+        "raw_feature_rows": 3071,
+        "unique_assignment_area_ids_before_supplements": 3030
+      }
+    },
+    "2011": {
+      "assignment_geometry_supplements": 32,
+      "boundary_override_hidden_ids": [],
+      "bounds_wgs84": {
+        "max_lat": 33.300019932633525,
+        "max_lon": 35.8417140354411,
+        "min_lat": 29.490525862473735,
+        "min_lon": 34.28098853325724
+      },
+      "current_locality_boundary_overrides": {},
+      "current_locality_fallback_geometry_overrides": 0,
+      "display_geometry_rejected_codes": [],
+      "display_geometry_replacements": 122,
+      "display_geometry_representative_sources": {},
+      "display_geometry_simplified": true,
+      "features": 3115,
+      "localities": 1313,
+      "non_exclusive_display_markers": [
+        "stat2011:10410001",
+        "stat2011:11690001",
+        "stat2011:11700001",
+        "stat2011:12340001",
+        "stat2011:14110001",
+        "stat2011:27100001",
+        "stat2011:9390001",
+        "stat2011:9560001",
+        "stat2011:9570001",
+        "stat2011:9580001",
+        "stat2011:9600001",
+        "stat2011:9610001",
+        "stat2011:9630001",
+        "stat2011:9640001",
+        "stat2011:9650001",
+        "stat2011:9660001",
+        "stat2011:9670001",
+        "stat2011:9680001",
+        "stat2011:9690001",
+        "stat2011:9700001",
+        "stat2011:9720001",
+        "stat2011:9760001",
+        "stat2011:9860001"
+      ],
+      "source_area_aliases": 3115,
+      "source_inventory_audit": {
+        "additional_geometry_rows_sharing_an_area_id": 0,
+        "archive": "statisticalareas_2020_demography.gdb.zip",
+        "assignable_source_geometry_rows": 3083,
+        "corrected_malformed_source_area_ids": 0,
+        "excluded_positive_locality_rows": [
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9901,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9902,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9903,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9904,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9905,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9906,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9907,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9909,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9910,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9911,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9914,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9915,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9916,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9917,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9920,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9922,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9924,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9925,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9926,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9927,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9928,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9929,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9930,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5501,
+            "locality_name_en": "HaGalil HaElyon",
+            "locality_name_he": "הגליל העליון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5502,
+            "locality_name_en": "Merom HaGalil",
+            "locality_name_he": "מרום הגליל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5503,
+            "locality_name_en": "HaGalil HaTahton",
+            "locality_name_he": "הגליל התחתון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5504,
+            "locality_name_en": "Matte Asher",
+            "locality_name_he": "מטה אשר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5506,
+            "locality_name_en": "Emeq HaYarden",
+            "locality_name_he": "עמק הירדן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5507,
+            "locality_name_en": "Emeq Hama'ayanot",
+            "locality_name_he": "עמק המעיינות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5508,
+            "locality_name_en": "HaGilboa",
+            "locality_name_he": "הגלבוע"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5509,
+            "locality_name_en": "Emaq Yizre'el",
+            "locality_name_he": "עמק יזרעאל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5512,
+            "locality_name_en": "Zevulun",
+            "locality_name_he": "זבולון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5513,
+            "locality_name_en": "Megiddo",
+            "locality_name_he": "מגידו"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5514,
+            "locality_name_en": "Menashe",
+            "locality_name_he": "מנשה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5515,
+            "locality_name_en": "Hof HaKarmel",
+            "locality_name_he": "חוף הכרמל"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5516,
+            "locality_name_en": "Emeq Hefer",
+            "locality_name_he": "עמק חפר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5518,
+            "locality_name_en": "Lev HaSharon",
+            "locality_name_he": "לב השרון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5519,
+            "locality_name_en": "Hof HaSharon",
+            "locality_name_he": "חוף השרון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5520,
+            "locality_name_en": "Derom HaSharon",
+            "locality_name_he": "דרום השרון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5525,
+            "locality_name_en": "Hevel Modi'in",
+            "locality_name_he": "חבל מודיעין"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5526,
+            "locality_name_en": "Matte Yehuda",
+            "locality_name_he": "מטה יהודה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5527,
+            "locality_name_en": "Gan Rawe",
+            "locality_name_he": "גן רווה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5528,
+            "locality_name_en": "Brenner",
+            "locality_name_he": "ברנר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5529,
+            "locality_name_en": "Hevel Yavne",
+            "locality_name_he": "חבל יבנה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5530,
+            "locality_name_en": "Gezer",
+            "locality_name_he": "גזר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5531,
+            "locality_name_en": "Nahal Soreq",
+            "locality_name_he": "נחל שורק"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5532,
+            "locality_name_en": "Gederot",
+            "locality_name_he": "גדרות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5533,
+            "locality_name_en": "Be'er Tuveya",
+            "locality_name_he": "באר-טוביה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5534,
+            "locality_name_en": "Shafir",
+            "locality_name_he": "שפיר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5535,
+            "locality_name_en": "Yo'av",
+            "locality_name_he": "יואב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5536,
+            "locality_name_en": "Hof Ashqelon",
+            "locality_name_he": "חוף אשקלון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5537,
+            "locality_name_en": "Sha'ar HaNegev",
+            "locality_name_he": "שער הנגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5538,
+            "locality_name_en": "Eshkol",
+            "locality_name_he": "אשכול"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5539,
+            "locality_name_en": "Sedot Negev",
+            "locality_name_he": "שדות נגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5540,
+            "locality_name_en": "sedot dan",
+            "locality_name_he": "שדות דן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5541,
+            "locality_name_en": "Bene Shim'on",
+            "locality_name_he": "בני שמעון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5542,
+            "locality_name_en": "Merhavim",
+            "locality_name_he": "מרחבים"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5545,
+            "locality_name_en": "Allona",
+            "locality_name_he": "אלונה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5548,
+            "locality_name_en": "Ramat Negev",
+            "locality_name_he": "רמת נגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5550,
+            "locality_name_en": "Lakhish",
+            "locality_name_he": "לכיש"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5551,
+            "locality_name_en": "Tamar",
+            "locality_name_he": "תמר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5552,
+            "locality_name_en": "Ma'ale Yosef",
+            "locality_name_he": "מעלה יוסף"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5553,
+            "locality_name_en": "Hevel Elot",
+            "locality_name_he": "חבל אילות"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5554,
+            "locality_name_en": "HaArava HaTikhona",
+            "locality_name_he": "הערבה התיכונה"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5555,
+            "locality_name_en": "Mevo'ot HaHermon",
+            "locality_name_he": "מבואות החרמון"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5556,
+            "locality_name_en": "Misgav",
+            "locality_name_he": "משגב"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5565,
+            "locality_name_en": "Al Batof",
+            "locality_name_he": "אל-בטוף"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5566,
+            "locality_name_en": "Bustan El Marj",
+            "locality_name_he": "בוסתן אל-מרג'"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5568,
+            "locality_name_en": "",
+            "locality_name_he": "נווה מדבר"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5569,
+            "locality_name_en": "",
+            "locality_name_he": "אל קסום"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 5571,
+            "locality_name_en": "Golan",
+            "locality_name_he": "גולן"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9931,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9932,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9933,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9934,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9935,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9936,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9937,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9938,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9939,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9940,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9941,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9942,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9944,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9945,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9946,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9947,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9950,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9951,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9955,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9956,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9958,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9959,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9960,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9961,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9962,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9963,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9965,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9969,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9970,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9971,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9973,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9974,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          },
+          {
+            "exclusion_reason": "missing_stat_area_number",
+            "locality_code": 9975,
+            "locality_name_en": "",
+            "locality_name_he": "שטח ללא שיפוט"
+          }
+        ],
+        "excluded_source_rows": 104,
+        "exclusion_reason_counts": {
+          "missing_stat_area_number": 104
+        },
+        "gdb": "statisticalareas_2020_demography.gdb",
+        "layer": "statisticalareas_2020_demography",
+        "raw_feature_rows": 3187,
+        "unique_assignment_area_ids_before_supplements": 3083
+      }
+    }
+  }
+}

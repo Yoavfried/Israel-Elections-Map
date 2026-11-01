@@ -18,7 +18,7 @@ interface StorageLike {
 export function defaultPreferences(browserLanguage = 'en'): AppPreferences {
   return {
     language: browserLanguage.toLowerCase().startsWith('he') ? 'he' : 'en',
-    electionId: 'K25',
+    electionId: 'K26',
     geographyMode: 'statistical-area',
     basemapMode: 'vector',
   }

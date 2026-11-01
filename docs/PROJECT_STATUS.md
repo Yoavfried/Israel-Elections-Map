@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-13
+Last updated: 2026-11-01
 
 This is the repository's only project completion tracker. Methodology, audit
 evidence, and generated coverage tables remain in subject-specific documents,
@@ -10,6 +10,7 @@ but open/complete workstream declarations belong here.
 
 | Workstream | Status | Current boundary |
 |---|---|---|
+| K26 / 2026 addition | Initial complete-count snapshot implemented; area audit remains open | All 12,926 source rows reconcile exactly to 5,690,685 valid votes. National results, 120 provisional mandates, locality results, and double envelopes are included. K26 uses 2022 geography. Only 1,783 single-area ballots plus 71 established custom-bucket rows receive supported geographic assignments; 10,157 rows remain municipality-only and are displayed through 145 disclosed whole-locality fallback units. Pre-balance crosswalk candidates are archived, not accepted. Final-register balancing, certification refresh, and new K26 party color/name/article review remain open; completed K17-K25 reviews are unchanged. No K26 coalition is invented before one is formed. |
 | K17-K25 election normalization | Complete | 96,529 source rows are normalized and reconcile to the official election totals. |
 | Locality-mode aggregation | Complete | Every geographic-scope result row is mapped. Twelve unsupported partial-presence cells across eight localities remain neutral under a closed policy; their effect is immaterial and no further matching work is planned. |
 | Historical statistical-area mode | Complete under the current evidence policy | Election-specific CBS crosswalks and matching 1995/2008/2011 geometry are active. Fifty-four high-confidence row-level continuity links are approved and labeled synthetic. The final K21-K25 display layer publishes 537 exact closed units and 1,732 disclosed representative units across 4,731 polygon-election memberships. Entirely unassigned localities use a display-only fallback. Visual refinement of all nine K17/K18 historical-composite components, all 33 effective K17 historical-identity fallback polygons, and the additional reviewed K17/K18 locality overlaps is complete. All 119 reviewed tiny West Bank proxies now have detailed display footprints; the final four use reviewed Peace Now polygons and do not alter assignments. A separate automated joined-locality display audit evaluates 175 election-specific continuity leads: 38 strict approvals are active and 137 are covered, contradicted, or unresolved; these never change ballot-level area assignments. A polling-register safety audit rejects 38 false K24 row-level stable-ballot candidates: ten in Daliyat al-Karmel and 28 in Umm al-Fahm. Their complete final results publish only through reviewed exact closed area sets. All nine specific ordinary crosswalk omissions are likewise resolved at exact set level, including K25 Daliyat ballot 23; no internal area split is invented. Remaining source limitations have settled display and publication rules and are not an active repair queue. |
@@ -17,26 +18,30 @@ but open/complete workstream declarations belong here.
 | Party colors | Complete | All 297 published K17-K25 lists have reviewed colors. Stable-letter defaults, election-specific exceptions, and audited identity carryovers remain explicit in the map configuration. |
 | Wikipedia links | Complete | Hebrew and English article links, repeated-party continuity, same-label/different-identity exceptions, and intentional blanks are reviewed for every published K17-K25 list. |
 | UX and accessibility | Complete for the current desktop and portrait-mobile scope | Bilingual desktop and portrait-mobile behavior is active, including document-level direction, properly shaped Hebrew/Arabic vector labels, a top-bar accessibility control, compact mobile navigation and selectors, a persistent map viewport, keyboard-aware search, closable result sheets, and short-screen scrolling that keeps the selected geography title visible. Landscape-phone support is outside the agreed scope. |
-| National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K25 election with official national votes, election-specific threshold, final mandates, current color, and separate Hebrew/English Wikipedia controls. The 12 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
+| National results | Implemented | A primary top-bar view publishes every positive-vote list in each K17-K26 election with official national votes, election-specific threshold, mandates, current color, and separate Hebrew/English Wikipedia controls. K26 is explicitly marked pending certification. The 14 documented zero-filled nonrunner columns remain auditable in the registry but are excluded from every election view. |
 | Product features | Complete for the current scope | Election-aware bilingual geography and numbered-address search, national results, both party-analysis modes, coalition results, and persisted neutral/vector backgrounds are implemented on desktop and portrait mobile. Single-party mode includes an area/vote-circle toggle: color represents vote share and circle area represents absolute votes. The color cap remains the positive-share 95th percentile; circle size uses one party-independent scale capped at the 99th percentile of each area's leading-party vote total, a smaller maximum radius, and a visible positive-vote tint floor. Coalition mode uses reviewed election-specific first-coalition lists, the outgoing transitional coalition for K21/K22, and explicit K21-K23 joint-list caveats. Satellite and 3D-building modes have been removed and are not planned. |
-| Public data distribution | Implemented | `public-data/v1` is a schema-v2 release with 107 manifest-listed data files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. Data releases now use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
+| Public data distribution | Implemented | `public-data/v2` is data release v2.0 with schema version 2 and 124 manifest-listed files plus release manifests and validation, direct geography joins, checksums, and row-level assignment provenance. The preceding v1 snapshot is preserved. Data releases use the independent two-level `major.minor` policy in `docs/VERSIONING.md`. |
 | Public repository hardening | Implemented | Split licensing keeps the downloadable data, canonical geography, methodology, and non-presentation evidence tables under MIT while reserving rights in the website, colors, web-only polygon transformations, modes, and other product presentation. The app links directly to this repository for downloads, sources, methodology, and legal notices, and publishes a bilingual privacy notice for current network and browser-storage behavior. Rebuilding the private-input pipeline from a fresh clone, hosted CI, continuous performance monitoring, and duplicate in-app Sources/Legal pages are not public-data deliverables. |
 | Production website launch | Implemented | The locally compiled deployment is live at `https://yoavfried.com/isr-electionmap`. Cloudflare Workers Static Assets hosts the application and a selective Worker handles SEO routes; the owned-domain subpath proxies to that origin. No paid database or object storage is required. |
-| SEO and discoverability | Implemented; submission pending | Worker-rendered overview, feature overview, party-comparison, coalition, election-specific single-party, 2026 information, historical-election, locality, and statistical-area pages are available in Hebrew, English, French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and Polish. Every language has equivalent descriptions, initial HTML, complete Open Graph/social metadata, canonical and reciprocal hreflang links, WebApplication/WebPage/Dataset structured data as appropriate, exact map deep links including party selections, real 404s, and split sitemaps. Deliberately, arbitrary party-pair combinations do not create indexable pages. Google Search Console verification/submission, the canonical host's root `robots.txt` sitemap declaration, and post-indexing performance review remain operational launch tasks. |
+| SEO and discoverability | Implemented; submission pending | Worker-rendered overview, feature overview, party-comparison, coalition, election-specific single-party, 2026 results, historical-election, locality, and statistical-area pages are available in Hebrew, English, French, Spanish, Russian, Simplified Chinese, Arabic, German, Ukrainian, and Polish. Every language has equivalent descriptions, initial HTML, complete Open Graph/social metadata, canonical and reciprocal hreflang links, WebApplication/WebPage/Dataset structured data as appropriate, exact map deep links including party selections, real 404s, and split sitemaps. Deliberately, arbitrary party-pair combinations do not create indexable pages. Google Search Console verification/submission, the canonical host's root `robots.txt` sitemap declaration, and post-indexing performance review remain operational launch tasks. |
 | AdSense advertising | Planned | Use manual responsive units on content-rich pages and the national-results view. Keep mobile maps, result sheets, controls, search, and selectors ad-free. Hosting and crawlable content prerequisites are complete; implementation still requires an issued AdSense publisher/slot ID, the advertising update to the privacy notice, and a Google-certified consent flow. |
 
 ## Public Data Release
 
-The committed `public-data/v1` release can be used without the private working
+The committed `public-data/v2` release (data version v2.0) can be used without the private working
 data. It includes:
 
-- nine ballot-row CSVs covering all 96,529 normalized rows;
+- ten ballot-row CSVs covering all 109,455 normalized rows;
 - statistical-area, locality, custom-geography, envelope, and unresolved tables;
 - full-resolution 1995, 2008, 2011, and 2022 statistical-area packages;
 - current locality, reviewed composite-locality, and custom-geography packages;
 - direct `geography_id` joins, party/election metadata, checksums, and validation;
-- 35 machine-readable provenance and audit artifacts under
+- 38 machine-readable provenance and audit artifacts under
   `metadata/assignment-provenance/`.
+
+The v2 manifest lists 124 files, including the unmodified K26 source snapshot.
+The preceding `public-data/v1` release is preserved. K26 is a complete-count,
+pre-certification snapshot dated 2026-10-30; it is not described as certified.
 
 `public-data/METHODOLOGY.md` now states the exact assignment precedence,
 synthetic-link counts, unresolved-row policy, validation rules, and audit path
@@ -63,12 +68,15 @@ part of the reusable election tables.
 ## Statistical-Area Coverage
 
 Statistical mode uses the historical vintage named by the official crosswalk:
-1995 for K17, 2008 for K18, and 2011 for K19-K25. K25 is not converted to 2022
+1995 for K17, 2008 for K18, 2011 for K19-K25, and 2022 for K26. K25 is not converted to 2022
 areas because its official crosswalk still targets 2011.
 
-Across all elections, 5,583 rows representing 2,086,436 actual voters remain
+Across K17-K25, 5,583 rows representing 2,086,436 actual voters remain
 without a defensible statistical-area target. Supported statistical-mode voter
-coverage is 94.00% overall. Locality coverage is 100% in every election.
+coverage is 94.00% for those elections. K26 currently has 14.44% supported
+statistical/custom coverage; its remaining geographic votes are visible as
+disclosed municipality totals, not claimed area assignments. Locality coverage
+is 100% in every election.
 
 | Election | Vintage | Statistical-area rows | Custom rows | Pending rows | Pending actual voters | Supported voter share |
 |---|---:|---:|---:|---:|---:|---:|
@@ -261,4 +269,4 @@ across elections or approximate arithmetic is not sufficient evidence.
   Modi'in Illit shapes.
 
 See `HISTORICAL_STATISTICAL_AREA_ASSIGNMENT.md` for the evidence hierarchy and
-`public-data/v1/metadata/assignment-provenance/` for row-level audit artifacts.
+`public-data/v2/metadata/assignment-provenance/` for row-level audit artifacts.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { LANGUAGES } from './config.mjs'
 import { handleSeoRequest } from './render.mjs'
+import { K26_PUBLICATION_STATUS } from './publication-status.mjs'
 
 const party = {
   id: 'מחל',
@@ -39,6 +40,14 @@ const record = {
 const catalog = {
   elections: [
     {
+      id: 'K26',
+      resultUrls: {
+        national: 'results/k26/national.json',
+        locality: 'results/k26/localities.json',
+        'statistical-area': 'results/k26/statistical-areas.json',
+      },
+    },
+    {
       id: 'K25',
       resultUrls: {
         national: 'results/k25/national.json',
@@ -71,6 +80,9 @@ const statisticalResults = {
 
 const fixtures = new Map([
   ['data/v2/catalog.json', catalog],
+  ['data/v2/results/k26/national.json', national],
+  ['data/v2/results/k26/localities.json', localityResults],
+  ['data/v2/results/k26/statistical-areas.json', statisticalResults],
   ['data/v2/results/k25/national.json', national],
   ['data/v2/results/k25/localities.json', localityResults],
   ['data/v2/results/k25/statistical-areas.json', statisticalResults],
@@ -106,13 +118,22 @@ describe('multilingual SEO routes', () => {
     expect(english).toContain('<a href="https://yoavfried.com/">Yoav Fried&#39;s portfolio</a>')
   })
 
-  it('renders localized 2026 information without claiming results exist', async () => {
+  it('renders the published 2026 results instead of the obsolete future-election page', async () => {
     const response = await request('/isr-electionmap/he/elections/2026')
     const html = await response.text()
     expect(response.status).toBe(200)
-    expect(html).toContain('בחירות ישראל 2026')
-    expect(html).toContain('עדיין אין במאגר תוצאות רשמיות')
-    expect(html).toContain('https://www.gov.il/he/pages/26elections-info')
+    expect(html).toContain('2026')
+    expect(html).toContain('הליכוד')
+    expect(html).toContain('election=K26')
+    expect(html).not.toContain('עדיין אין במאגר תוצאות רשמיות')
+  })
+
+  it.each(LANGUAGES)('discloses K26 publication and geography limits in $code', async ({ code }) => {
+    const response = await request(`/isr-electionmap/${code}/elections/2026`)
+    expect(response.status).toBe(200)
+    const html = await response.text()
+    expect(html).toContain(K26_PUBLICATION_STATUS[code])
+    expect(html).not.toContain('/elections/2026/coalition')
   })
 
   it.each(LANGUAGES)('publishes advanced feature copy in $code', async ({ code }) => {

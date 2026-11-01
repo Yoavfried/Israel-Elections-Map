@@ -18,6 +18,7 @@ export const LANGUAGES = Object.freeze([
 export const LANGUAGE_BY_CODE = new Map(LANGUAGES.map((language) => [language.code, language]))
 
 export const ELECTIONS = Object.freeze([
+  { id: 'K26', number: 26, slug: '2026', year: 2026 },
   { id: 'K25', number: 25, slug: '2022', year: 2022 },
   { id: 'K24', number: 24, slug: '2021', year: 2021 },
   { id: 'K23', number: 23, slug: '2020', year: 2020 },
@@ -32,8 +33,7 @@ export const ELECTIONS = Object.freeze([
 export const ELECTION_BY_ID = new Map(ELECTIONS.map((election) => [election.id, election]))
 export const ELECTION_BY_SLUG = new Map(ELECTIONS.map((election) => [election.slug, election]))
 
-export const FUTURE_ELECTION = Object.freeze({ number: 26, slug: '2026', year: 2026 })
-export const BUILD_DATE = '2026-08-13'
+export const BUILD_DATE = '2026-11-01'
 
 export function localizedPath(languageCode, suffix = '') {
   const normalizedSuffix = suffix ? `/${String(suffix).replace(/^\/+|\/+$/g, '')}` : ''
@@ -70,7 +70,7 @@ export function partySuffix(election, partyId) {
 }
 
 export function mapUrl({
-  electionId = 'K25',
+  electionId = 'K26',
   mode = 'statistical-area',
   areaId,
   view = 'map',

@@ -1195,6 +1195,8 @@ def build_municipality_assignment_audit(coverage: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     assignments = read_csv(ASSIGNMENTS)
+    # K26 uses 2022 geography and has a separate pre-balance source audit.
+    assignments = assignments[assignments["election"].isin(ELECTION_VINTAGES)].copy()
     historical = read_csv(HISTORICAL_ASSIGNMENTS)
     crosswalk = read_csv(HISTORICAL_CROSSWALK)
     metadata = load_metadata()

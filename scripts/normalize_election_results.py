@@ -31,6 +31,8 @@ ADMIN_FIELDS = {
     "ברזל",
     "ריכוז",
     "שופט",
+    "חיצוניות",
+    "קלפי אחרת",
 }
 CORE_FIELD_NAMES = set(
     LOCALITY_CODE_FIELDS
@@ -60,7 +62,10 @@ def is_envelope(locality_code: str, locality_name: str) -> bool:
 
 
 def party_columns(columns: list[str]) -> list[str]:
-    return [column for column in columns if column not in CORE_FIELD_NAMES]
+    return [
+        column for column in columns
+        if column not in CORE_FIELD_NAMES and column.strip() and not column.startswith("Unnamed:")
+    ]
 
 
 def normalize_resource(

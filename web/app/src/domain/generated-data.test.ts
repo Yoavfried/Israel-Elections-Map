@@ -13,6 +13,25 @@ import {
 const dataRoot = resolve(import.meta.dirname, '..', '..', 'public', 'data', 'v2')
 
 describe('generated web data', () => {
+  it('keeps K26 supplements election-specific and hides the replaced Shaar Shomron components', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const supplements = ['1362', '3815', '3826', '3861', '3864', '3869']
+    for (const election of catalog.elections) {
+      const locality = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, election.resultUrls.locality)))
+      if (election.id !== 'K26') {
+        for (const code of supplements) expect(locality.hiddenGeographyIds).toContain(`loc:${code}`)
+        continue
+      }
+      expect(election.statisticalAreaVintage).toBe(2022)
+      for (const code of supplements) expect(locality.records.some((row) => row.id === `loc:${code}`)).toBe(true)
+      expect(locality.hiddenGeographyIds).toEqual(expect.arrayContaining(['loc:3720', 'loc:3778']))
+      const statistical = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, election.resultUrls['statistical-area'])))
+      expect(statistical.hiddenGeographyIds).toEqual(expect.arrayContaining(['stat2022:37200001', 'stat2022:37780001']))
+      expect(statistical.records.some((row) => row.id === 'stat2022:38260001')).toBe(true)
+      expect(statistical.records.some((row) => row.id === 'custom:tribal_negev')).toBe(true)
+    }
+  })
+
   it('matches the runtime schemas and asset checksums', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
 
@@ -24,7 +43,7 @@ describe('generated web data', () => {
       }),
     )
 
-    expect(catalog.elections).toHaveLength(9)
+    expect(catalog.elections).toHaveLength(10)
     expect(catalog.buildId).toHaveLength(16)
   })
 
@@ -33,6 +52,10 @@ describe('generated web data', () => {
 
     for (const election of catalog.elections) {
       const definition = coalitionDefinition(election.id)
+      if (election.id === 'K26') {
+        expect(definition).toBeNull()
+        continue
+      }
       expect(definition, election.id).not.toBeNull()
       const results = ElectionResultsSchema.parse(
         await readJson(resolve(dataRoot, election.resultUrls.locality)),
@@ -103,6 +126,7 @@ describe('generated web data', () => {
       K23: 29,
       K24: 38,
       K25: 40,
+      K26: 36,
     }
 
     for (const election of catalog.elections) {
@@ -552,6 +576,7 @@ describe('generated web data', () => {
   it('publishes zero-assignment result units as documented display-only totals', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedFallbackCounts: Record<string, number> = {
+      K26: 145,
       K17: 52,
       K18: 36,
       K19: 33,
@@ -941,7 +966,7 @@ describe('generated web data', () => {
       K25: ['custom:tribal_negev'],
     }
 
-    for (const election of catalog.elections) {
+    for (const election of catalog.elections.filter((entry) => entry.number <= 25)) {
       const asset = election.geographiesByMode['statistical-area']
       const geometry = (await readJson(resolve(dataRoot, asset.geometryUrl))) as {
         features: Array<{
@@ -1051,7 +1076,7 @@ describe('generated web data', () => {
     expect(featuresById.has('loc:3786')).toBe(true)
     expect(featuresById.has('loc:3825')).toBe(true)
 
-    for (const election of catalog.elections) {
+    for (const election of catalog.elections.filter((entry) => entry.number <= 25)) {
       const payload = ElectionResultsSchema.parse(
         await readJson(resolve(dataRoot, election.resultUrls.locality)),
       )
@@ -1080,7 +1105,7 @@ describe('generated web data', () => {
       ),
     )
 
-    for (const electionId of catalog.elections.map((election) => election.id)) {
+    for (const electionId of catalog.elections.filter((entry) => entry.number <= 25).map((election) => election.id)) {
       const payload = payloads.get(electionId)
       const composite = payload?.records.find(
         (record) => record.code === '567' && record.id.startsWith('composite:'),
@@ -1139,7 +1164,7 @@ describe('generated web data', () => {
         expect(
           statisticalPayload.records.some((record) => record.id === 'stat2011:37970001'),
         ).toBe(true)
-      } else if (Number(election.id.slice(1)) >= 21) {
+      } else if (election.number >= 21 && election.number <= 25) {
         expect(statisticalPayload.hiddenGeographyIds).not.toContain('stat2011:38230001')
         expect(statisticalPayload.hiddenGeographyIds).toContain('stat2011:37970001')
         expect(
@@ -1360,6 +1385,10 @@ describe('generated web data', () => {
     }
 
     for (const [electionId, payload] of payloads) {
+      if (electionId === 'K26') {
+        expect(payload.parties.some((candidate) => candidate.colorStatus === 'provisional')).toBe(true)
+        continue
+      }
       expect(
         payload.parties.every((candidate) => candidate.colorStatus === 'reviewed'),
         electionId,

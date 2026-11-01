@@ -371,11 +371,11 @@ export default function App() {
   )
   const coalitionPresentation = useMemo(
     () =>
-      activeView === 'coalition' && coalitionAnchorParty && coalitionPartyIds.length > 0
+      activeView === 'coalition'
         ? {
             partyIds: coalitionPartyIds,
-            color: coalitionAnchorParty.color,
-            upperBoundShare: coalitionUpperBoundShare,
+            color: coalitionAnchorParty?.color ?? '#D0D2CC',
+            upperBoundShare: coalitionUpperBoundShare || 1,
           }
         : null,
     [
@@ -726,6 +726,13 @@ export default function App() {
                 anchorParty={coalitionAnchorParty}
                 upperBoundShare={coalitionUpperBoundShare}
               />
+            ) : null}
+            {activeView === 'coalition' && !selectedCoalition ? (
+              <section className="coalition-panel" role="status">
+                {language === 'he'
+                  ? 'טרם הוקמה קואליציה לכנסת זו.'
+                  : 'A coalition has not yet been formed for this Knesset.'}
+              </section>
             ) : null}
             <GeographySearch
               language={language}

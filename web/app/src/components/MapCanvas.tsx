@@ -862,7 +862,7 @@ export default function MapCanvas({
           ),
         )
       } else if (coalition) {
-        color = partyGradientColor(
+        color = coalition.partyIds.length === 0 ? '#D0D2CC' : partyGradientColor(
           coalition.color,
           coalitionVoteShare(record, coalition.partyIds),
           coalition.upperBoundShare,

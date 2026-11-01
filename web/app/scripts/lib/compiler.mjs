@@ -428,6 +428,10 @@ export function pruneGeography(
         nameEn: properties.locality_name_en || properties.locality_name_he || '',
         displayMode,
         isComposite: false,
+        ...(properties.active_elections
+          ? { activeElections: splitPipeValues(properties.active_elections),
+              componentLocalityIds: splitPipeValues(properties.component_locality_ids) }
+          : {}),
         ...(mode === 'statistical-area' ? { statAreaNumber } : {}),
         ...(mode === 'statistical-area'
           ? { statAreaVintage: numberValue(properties.stat_area_vintage ?? 2022) }
@@ -692,7 +696,14 @@ export function buildHiddenLocalityIds(featureCollection, electionId) {
   const hidden = new Set()
   for (const feature of featureCollection.features) {
     const properties = feature.properties ?? {}
+    if (!properties.isComposite && properties.activeElections?.length &&
+      !properties.activeElections.includes(electionId)) {
+      hidden.add(properties.id)
+    }
     if (!properties.isComposite) {
+      if (properties.activeElections?.includes(electionId)) {
+        for (const componentId of properties.componentLocalityIds ?? []) hidden.add(componentId)
+      }
       continue
     }
     const active = (properties.activeElections ?? []).includes(electionId)
@@ -1320,7 +1331,7 @@ function buildPartyDefinition(
       en: registryEntry.wikipediaEnUrl || null,
     },
     color: reviewedColor || stablePartyColor(registryEntry.ballotLetter),
-    colorStatus: reviewedColor ? 'reviewed' : 'provisional',
+    colorStatus: reviewedColor && override.colorStatus !== 'provisional' ? 'reviewed' : 'provisional',
   }
 }
 

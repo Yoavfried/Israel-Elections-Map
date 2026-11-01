@@ -6,6 +6,13 @@ import {
 } from './mapLink'
 
 describe('map deep links', () => {
+  it('accepts the newly configured K26 election and overrides a stored older election', () => {
+    const link = parseMapLinkSearch('?election=K26&mode=locality&lang=en')
+    expect(link.electionId).toBe('K26')
+    expect(applyMapLinkPreferences({
+      electionId: 'K20', geographyMode: 'statistical-area', language: 'he', basemapMode: 'neutral',
+    }, link)).toMatchObject({ electionId: 'K26', geographyMode: 'locality', language: 'en' })
+  })
   it('parses a localized statistical-area result link', () => {
     expect(
       parseMapLinkSearch(

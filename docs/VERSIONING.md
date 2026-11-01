@@ -16,8 +16,9 @@ Public-data versions have exactly two numeric levels: `major.minor`.
   or another substantial expansion changes the data contract.
 - There is no patch-level public-data version.
 
-The current major line remains in `public-data/v1/` so download links stay
-simple. Exact published snapshots should be identified with Git tags or GitHub
+The current release is `v2.0` in `public-data/v2/`, adding K26 / 2026.
+The preceding `public-data/v1/` snapshot remains available and is not rewritten.
+Exact published snapshots should be identified with Git tags or GitHub
 releases such as `data-v1.1`; a tagged snapshot is never silently rewritten.
 The manifest's `schema_version` is a machine-format marker and is not the
 public release number.

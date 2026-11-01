@@ -1,0 +1,11 @@
+﻿election,election_number,year,label,stat_area_vintage,ballot_results_path,statistical_results_path,locality_results_path,statistical_geometry_archive
+K17,17,2006,Knesset 17,1995,ballots/k17.csv,aggregates/statistical-areas/k17.csv,aggregates/localities/k17.csv,geographies/statistical_areas_1995.zip
+K18,18,2009,Knesset 18,2008,ballots/k18.csv,aggregates/statistical-areas/k18.csv,aggregates/localities/k18.csv,geographies/statistical_areas_2008.zip
+K19,19,2013,Knesset 19,2011,ballots/k19.csv,aggregates/statistical-areas/k19.csv,aggregates/localities/k19.csv,geographies/statistical_areas_2011.zip
+K20,20,2015,Knesset 20,2011,ballots/k20.csv,aggregates/statistical-areas/k20.csv,aggregates/localities/k20.csv,geographies/statistical_areas_2011.zip
+K21,21,2019 Apr,Knesset 21,2011,ballots/k21.csv,aggregates/statistical-areas/k21.csv,aggregates/localities/k21.csv,geographies/statistical_areas_2011.zip
+K22,22,2019 Sep,Knesset 22,2011,ballots/k22.csv,aggregates/statistical-areas/k22.csv,aggregates/localities/k22.csv,geographies/statistical_areas_2011.zip
+K23,23,2020,Knesset 23,2011,ballots/k23.csv,aggregates/statistical-areas/k23.csv,aggregates/localities/k23.csv,geographies/statistical_areas_2011.zip
+K24,24,2021,Knesset 24,2011,ballots/k24.csv,aggregates/statistical-areas/k24.csv,aggregates/localities/k24.csv,geographies/statistical_areas_2011.zip
+K25,25,2022,Knesset 25,2011,ballots/k25.csv,aggregates/statistical-areas/k25.csv,aggregates/localities/k25.csv,geographies/statistical_areas_2011.zip
+K26,26,2026,Knesset 26,2022,ballots/k26.csv,aggregates/statistical-areas/k26.csv,aggregates/localities/k26.csv,geographies/statistical_areas_2022.zip

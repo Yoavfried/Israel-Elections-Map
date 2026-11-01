@@ -1,0 +1,7 @@
+﻿locality_id,locality_code,locality_name_he,locality_name_en,stat_area_count,single_stat_area,stat_area_ids,stat_2022_values,yishuv_stat_2022_values,cod_tifkud_values,has_function_code,display_geometry_source,min_lon,min_lat,max_lon,max_lat
+loc:1362,1362,גבעות עדן,Giv'ot Eden,1,True,stat2022:13620001,1,13620001,1,True,official_cbs_2025_publication_stat22_supplement,35.009401952562456,31.657022101784744,35.024480808343775,31.668910808563346
+loc:3815,3815,תל ציון,Tel Tsiyon,1,True,stat2022:38150001,1,38150001,1,True,official_cbs_2025_publication_stat22_supplement,35.238058716892105,31.879101131240567,35.2391149702329,31.880002957787887
+loc:3826,3826,שער שומרון,Sha'ar Shomron,1,True,stat2022:38260001,1,38260001,1,True,official_cbs_2025_publication_stat22_supplement,35.031268894008754,32.12131167300521,35.032327970678935,32.12221346110241
+loc:3861,3861,עשהאל,Asa'el,1,True,stat2022:38610001,1,38610001,1,True,official_cbs_2025_publication_stat22_supplement,35.04292732420207,31.372868943860404,35.04397791167241,31.37377083855029
+loc:3864,3864,בית חוגלה,Bet Hogla,1,True,stat2022:38640001,1,38640001,1,True,official_cbs_2025_publication_stat22_supplement,35.50634179154103,31.820784033457304,35.507397456901394,31.821685855876694
+loc:3869,3869,אביגיל,Avigayil,1,True,stat2022:38690001,1,38690001,1,True,official_cbs_2025_publication_stat22_supplement,35.140448433921634,31.402390319876968,35.141499321125096,31.40329221344211
