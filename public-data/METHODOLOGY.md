@@ -2,6 +2,12 @@
 
 ## K26 / 2026 Publication Policy
 
+Version v2.3 corrects whole-locality display-fallback metadata where mixed-group
+results became available. No ballot values, inferred links, or canonical
+downloadable boundaries change. A high-confidence inferred link is not a claim
+that the website has proved the complete and exclusive result for its polygon;
+incomplete register coverage and unbalanced residuals retain uncertainty notices.
+
 Version v2.2 adds 4,081 high-confidence synthetic K26 ballot-to-area links,
 representing 1,769,051 actual voters, without changing any vote count or any
 K17-K25 assignment. The evidence is published in

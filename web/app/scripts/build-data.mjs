@@ -1062,8 +1062,10 @@ function applyPendingAggregateNotices(metadataById, evidenceRows, electionId) {
   for (const row of evidenceRows) {
     if (
       String(row.election ?? '').trim() !== electionId ||
-      String(row.evidence_class ?? '').trim() !==
-        'cannot_show_separately_pending_aggregate_review'
+      !(
+        String(row.evidence_class ?? '').trim() === 'cannot_show_separately_pending_aggregate_review' ||
+        (electionId === 'K26' && String(row.evidence_class ?? '').trim() === 'incomplete_source_coverage')
+      )
     ) {
       continue
     }

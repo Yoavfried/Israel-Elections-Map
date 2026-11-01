@@ -1,6 +1,43 @@
 # Data Pipeline
 
-Last updated: 2026-07-19
+Last updated: 2026-11-01
+
+## K26 Display Review
+
+K26 uses the shared mixed-polling-group partition and ownership algorithm on
+2022 geometry. Its planned-to-final linkage is deliberately stricter than the
+historical default: ballot-number reuse alone never joins sites. The final
+register must reconcile to all ordinary result ballots and eligible counts.
+
+Whole-locality fallbacks are generated after mixed-group displays and excluded
+whenever that locality has a detailed display. This prevents the same ballots
+from appearing both in a locality-wide result and in a finer result. Row-level
+assignments and national/locality vote totals are not changed by this rule.
+
+For K26, omitted planned groups or unlinked final sites prevent an exact/no-note
+classification. Unbalanced single-area residual inferences also retain a notice.
+This affects claimed precision, not the recorded vote count or an invented split.
+
+`prepare_map_display_geometries.py` operates only on web presentation geometry.
+It repairs small rings before export, makes larger 2022 display footprints leave
+space for overlapping smaller footprints, and retains exact cutout coordinates.
+An approximately one-millimetre clearance avoids coincident-edge roundoff;
+this is below display resolution and does not change assignments.
+The intentionally hidden Shaar Shomron predecessors are excluded from ownership
+cleanup. The compiler does not round coordinates again after topology validation.
+K26 grouped and fallback outlines are dissolved from the full-resolution source
+before simplification, preventing artificial internal seams between components.
+The final visible partition is checked again after those unions.
+Canonical downloadable geography is unchanged.
+
+The contributor-capacity audit now includes K26 with CBS population attributes
+from the archived 2025 publication on STAT22 identifiers. It retains the existing
+125% total-population tolerance, treats missing demographics as unknown, and
+never infers a transfer merely from a population mismatch. The Ofakim 12 review
+is recorded in `data/manual/k26_display_capacity_reviews.csv`: the planned
+register already lists 431 eligible voters against the 258-person population
+proxy; final ballot 46 has 574 eligible and 452 actual voters. The synthetic
+residual link is retained with an uncertainty notice, not a forced merger.
 
 ## Product Grain
 

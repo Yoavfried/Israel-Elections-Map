@@ -208,6 +208,11 @@ def main() -> None:
     manifest: dict[str, Any] = {"elections": [], "outputs": {}}
     summary_rows: list[dict[str, Any]] = []
     municipality_fallback_audit_rows: list[dict[str, Any]] = []
+    display_metadata_path = PROCESSED_DIR / "geographies" / "statistical_area_polling_group_displays.metadata.csv"
+    display_metadata = (
+        pd.read_csv(display_metadata_path, dtype=str).fillna("")
+        if display_metadata_path.exists() else pd.DataFrame(columns=["election", "locality_code"])
+    )
 
     for election_number in sorted(ELECTIONS.keys(), reverse=True):
         election = ELECTIONS[election_number]["key"]
@@ -346,6 +351,11 @@ def main() -> None:
         mapped_locality_geography_ids = set(
             geographic_rows["locality_geography_id"].astype(str)
         ) | fully_covered_component_sources
+        mapped_locality_geography_ids.update(
+            "loc:" + code for code in display_metadata.loc[
+                display_metadata["election"].eq(election), "locality_code"
+            ]
+        )
         whole_locality_fallback_agg = locality_agg[
             ~locality_agg["locality_id"].isin(mapped_locality_geography_ids)
         ].copy()

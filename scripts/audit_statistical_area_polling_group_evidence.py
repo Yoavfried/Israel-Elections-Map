@@ -1153,12 +1153,27 @@ def main() -> None:
     )
 
     area_rows: list[dict[str, Any]] = []
+    unlinked_k26_localities = {
+        clean(row["locality_code"]) for row in site_rows
+        if clean(row["election"]) == "K26"
+        and not clean(row["all_area_ids"])
+        and clean(row["residual_final_ballots"])
+    }
+    unbalanced_k26_residual_areas = {
+        area_id
+        for row in site_rows
+        if clean(row["election"]) == "K26"
+        and integer(row["residual_area_count"]) == 1
+        and integer(row["all_area_count"]) > 1
+        and abs(integer(row["eligible_difference"])) > 3
+        for area_id in clean(row["residual_area_ids"]).split("|")
+    }
     for key, context in sorted(area_context.items()):
         election, locality_code, area_id = key
         component_id = component_by_area.get(key, "")
         if component_id:
             evidence_class = "cannot_show_separately_pending_aggregate_review"
-        elif context["missing_crosswalk_ballots"]:
+        elif context["missing_crosswalk_ballots"] or (election == "K26" and (locality_code in unlinked_k26_localities or area_id in unbalanced_k26_residual_areas)):
             evidence_class = "incomplete_source_coverage"
         else:
             evidence_class = "no_multi_area_aggregate_detected"

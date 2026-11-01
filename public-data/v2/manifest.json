@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "data_release": "v2.2",
+  "data_release": "v2.3",
   "election_range": {
     "first": "K17",
     "last": "K26"
@@ -991,9 +991,9 @@
       "election": "",
       "stat_area_vintage": "",
       "format": "csv",
-      "rows_or_features": 366,
-      "bytes": 70175,
-      "sha256": "3f3ea4c133dd9695bf3af5a09e393d96db8b3f350556a97e340523efca48b893",
+      "rows_or_features": 364,
+      "bytes": 69797,
+      "sha256": "c2cd8d0c9559a5c1650a2d47f39c357c2935134f9b91f7bd806b6a01a0baddea",
       "description": "Display-only municipality or reviewed-component totals used when no ballot has a supported statistical-area assignment."
     },
     {
@@ -1257,7 +1257,7 @@
       "format": "csv",
       "rows_or_features": 10,
       "bytes": 2583,
-      "sha256": "6929004b607b61028da835bbf2a537bea9ae5c170892dcf93db343e8c971ed84",
+      "sha256": "8ad9e7682efebc0886419edc11ab744b1f073d9e71bc4989e5013fbb51c795fb",
       "description": "Per-election statistical and locality mapping coverage."
     },
     {

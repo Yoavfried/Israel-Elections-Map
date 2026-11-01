@@ -27,7 +27,7 @@ GEOGRAPHIES = PROCESSED / "geographies"
 AUDITS = PROCESSED / "audits"
 MANUAL = ROOT / "data" / "manual"
 
-ELECTIONS = tuple(f"K{number}" for number in range(17, 26))
+ELECTIONS = tuple(f"K{number}" for number in range(17, 27))
 DEMOGRAPHIC_LENIENCY = Decimal("1.25")
 
 POLLING_RESULTS_PATH = PUBLIC / "statistical_area_polling_group_displays.csv"
@@ -145,6 +145,20 @@ def load_demographics() -> dict[tuple[str, str], tuple[int, bool]]:
         values[key] = (
             integer(row["population_proxy"]),
             clean(row["population_evidence_status"]) in complete_statuses,
+        )
+    local_geo = ROOT / ".local" / "python-geo"
+    sys.path.insert(0, str(local_geo))
+    import pyogrio
+
+    packages = list((ROOT / "data/raw/k26/geography").rglob("*.gdb"))
+    if len(packages) != 1:
+        raise ValueError("K26 capacity review requires the archived CBS 2025 demographic layer")
+    current = pyogrio.read_dataframe(packages[0], columns=["YISHUV_STAT22", "Pop_Total"], read_geometry=False)
+    for row in current.itertuples(index=False):
+        population = row.Pop_Total
+        complete = population is not None and population == population
+        values[("K26", f"stat2022:{int(row.YISHUV_STAT22)}")] = (
+            int(population) if complete else 0, complete
         )
     return values
 

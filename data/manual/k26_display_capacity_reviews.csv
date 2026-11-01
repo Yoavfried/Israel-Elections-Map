@@ -1,0 +1,2 @@
+election,stat_area_id,source_kalpi,planned_eligible_voters,final_eligible_voters,actual_voters,population_proxy,decision,reason
+K26,stat2022:310012,46,431,574,452,258,retain_inferred_assignment_with_uncertainty_notice,"The official planned register already exceeds the demographic total-population proxy. The source site supports areas 6 and 12; preserved ballots leave area 12 as the residual candidate, but its eligible count changed by 143. Retain the synthetic link and disclose incomplete precision rather than invent a population-based transfer or merger."

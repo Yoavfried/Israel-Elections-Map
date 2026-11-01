@@ -606,7 +606,7 @@ describe('generated web data', () => {
   it('publishes zero-assignment result units as documented display-only totals', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedFallbackCounts: Record<string, number> = {
-      K26: 52,
+      K26: 50,
       K17: 52,
       K18: 36,
       K19: 33,
@@ -1670,7 +1670,7 @@ describe('generated web data', () => {
   it('publishes nationwide polling-group placement only where evidence qualifies', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
-      K26: 648,
+      K26: 848,
       K21: 92,
       K22: 427,
       K23: 424,
@@ -1678,7 +1678,7 @@ describe('generated web data', () => {
       K25: 407,
     }
     const expectedExactClosedCounts: Record<string, number> = {
-      K26: 226,
+      K26: 34,
       K21: 134,
       K22: 4,
       K23: 2,

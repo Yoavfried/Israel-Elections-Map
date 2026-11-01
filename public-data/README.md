@@ -8,7 +8,7 @@ polygon aggregates, full-resolution geography packages, election and party
 metadata, row-level assignment provenance, checksums, and a machine-readable
 validation report. The ballot-table contract is schema version 2.
 
-The current data release is **v2.2**. It adds 4,081 validated, explicitly
+The current data release is **v2.3**. Version v2.2 added 4,081 validated, explicitly
 synthetic K26 ballot-to-area links and archives both official polling registers.
 Votes are unchanged, as are all K17-K25 ballot values and assignments. The v2.1
 [25-list Wikipedia review](v2/metadata/party-wikipedia-reviews/k26.csv?raw=1)
@@ -154,7 +154,9 @@ assign any ballot or change coverage. The historical map substitutions and their
 represented totals are disclosed in
 [`historical_municipality_display_fallbacks.csv`](v2/metadata/assignment-provenance/historical_municipality_display_fallbacks.csv?raw=1).
 
-K26 retains 52 whole-locality display fallbacks after the register-based update.
+K26 retains 50 whole-locality display fallbacks after the register-based update
+and removal of fallbacks superseded by mixed-group results. The v2.3 correction
+does not change any ballot-level vote value or assignment.
 Its source policy is recorded in
 [`k26_source_audit.json`](v2/metadata/assignment-provenance/k26_source_audit.json?raw=1)
 and its underlying assignment counts in [`coverage.csv`](v2/metadata/coverage.csv?raw=1).

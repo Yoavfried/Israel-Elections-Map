@@ -437,7 +437,7 @@ export function pruneGeography(
           ? { statAreaVintage: numberValue(properties.stat_area_vintage ?? 2022) }
           : {}),
       },
-      geometry: roundGeometry(feature.geometry),
+      geometry: webGeometry(feature.geometry),
     }
   })
 
@@ -487,7 +487,7 @@ export function pruneGeography(
           evidenceStatus: properties.evidence_status || '',
           evidenceMethod: properties.evidence_method || '',
         },
-        geometry: roundGeometry(feature.geometry),
+        geometry: webGeometry(feature.geometry),
       })
     }
   }
@@ -513,7 +513,7 @@ export function pruneGeography(
         nameEn: properties.name_en || properties.name_he || id,
         displayMode,
       },
-      geometry: roundGeometry(feature.geometry),
+      geometry: webGeometry(feature.geometry),
     })
   }
 
@@ -675,7 +675,7 @@ export function buildMunicipalityFallbackDisplay({
             }
           : {}),
       },
-      geometry: roundGeometry(
+      geometry: webGeometry(
         componentFallbackFeature?.geometry ??
           localityFallbackFeature?.geometry ??
           localityFeature.geometry,
@@ -1486,24 +1486,10 @@ function coordinatePositionCount(coordinates) {
   return count
 }
 
-function roundGeometry(geometry) {
-  if (!geometry) {
-    return geometry
-  }
-  if (geometry.type === 'GeometryCollection') {
-    return { ...geometry, geometries: geometry.geometries.map(roundGeometry) }
-  }
-  return { ...geometry, coordinates: roundCoordinates(geometry.coordinates) }
-}
-
-function roundCoordinates(value) {
-  if (!Array.isArray(value)) {
-    return value
-  }
-  if (value.length > 0 && typeof value[0] === 'number') {
-    return value.map((coordinate) => Number(coordinate.toFixed(6)))
-  }
-  return value.map(roundCoordinates)
+function webGeometry(geometry) {
+  // Display geometry is topology-checked by the Python build. Re-rounding here
+  // collapses small rings and changes shared boundaries after that validation.
+  return geometry
 }
 
 function assertFeatureCollection(value, label) {

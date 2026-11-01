@@ -215,9 +215,11 @@ def apply_reviewed_display_groups(
     return adjusted
 
 
-def dissolved_component_geometry(geometries: list[object]) -> dict[str, object]:
+def dissolved_component_geometry(geometries: list[object], simplify_tolerance: float = 0) -> dict[str, object]:
     """Dissolve shared borders so one result record reads as one map area."""
     dissolved = unary_union(geometries)
+    if simplify_tolerance:
+        dissolved = dissolved.simplify(simplify_tolerance, preserve_topology=True)
     if dissolved.is_empty:
         raise ValueError("Polling-group display has no polygon components")
     if dissolved.geom_type not in {"Polygon", "MultiPolygon"}:
@@ -377,7 +379,7 @@ def build_election(
         if len(set(components["locality_code"].map(clean))) != 1:
             raise ValueError(f"{display_id} crosses locality codes")
         geometries = list(components.geometry)
-        display_geometry = dissolved_component_geometry(geometries)
+        display_geometry = dissolved_component_geometry(geometries, 0.00005 if election == "K26" else 0)
         connected = is_connected(geometries, ADJACENCY_TOLERANCE_METERS)
         ownership_status = clean(row["ownership_status"])
         if ownership_status in {
@@ -729,6 +731,8 @@ def main() -> None:
         source_geometry = source_geometry.set_crs("EPSG:4326")
     source_geometry = source_geometry.to_crs("EPSG:4326")
     current_geometry = gpd.read_file(SOURCE_GEOMETRY_PATH.with_name("statistical_areas_2022.display.simplified.geojson"), engine="pyogrio").to_crs("EPSG:4326")
+    current_full = gpd.read_file(SOURCE_GEOMETRY_PATH.with_name("statistical_areas_2022.display.geojson"), engine="pyogrio").to_crs("EPSG:4326")
+    current_geometry = pd.concat([current_full, current_geometry.loc[~current_geometry["stat_area_id"].isin(current_full["stat_area_id"])]], ignore_index=True)
     current_geometry["stat_area_number"] = current_geometry["stat_2022"]
     source_geometry = pd.concat([source_geometry, current_geometry], ignore_index=True)
     geometry_by_id = source_geometry.set_index("stat_area_id", drop=False)

@@ -901,7 +901,7 @@ def write_manifests(
             json.dumps(
                 {
                     "schema_version": 2,
-                    "data_release": "v2.2",
+                    "data_release": "v2.3",
                     "election_range": {"first": "K17", "last": "K26"},
                     "files": manifest,
                 },

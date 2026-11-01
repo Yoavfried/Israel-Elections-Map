@@ -1346,6 +1346,13 @@ def main() -> None:
         clean(row["site_audit_id"]): row
         for row in sites.to_dict("records")
     }
+    unlinked_final_localities = {
+        clean(site["locality_code"])
+        for site in sites_by_id.values()
+        if clean(site["election"]) == "K26"
+        and not split_pipe(site["all_area_ids"])
+        and split_pipe(site["residual_final_ballots"])
+    }
     output_rows: list[dict[str, Any]] = []
     policy_rows: list[dict[str, Any]] = []
     fallback_rows: list[dict[str, Any]] = []
@@ -1439,6 +1446,13 @@ def main() -> None:
             data_issues.append("final_result_rows_without_register")
         if network_balance == "mismatch":
             evidence_warnings.append("planned_final_eligible_mismatch")
+
+        incomplete_k26_evidence = clean(component["election"]) == "K26" and (
+            bool(omitted_site_ids)
+            or clean(component["locality_code"]) in unlinked_final_localities
+        )
+        if incomplete_k26_evidence:
+            evidence_warnings.append("incomplete_final_area_coverage")
 
         network_supported = not data_issues
         component_classification = clean(component["classification"])
@@ -1551,7 +1565,7 @@ def main() -> None:
                 if exact_merge_supported:
                     partition_units = list(partition_result["units"])
                     partition_strategy = "exact_topological_component"
-                    partition_exact = True
+                    partition_exact = not incomplete_k26_evidence
                 elif initial_units:
                     partition_units = initial_units
                     partition_strategy = "best_effort_detail_preserved"
