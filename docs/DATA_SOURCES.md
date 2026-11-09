@@ -231,6 +231,14 @@ The jurisdiction polygons are broader legal/administrative extents and are not
 used as the displayed built-up boundaries. No candidate intersects another
 current locality display feature.
 
+For K26 only, the same layer supplies display footprints for Asa'el,
+Beit Hogla, Avigayil, Tel Zion, and Kochav Ya'akov. Source feature IDs are in
+`data/manual/k26_west_bank_display_footprints.geojson`. The first four
+contain their existing marker positions; Tel Zion and Kochav Ya'akov use
+separate outlines from the same layer. The original Kochav Ya'akov outline
+remains in earlier elections. The five replacements do not change vote
+assignments or downloadable boundaries.
+
 ### Kaplan Election-Map Payloads
 
 The supplied Kaplan map applications were traced to five public data payloads:

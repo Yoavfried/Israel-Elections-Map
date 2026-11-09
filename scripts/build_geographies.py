@@ -34,7 +34,7 @@ REVIEWED_WEST_BANK_DETAILS_PATH = (
 )
 COMPOSITE_LOCALITIES_PATH = MANUAL_DIR / "composite_localities.csv"
 JOINED_LOCALITY_COMPOSITES_PATH = MANUAL_DIR / "joined_locality_composites.csv"
-ELECTIONS = {f"K{number}" for number in range(17, 26)}
+ELECTIONS = {f"K{number}" for number in range(17, 27)}
 SPECIAL_POINT_PROXY_LOCALITY_CODES = {1791, 1792, 1793, 1794, 3488}
 
 CUSTOM_GEOGRAPHIES = [

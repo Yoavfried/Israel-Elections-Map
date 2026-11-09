@@ -20,6 +20,8 @@ describe('generated web data', () => {
     expect(telAviv.length).toBeGreaterThan(80)
     expect(statistical.records.find((row) => row.id === 'stat2022:50000223')?.totals.actualVoters).toBe(3331)
     expect(telAviv.some((row) => row.id.startsWith('display:polling-'))).toBe(true)
+    expect(telAviv.find((row) => row.id === 'display:reviewed-site-move:K26:5000:824')?.totals.validVotes).toBe(1455)
+    expect(statistical.hiddenGeographyIds).toContain('stat2022:50000824')
     const locality = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, 'results/k26/localities.json')))
     expect(locality.records.find((row) => row.id === 'loc:5000')?.totals.actualVoters).toBe(309971)
   })
@@ -75,6 +77,30 @@ describe('generated web data', () => {
 
     expect(catalog.elections).toHaveLength(10)
     expect(catalog.buildId).toHaveLength(16)
+  })
+
+  it('omits K26 council and no-jurisdiction outlines from statistical selection and search', async () => {
+    const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
+    const election = catalog.elections.find((entry) => entry.id === 'K26')!
+    const mode = 'statistical-area'
+    const geometry = await readJson(resolve(dataRoot, election.geographiesByMode[mode].geometryUrl)) as {
+      features: Array<{ id: string; properties: { geographyType: string; localityCode?: string } }>
+    }
+    const structuralIds = geometry.features.filter(({ properties }) => {
+      const code = Number(properties.localityCode)
+      return properties.geographyType === mode &&
+        ((code >= 5500 && code <= 5599) || (code >= 9900 && code <= 9999))
+    }).map(({ id }) => id)
+    expect(structuralIds).toHaveLength(104)
+    expect(structuralIds).toContain('stat2022:5548')
+    expect(structuralIds).toContain('stat2022:5526')
+
+    const results = ElectionResultsSchema.parse(await readJson(resolve(dataRoot, election.resultUrls[mode])))
+    const search = GeographySearchIndexSchema.parse(await readJson(resolve(dataRoot, election.resultUrls.search)))
+    const hidden = new Set(results.hiddenGeographyIds)
+    const searchable = new Set(search.items.filter((item) => item.geographyMode === mode).map((item) => item.id))
+    expect(structuralIds.every((id) => hidden.has(id) && !searchable.has(id))).toBe(true)
+    expect(searchable.has('display:reviewed-site-move:K26:5000:824')).toBe(true)
   })
 
   it('resolves every configured coalition member to an election ballot', async () => {
@@ -810,22 +836,18 @@ describe('generated web data', () => {
     }
   })
 
-  it('ships one shared lightweight land backdrop for both map modes', async () => {
+  it('shares the land backdrop except for the K26 statistical background-only areas', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
-    const backdropUrls = new Set(
-      catalog.elections.flatMap((election) => [
-        election.geographiesByMode['statistical-area'].backdropGeometryUrl,
-        election.geographiesByMode.locality.backdropGeometryUrl,
-      ]),
-    )
-
-    expect(backdropUrls.size).toBe(1)
-    const backdropUrl = [...backdropUrls][0]
-    expect(backdropUrl).toBe('geographies/statistical-area-backdrop.geojson')
-    if (!backdropUrl) {
-      throw new Error('Missing shared map backdrop URL')
+    const backdropUrl = 'geographies/statistical-area-backdrop.geojson'
+    const k26BackdropUrl = 'geographies/statistical-area-backdrop-k26.geojson'
+    for (const election of catalog.elections) {
+      expect(election.geographiesByMode.locality.backdropGeometryUrl).toBe(backdropUrl)
+      expect(election.geographiesByMode['statistical-area'].backdropGeometryUrl).toBe(
+        election.id === 'K26' ? k26BackdropUrl : backdropUrl,
+      )
     }
     expect(catalog.assets.some((asset) => asset.path === backdropUrl)).toBe(true)
+    expect(catalog.assets.some((asset) => asset.path === k26BackdropUrl)).toBe(true)
 
     const backdrop = (await readJson(resolve(dataRoot, backdropUrl))) as {
       features: Array<{
@@ -1670,7 +1692,7 @@ describe('generated web data', () => {
   it('publishes nationwide polling-group placement only where evidence qualifies', async () => {
     const catalog = AppCatalogSchema.parse(await readJson(resolve(dataRoot, 'catalog.json')))
     const expectedRepresentativeCounts: Record<string, number> = {
-      K26: 848,
+      K26: 869,
       K21: 92,
       K22: 427,
       K23: 424,
@@ -1678,7 +1700,7 @@ describe('generated web data', () => {
       K25: 407,
     }
     const expectedExactClosedCounts: Record<string, number> = {
-      K26: 34,
+      K26: 37,
       K21: 134,
       K22: 4,
       K23: 2,
@@ -1698,6 +1720,8 @@ describe('generated web data', () => {
           record.id.startsWith('display:polling-exact:') ||
           record.id.startsWith('display:polling-topology:') ||
           record.id.startsWith('display:reviewed-set:') ||
+          record.id.startsWith('display:reviewed-site-move:') ||
+          record.id.startsWith('display:reviewed-site-continuity:') ||
           record.id.startsWith('display:reviewed-closed:'),
       )
       const representativeRecords = pollingGroupRecords.filter((record) => record.notice)

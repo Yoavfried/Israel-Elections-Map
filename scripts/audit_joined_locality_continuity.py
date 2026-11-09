@@ -363,7 +363,8 @@ def accepted_relationships() -> list[dict[str, str]]:
     return [
         row
         for row in read_csv(JOINED_PATH)
-        if clean(row.get("evidence_status")) in {"confirmed", "strong"}
+        if clean(row.get("election")) in ELECTIONS
+        and clean(row.get("evidence_status")) in {"confirmed", "strong"}
     ]
 
 

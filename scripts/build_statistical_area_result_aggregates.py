@@ -43,7 +43,7 @@ SOURCE_PATHS = [
     / "processed"
     / "geographies"
     / f"statistical_areas_{vintage}.display.simplified.geojson"
-    for vintage in (1995, 2008, 2011)
+    for vintage in (1995, 2008, 2011, 2022)
 ]
 OUTPUT_PATH = (
     ROOT
@@ -178,6 +178,8 @@ def main() -> None:
     source_frames: list[gpd.GeoDataFrame] = []
     for source_path in SOURCE_PATHS:
         source_frame = gpd.read_file(source_path, engine="pyogrio")
+        if "stat_area_number" not in source_frame:
+            source_frame["stat_area_number"] = source_frame["stat_2022"]
         if source_frame.crs is None:
             source_frame = source_frame.set_crs("EPSG:4326")
         source_frames.append(source_frame.to_crs("EPSG:4326"))

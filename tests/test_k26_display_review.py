@@ -22,6 +22,72 @@ def rows(path):
 
 
 class K26DisplayReviewTests(unittest.TestCase):
+    def test_west_bank_footprints_and_joined_register_are_k26_only(self):
+        root = ROOT / "web/app/public/data/v2"
+        def read(path):
+            return json.loads((root / path).read_text(encoding="utf-8"))
+
+        codes = {"3779", "3815", "3861", "3864", "3869"}
+        expected = {"3779": 1819, "3815": 2784, "3861": 148, "3864": 172, "3869": 87}
+        for mode, geo, marker in (
+            ("statistical-areas", "statistical-areas-2022", "statistical-area-markers-2022"),
+            ("localities", "localities-k26", "locality-markers-k26"),
+        ):
+            payload = read(f"results/k26/{mode}.json")
+            visible = {r["id"]: r for r in payload["records"] if r["id"] not in payload["hiddenGeographyIds"]}
+            features = {f["properties"]["localityCode"]: f for f in read(f"geographies/{geo}.geojson")["features"]
+                        if f["properties"].get("localityCode") in codes}
+            self.assertEqual(set(features), codes)
+            for code, feature in features.items():
+                self.assertEqual(feature["properties"]["displayMode"], "polygon")
+                self.assertEqual(visible[feature["id"]]["totals"]["validVotes"], expected[code])
+            active_markers = {f["id"] for f in read(f"geographies/{marker}.geojson")["features"]} & visible.keys()
+            self.assertEqual(active_markers, {"custom:tribal_negev"})
+            self.assertEqual(visible["custom:tribal_negev"]["totals"]["validVotes"], 33088)
+            self.assertEqual(shape(features["3779"]["geometry"]).intersection(shape(features["3815"]["geometry"])).area, 0)
+            joined, components = (
+                ("display:joined-locality:K26:3555:3620", {"stat2022:35550001", "stat2022:36200001"})
+                if mode == "statistical-areas" else ("composite:joined-k26-3555", {"loc:3555", "loc:3620"})
+            )
+            self.assertEqual(visible[joined]["totals"]["validVotes"], 188)
+            self.assertTrue(components <= set(payload["hiddenGeographyIds"]))
+            self.assertFalse(components & visible.keys())
+        historical = read("results/k25/localities.json")
+        self.assertIn("composite:joined-k25-3555", {r["id"] for r in historical["records"]})
+        catalog = read("catalog.json")
+        k25 = next(e for e in catalog["elections"] if e["id"] == "K25")
+        self.assertEqual(k25["geographiesByMode"]["locality"]["geometryUrl"], "geographies/localities.geojson")
+
+    def test_reviewed_city_displays_preserve_whole_final_ballots(self):
+        root = ROOT / "web/app/public/data/v2"
+        payload = json.loads((root / "results/k26/statistical-areas.json").read_text(encoding="utf-8"))
+        display = {r["id"]: r for r in payload["records"]}
+        hidden = set(payload["hiddenGeographyIds"])
+        neutral = {"35700006", "36160025", "36500005", "37800035", "37800036", "37970036"}
+        self.assertTrue({f"stat2022:{code}" for code in neutral} <= hidden)
+        backdrop = json.loads((root / "geographies/statistical-area-backdrop-k26.geojson").read_text(encoding="utf-8"))
+        self.assertTrue({f"stat2022:{code}" for code in neutral} <= {f.get("id") for f in backdrop["features"]})
+        reviews = rows(ROOT / "data/manual/statistical_area_polling_group_display_reviews.csv")
+        ballots = rows(ROOT / "public-data/v2/ballots/k26.csv")
+        seen = set()
+        for review in reviews:
+            key = review["display_geography_id"]
+            if not key.startswith(("display:reviewed-site-move:K26:", "display:reviewed-site-continuity:K26:")):
+                continue
+            record = display[key]
+            scope = set(review["owned_stat_area_ids"].split("|"))
+            kalpis = set(review["ambiguous_final_ballots"].split("|"))
+            source = [r for r in ballots if r["source_locality_code"] == review["locality_code"]
+                      and (r["source_kalpi"] in kalpis or r["stat_area_id"] in scope)]
+            ballot_ids = {r["source_row_uid"] for r in source}
+            self.assertFalse(seen & ballot_ids)
+            self.assertTrue(scope <= hidden)
+            self.assertFalse(scope & display.keys())
+            self.assertEqual(record["totals"]["contributingRows"], len(source))
+            self.assertEqual(record["totals"]["validVotes"], sum(int(r["valid_votes"]) for r in source))
+            self.assertEqual(bool(record.get("notice")), review["review_status"] != "approved-exact-closed")
+            seen.update(ballot_ids)
+
     def test_meitar_union_has_no_artificial_internal_seams(self):
         geometry = json.loads((ROOT / "web/app/public/data/v2/geographies/statistical-areas-2022.geojson").read_text())
         feature = next(feature for feature in geometry["features"] if feature["properties"].get("nameHe") == "מיתר · 1, 2, 3")
@@ -82,9 +148,61 @@ class K26DisplayReviewTests(unittest.TestCase):
         self.assertTrue(incomplete)
         payload = json.loads((ROOT / "web/app/public/data/v2/results/k26/statistical-areas.json").read_text())
         records = {row["id"]: row for row in payload["records"]}
+        reviews = rows(ROOT / "data/manual/statistical_area_polling_group_display_reviews.csv")
         for row in incomplete:
             self.assertNotEqual(row["review_status"], "approved-exact-closed")
-            self.assertTrue(records[row["display_geography_id"]].get("notice"))
+            key = row["display_geography_id"]
+            if key not in records:
+                successors = [
+                    review["display_geography_id"] for review in reviews
+                    if review["election"] == row["election"]
+                    and review["locality_code"] == row["locality_code"]
+                    and set(row["owned_stat_area_ids"].split("|")) <= set(review["owned_stat_area_ids"].split("|"))
+                    and set(row["ambiguous_final_ballots"].split("|")) <= set(review["ambiguous_final_ballots"].split("|"))
+                ]
+                self.assertEqual(len(successors), 1, key)
+                key = successors[0]
+            self.assertTrue(records[key].get("notice"))
+
+    def test_east_jerusalem_review_displays_final_votes_once(self):
+        payload = json.loads((ROOT / "web/app/public/data/v2/results/k26/statistical-areas.json").read_text(encoding="utf-8"))
+        reviews = rows(ROOT / "data/manual/statistical_area_polling_group_display_reviews.csv")
+        reviews = [row for row in reviews if row["ownership_policy"] == "reviewed_k26_missing_planned_area_partition"]
+        self.assertEqual(len(reviews), 5)
+        records = {row["id"]: row for row in payload["records"]}
+        hidden = set(payload["hiddenGeographyIds"])
+        ballots = [row for row in rows(ROOT / "public-data/v2/ballots/k26.csv") if row["source_locality_code"] == "3000"]
+        seen_areas = set()
+        seen_ballots = set()
+        added_votes = 0
+        for review in reviews:
+            group = records[review["display_geography_id"]]
+            self.assertTrue(group["notice"]["he"])
+            self.assertTrue(group["notice"]["en"])
+            areas = set(review["owned_stat_area_ids"].split("|"))
+            final = set(review["ambiguous_final_ballots"].split("|"))
+            self.assertFalse(seen_areas & areas)
+            self.assertTrue(areas <= hidden)
+            self.assertFalse(areas & records.keys())
+            seen_areas.update(areas)
+            members = [row for row in ballots if row["source_kalpi"] in final or row["stat_area_id"] in areas]
+            keys = {row["source_row_uid"] for row in members}
+            self.assertFalse(seen_ballots & keys)
+            seen_ballots.update(keys)
+            self.assertEqual(group["totals"]["contributingRows"], len(members))
+            self.assertEqual(group["totals"]["validVotes"], sum(int(row["valid_votes"]) for row in members))
+            for party, votes in group["partyVotes"].items():
+                self.assertEqual(votes, sum(int(row[party]) for row in members))
+            added_votes += sum(int(row["valid_votes"]) for row in members if row["source_kalpi"] in final)
+        self.assertEqual((len(seen_areas), len(seen_ballots), added_votes), (36, 32, 9970))
+
+    def test_reviewed_east_jerusalem_capacity_uses_verified_final_ballots(self):
+        audit = rows(ROOT / "data/processed/audits/display_contributor_capacity_audit.csv")
+        row = next(row for row in audit if row["display_geography_id"] == "display:polling-partition:K26:3000:reviewed-east:611")
+        self.assertEqual(int(row["ambiguous_final_eligible_voters"]), 6145)
+        self.assertEqual(int(row["preserved_direct_eligible_voters"]), 2437)
+        self.assertEqual(int(row["election_capacity"]), 8582)
+        self.assertFalse(row["flag_reason"])
 
 
 if __name__ == "__main__":

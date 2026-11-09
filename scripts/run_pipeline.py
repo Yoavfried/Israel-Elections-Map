@@ -49,6 +49,7 @@ GEOGRAPHY_OUTPUTS = [
     PROCESSED_DIR / "geographies" / "localities_2022_dissolved.geojson",
     PROCESSED_DIR / "geographies" / "statistical_areas_2022.display.simplified.geojson",
     PROCESSED_DIR / "geographies" / "localities_2022_dissolved.display.simplified.geojson",
+    PROCESSED_DIR / "geographies" / "localities_2022_dissolved.k26.display.geojson",
     PROCESSED_DIR / "geographies" / "composite_localities.simplified.geojson",
     PROCESSED_DIR / "geographies" / "statistical_areas_1995.geojson",
     PROCESSED_DIR / "geographies" / "statistical_areas_2008.geojson",

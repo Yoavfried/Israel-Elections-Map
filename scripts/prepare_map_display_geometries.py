@@ -24,6 +24,8 @@ from shapely.ops import transform
 GRID = 0.000001
 CUTOUT_CLEARANCE = 0.00000001  # About one millimetre; avoids coincident-edge roundoff.
 GEOGRAPHIES = ROOT / "data/processed/geographies"
+K26_FOOTPRINTS = ROOT / "data/manual/k26_west_bank_display_footprints.geojson"
+K26_LOCALITIES = GEOGRAPHIES / "localities_2022_dissolved.k26.display.geojson"
 
 
 def polygonal(geometry):
@@ -61,10 +63,37 @@ def carve_overlaps(geometries, ids):
     return output, changes
 
 
+def apply_k26_footprints(features, geometries, replacements):
+    output = []
+    shapes = []
+    found = set()
+    for feature, geometry in zip(features, geometries):
+        properties = feature["properties"]
+        code = int(properties["locality_code"])
+        if code in replacements:
+            if code in found:
+                raise ValueError(f"K26 footprint replacement requires one area for {code}")
+            found.add(code)
+            geometry, source = replacements[code]
+            properties = {**properties, "display_mode": "polygon", "display_geometry_source": source}
+        output.append({**feature, "properties": properties})
+        shapes.append(geometry)
+    if found != replacements.keys():
+        raise ValueError(f"Missing K26 footprint targets: {sorted(replacements.keys() - found)}")
+    return output, shapes
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-only", action="store_true")
     args = parser.parse_args()
+    replacements = {
+        int(feature["properties"]["locality_code"]): (
+            polygonal(make_valid(shape(feature["geometry"]))),
+            feature["properties"]["geometry_source"],
+        )
+        for feature in json.loads(K26_FOOTPRINTS.read_text(encoding="utf-8"))["features"]
+    }
     paths = [
         *[GEOGRAPHIES / f"statistical_areas_{vintage}.display.simplified.geojson" for vintage in (1995, 2008, 2011, 2022)],
         *[GEOGRAPHIES / name for name in (
@@ -88,12 +117,24 @@ def main():
             for feature in payload["features"]
         ]
         changes = []
+        if path.name == "statistical_areas_2022.display.simplified.geojson":
+            payload["features"], geometries = apply_k26_footprints(payload["features"], geometries, replacements)
         if path.name in {"statistical_areas_2022.display.simplified.geojson", "localities_2022_dissolved.display.simplified.geojson"}:
             field = "stat_area_id" if path.name.startswith("statistical") else "locality_id"
             ids = [str(feature["properties"][field]) for feature in payload["features"]]
             # These predecessor polygons are intentionally hidden in K26, whose
             # Shaar Shomron polygon already contains both component footprints.
             positions = [i for i, feature in enumerate(payload["features"]) if str(feature["properties"].get("locality_code")) not in {"3720", "3778"}]
+            if field == "locality_id":
+                k26_features, k26_shapes = apply_k26_footprints(payload["features"], geometries, replacements)
+                cleaned, k26_changes = carve_overlaps([k26_shapes[i] for i in positions], [ids[i] for i in positions])
+                k26_shapes = dict(zip(positions, cleaned))
+                k26_payload = {**payload, "features": [
+                    {**feature, "geometry": mapping(k26_shapes[i]) if i in k26_shapes else feature["geometry"]}
+                    for i, feature in enumerate(k26_features)
+                ]}
+                K26_LOCALITIES.write_text(json.dumps(k26_payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+                summary.append({"file": K26_LOCALITIES.name, "valid_shapes": len(k26_features), "cutouts": k26_changes})
             cleaned, changes = carve_overlaps([geometries[i] for i in positions], [ids[i] for i in positions])
             for index, geometry in zip(positions, cleaned):
                 geometries[index] = geometry
@@ -136,7 +177,10 @@ def main():
     if not args.base_only and group_path.exists() and fallback_rows_path.exists():
         group_payload = json.loads(group_path.read_text(encoding="utf-8"))
         current_groups = [feature for feature in group_payload["features"] if feature["properties"].get("elections") == "K26"]
-        owned = {area for feature in current_groups for area in feature["properties"]["component_stat_area_ids"].split("|")}
+        aggregate_path = GEOGRAPHIES / "statistical_area_result_aggregates.geojson"
+        aggregate_payload = json.loads(aggregate_path.read_text(encoding="utf-8"))
+        current_aggregates = [feature for feature in aggregate_payload["features"] if feature["properties"].get("elections") == "K26"]
+        owned = {area for feature in current_groups + current_aggregates for area in feature["properties"]["component_stat_area_ids"].split("|")}
         fallback_codes = {row["locality_code"] for row in fallbacks}
         from geography_display_helpers import is_point_proxy
         project = Transformer.from_crs(4326, 2039, always_xy=True).transform
@@ -150,7 +194,7 @@ def main():
                 continue
             plain.append(feature)
         current_fallbacks = [feature for feature in fallback_payload["features"] if feature["properties"].get("stat_area_vintage") == 2022]
-        active = plain + current_groups + current_fallbacks
+        active = plain + current_groups + current_aggregates + current_fallbacks
         ids = [str(feature["properties"].get("stat_area_id") or feature["properties"].get("custom_id") or feature["properties"]["fallback_geography_id"]) for feature in active]
         cleaned, changes = carve_overlaps([shape(feature["geometry"]) for feature in active], ids)
         for feature, geometry in zip(active, cleaned):
@@ -159,6 +203,7 @@ def main():
         for path, payload in (
             (GEOGRAPHIES / "statistical_areas_2022.display.simplified.geojson", {"type": "FeatureCollection", "features": stats}),
             (group_path, group_payload),
+            (aggregate_path, aggregate_payload),
             (fallback_path, fallback_payload),
         ):
             path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")

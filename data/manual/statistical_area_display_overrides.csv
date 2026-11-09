@@ -48,3 +48,9 @@ stat2011:30002711,K20,default,,,,במרשם הקלפיות הרשמי לא נר�
 stat2011:30002812,K20,default,,,,במרשם הקלפיות הרשמי לא נרשמו בעלי זכות בחירה לקלפיות שתוכננו לאזור זה ולכן אין תוצאה להצגה.,The official register records no eligible voters for this area's planned ballots so there is no result to display.
 stat2022:37200001,K26,hidden,,,Replaced in the K26 display by the reviewed Sha'ar Shomron union; no standalone result.,,
 stat2022:37780001,K26,hidden,,,Replaced in the K26 display by the reviewed Sha'ar Shomron union; no standalone result.,,
+stat2022:35700006,K26,background,,,Industrial area with no K26 ballot assignment; prior coverage was through broader Ariel area 1.,,
+stat2022:36160025,K26,background,,,Open land with no K26 ballot assignment; prior coverage was through broader Maale Adumim area 1.,,
+stat2022:36500005,K26,background,,,Open land with no K26 ballot assignment; prior coverage was through broader Efrat area 1.,,
+stat2022:37800035,K26,background,,,Open land with no K26 ballot assignment; prior coverage was through broader Beitar Illit area 7.,,
+stat2022:37800036,K26,background,,,Open land with no K26 ballot assignment; prior coverage was through broader Beitar Illit area 7.,,
+stat2022:37970036,K26,background,,,Open land with no K26 ballot assignment; prior coverage was through broader Modiin Illit area 8.,,

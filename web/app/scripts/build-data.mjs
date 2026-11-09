@@ -53,6 +53,7 @@ async function main() {
       localityMetadataRows,
       statisticalAreas,
       localities,
+      k26Localities,
       historicalComponentFallbackGeometries,
       historicalLocalityFallbackGeometries,
       statisticalAreaBackdrop,
@@ -93,6 +94,7 @@ async function main() {
       readJson(
         resolve(sourceRoot, 'geographies', 'localities_2022_dissolved.display.simplified.geojson'),
       ),
+      readJson(resolve(sourceRoot, 'geographies', 'localities_2022_dissolved.k26.display.geojson')),
       readJson(
         resolve(
           sourceRoot,
@@ -233,6 +235,7 @@ async function main() {
       customGeographies,
       compositeLocalities,
     )
+    const prunedK26Localities = pruneGeography(k26Localities, 'locality', customGeographies, compositeLocalities)
     const electionSourceDataById = new Map(
       await Promise.all(
         electionConfig.map(async (election) => {
@@ -308,7 +311,7 @@ async function main() {
         electionId: election.id,
         vintage,
         fallbackRows: sourceData.fallbackRows,
-        localityGeography: prunedLocalities,
+        localityGeography: election.id === 'K26' ? prunedK26Localities : prunedLocalities,
         statisticalGeography,
         componentFallbackGeography: historicalComponentFallbackGeometries,
         localityFallbackGeography: filterFallbackGeographiesByVintage(
@@ -364,6 +367,7 @@ async function main() {
       ]),
     )
     const localityMarkers = buildDisplayMarkers(prunedLocalities)
+    const k26LocalityMarkers = buildDisplayMarkers(prunedK26Localities)
 
     const assets = []
     const writeJsonAsset = async (relativePath, payload, pretty = false) => {
@@ -406,6 +410,13 @@ async function main() {
       featureCount: prunedLocalities.features.length,
       markerFeatureCount: localityMarkers.features.length,
     }
+    const k26LocalityGeographyAsset = {
+      ...localityGeographyAsset,
+      geometryUrl: 'geographies/localities-k26.geojson',
+      markerGeometryUrl: 'geographies/locality-markers-k26.geojson',
+      featureCount: prunedK26Localities.features.length,
+      markerFeatureCount: k26LocalityMarkers.features.length,
+    }
 
     await Promise.all([
       ...[...prunedStatisticalAreasByVintage].flatMap(([vintage, geography]) => [
@@ -417,6 +428,8 @@ async function main() {
       ]),
       writeJsonAsset(localityGeographyAsset.geometryUrl, prunedLocalities),
       writeJsonAsset(localityGeographyAsset.markerGeometryUrl, localityMarkers),
+      writeJsonAsset(k26LocalityGeographyAsset.geometryUrl, prunedK26Localities),
+      writeJsonAsset(k26LocalityGeographyAsset.markerGeometryUrl, k26LocalityMarkers),
       writeJsonAsset(statisticalAreaBackdropUrl, statisticalAreaBackdrop),
       writeJsonAsset(basemapMaskGeometryUrl, basemapOutsideMask),
       writeJsonAsset(mapContextGeometryUrl, mapContextFootprint),
@@ -425,6 +438,7 @@ async function main() {
     const catalogElections = []
     for (const election of electionConfig) {
       const electionSlug = election.id.toLowerCase()
+      const electionLocalityGeography = election.id === 'K26' ? prunedK26Localities : prunedLocalities
       const statisticalAreaVintage = Number(election.statisticalAreaVintage)
       const statisticalMetadata = statisticalMetadataByVintage.get(statisticalAreaVintage)
       const statisticalGeographyAsset = statisticalGeographyAssetsByVintage.get(
@@ -451,11 +465,14 @@ async function main() {
       const statisticalDisplayOverrides =
         statisticalAreaDisplayOverrides.get(election.id) ?? new Map()
       const configuredHiddenStatisticalIds = [...statisticalDisplayOverrides]
-        .filter(([, override]) => override.visibility === 'hidden')
+        .filter(([, override]) => override.visibility !== 'default')
         .map(([statAreaId]) => statAreaId)
+      const backgroundOnlyIds = new Set(
+        configuredHiddenStatisticalIds.filter((id) => statisticalDisplayOverrides.get(id).visibility === 'background'),
+      )
       const hiddenLocalityIds = [
         ...new Set([
-          ...buildHiddenLocalityIds(prunedLocalities, election.id),
+          ...buildHiddenLocalityIds(electionLocalityGeography, election.id),
           ...[...displayOverrides]
             .filter(([, override]) => override.visibility === 'hidden')
             .map(([localityId]) => localityId),
@@ -475,7 +492,7 @@ async function main() {
       )
       const displayedLocalityRows = aliasJoinedCompositeResults(
         localityRows,
-        prunedLocalities,
+        electionLocalityGeography,
         election.id,
       )
       const pollingGroupRows = statisticalAreaPollingGroupDisplayRows
@@ -517,9 +534,45 @@ async function main() {
       const statisticalPrimaryRows = statisticalDisplay.primaryRows.filter(
         (row) => !pollingGroupHiddenIdSet.has(row.stat_area_id),
       )
+      const activeAreaIds = new Set([
+        ...statisticalRows.map((row) => row.stat_area_id),
+        ...pollingGroupHiddenIds,
+        ...electionStatisticalDisplayGroups.flatMap((group) => group.componentIds),
+        ...fallbackDisplay.hiddenGeographyIds,
+      ])
+      const statisticalGeography = prunedStatisticalAreasByVintage.get(statisticalAreaVintage)
+      const structuralBackgroundIds = statisticalAreaVintage === 2022
+        ? statisticalGeography.features
+          .filter(({ id, properties }) => {
+            const code = Number(properties.localityCode)
+            // CBS regional-council and no-jurisdiction footprints are not voting areas.
+            return properties.geographyType === 'statistical-area' &&
+              ((code >= 5500 && code <= 5599) || (code >= 9900 && code <= 9999)) &&
+              !activeAreaIds.has(id)
+          })
+          .map(({ id }) => id)
+        : []
+      let electionStatisticalGeographyAsset = statisticalGeographyAsset
+      if (backgroundOnlyIds.size) {
+        for (const id of backgroundOnlyIds) {
+          if (activeAreaIds.has(id)) throw new Error(`${election.id} background-only area has results: ${id}`)
+        }
+        const backgroundFeatures = statisticalGeography.features
+          .filter((feature) => backgroundOnlyIds.has(feature.id) && feature.properties.displayMode === 'polygon')
+        if (backgroundFeatures.length !== backgroundOnlyIds.size) {
+          throw new Error(`${election.id} background-only area is missing a display polygon`)
+        }
+        const backdropGeometryUrl = `geographies/statistical-area-backdrop-${electionSlug}.geojson`
+        await writeJsonAsset(backdropGeometryUrl, {
+          ...statisticalAreaBackdrop,
+          features: [...statisticalAreaBackdrop.features, ...backgroundFeatures],
+        })
+        electionStatisticalGeographyAsset = { ...statisticalGeographyAsset, backdropGeometryUrl }
+      }
       const hiddenStatisticalIds = [
         ...new Set([
           ...configuredHiddenStatisticalIds,
+          ...structuralBackgroundIds,
           ...statisticalDisplay.hiddenGeographyIds,
           ...pollingGroupHiddenIds,
           ...fallbackDisplay.hiddenGeographyIds,
@@ -588,7 +641,7 @@ async function main() {
           },
           {
             geographyMode: 'locality',
-            geography: prunedLocalities,
+            geography: electionLocalityGeography,
             results: localityPayload,
             metadataById: electionLocalityMetadata,
           },
@@ -613,8 +666,8 @@ async function main() {
         coverageByMode,
         resultUrls,
         geographiesByMode: {
-          'statistical-area': statisticalGeographyAsset,
-          locality: localityGeographyAsset,
+          'statistical-area': electionStatisticalGeographyAsset,
+          locality: election.id === 'K26' ? k26LocalityGeographyAsset : localityGeographyAsset,
         },
       })
     }
@@ -871,7 +924,7 @@ function buildStatisticalAreaDisplayOverrideIndex(rows, elections, metadataByVin
 
     if (
       !statAreaId ||
-      !['default', 'hidden'].includes(visibility) ||
+      !['default', 'hidden', 'background'].includes(visibility) ||
       electionIds.length === 0 ||
       (visibility === 'default' && !nameHe && !nameEn && !notice)
     ) {

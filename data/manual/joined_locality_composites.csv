@@ -225,3 +225,4 @@ composite:joined-k25-2011,K25,2011,1,2011|1339,strong,under_100_host_delta,The u
 composite:joined-k25-3555,K25,3555,,3555|3620,confirmed,exact_eligible_arithmetic,The published host eligible total 225 exactly equals the host register 156 plus the Na'aran register 69.,
 composite:joined-k25-3607,K25,3607,1,3607|3825,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,
 composite:joined-k25-4303,K25,4303,1,4303|4035,strong,under_100_host_delta,The under-100 K25 register is consistent with the reviewed nearby host station eligible-voter delta.,
+composite:joined-k26-3555,K26,3555,1,3555|3620,strong,combined_register_continuity,"Na'aran again has no final ballot. Its 96 planned eligible voters plus Netiv HaGdud's 172 sum to 268; the only final ballot for the pair has 269. The same host carried the combined result in K22-K25.",

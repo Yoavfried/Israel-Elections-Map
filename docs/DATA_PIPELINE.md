@@ -1,6 +1,6 @@
 # Data Pipeline
 
-Last updated: 2026-11-01
+Last updated: 2026-11-09
 
 ## K26 Display Review
 
@@ -17,6 +17,70 @@ assignments and national/locality vote totals are not changed by this rule.
 For K26, omitted planned groups or unlinked final sites prevent an exact/no-note
 classification. Unbalanced single-area residual inferences also retain a notice.
 This affects claimed precision, not the recorded vote count or an invented split.
+
+### Missing planned area codes
+
+A nationwide scan of K26 polling components rejected for missing planned area
+codes found three: East Jerusalem, Rahat, and Nazareth. For each, the planned
+ballot was checked against the K25 register, the official stable-ballot list,
+the K25 ballot-to-area key, and the CBS 2011-to-2022 area conversion.
+
+In Jerusalem, planned ballot 526 has possible 2022 areas 2411 and 2412; 622
+and 626 have 2613, 2621, and 2622. The three ballots are stable, kept their
+polling sites, and every candidate area is already within the component.
+Including their 133 eligible voters reduces the planned/final gap from 149
+to 16. The existing partition algorithm found five groups in all 18 extreme
+placements of those voters. The selected fixed layout maximizes the worst-case
+score among the two layouts found, with a minimum modeled precision/recall
+of 0.83975. This is a display check, not an observed vote share.
+
+The five representative display reviews in
+`data/manual/statistical_area_polling_group_display_reviews.csv` restore
+9,970 valid votes from 28 final ballots to 34 previously blank polygons.
+The two other polygons in the component already displayed 1,151 valid votes;
+their four source ballots are included once in the relevant group. The review
+does not write single-area links for 526, 622, or 626, or change the downloadable
+data. All five displays retain their uncertainty notes.
+
+Rahat planned ballots 44 and 54 lack a 2022 area link. Their K25 area splits
+across areas 11, 16, and 17. The two reviewed Rahat displays keep the actual
+final ballots together and note potential vote flow between displays.
+Nazareth ballot 78 has no matching K25 planned ballot or area key, but its
+546 planned eligible voters reconcile the continuing school site's combined
+register to within nine. Its final result is displayed on 44 and 45 together,
+with a notice and no claimed split.
+
+### K26 site moves and display boundaries
+
+Reviewed site moves use the complete final result rows, not the coordinates
+of the polling station. Tel Aviv 824 keeps all four ballot numbers and the
+eligible total changes from 2,361 to 2,362. Meitar 5 and Tiberias 14 have the
+same closed-site evidence. Other reviews retain notices when they depend on
+near-balance arithmetic or serve multiple areas. Ashkelon 231/232, for example,
+has 5,608 final eligible voters across two sites against 5,640 planned.
+These display reviews leave the downloadable ballot assignments unchanged.
+They restore results to 21 of the 23 initially blank residential areas
+inside localities with K26 results. Rahat 44 and Bat Yam 525 have no K26
+planned ballot link and remain neutral.
+
+K26 uses separate display-only footprints for Asa'el, Beit Hogla, Avigayil,
+Tel Zion, and Kochav Ya'akov. The last two use the same source to avoid overlap
+without combining their votes. Six West Bank areas without ballot links are
+neutral background: Ariel 6, Ma'ale Adumim 25, Efrat 5, Beitar Illit 35/36,
+and Modi'in Illit 36. The CBS 2011-to-2022 conversion connects these areas
+to older, larger polygons, not to standalone historical results for these
+pieces. This also explains the open-land blanks in Modi'in-Maccabim-Re'ut
+(215, 333) and Hadera (123, 211, 315, 411, 423).
+
+The 2022 statistical layer also contains regional-council and
+no-jurisdiction footprints. When these have no election results, they do
+not appear as selectable or searchable areas. The shared land backdrop
+and downloadable source geography are unchanged.
+
+Na'aran and Netiv HaGdud share the published Netiv HaGdud result in both K26
+views. Their separate planned registers total 268 eligible voters; the
+combined final host ballot has 269, following the K22-K25 pattern. No votes
+are attributed to Na'aran separately.
 
 `prepare_map_display_geometries.py` operates only on web presentation geometry.
 It repairs small rings before export, makes larger 2022 display footprints leave

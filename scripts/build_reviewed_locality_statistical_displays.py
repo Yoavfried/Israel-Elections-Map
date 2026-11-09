@@ -43,6 +43,7 @@ ELECTION_VINTAGES = {
     "K23": 2011,
     "K24": 2011,
     "K25": 2011,
+    "K26": 2022,
 }
 CORE_TOTAL_FIELDS = (
     "contributing_rows",
@@ -429,7 +430,7 @@ def main() -> None:
             host_name_en = str(
                 host_metadata.get("locality_name_en") or host_name_he
             ).strip()
-            host_area_number = clean_code(host_metadata.get("stat_area_number"))
+            host_area_number = clean_code(host_metadata.get("stat_area_number") or host_metadata.get("stat_2022"))
             component_names_he = "|".join(
                 dict.fromkeys(
                     str(metadata_by_id[area_id].get("locality_name_he") or "").strip()
@@ -478,6 +479,7 @@ def main() -> None:
             display_name_en = (
                 f"{host_name_en} · {host_area_number}" if host_area_number else host_name_en
             )
+            near_balance = relationship["evidence_method"] == "combined_register_continuity"
             policy_rows.append(
                 {
                     "display_geography_id": display_id,
@@ -485,7 +487,7 @@ def main() -> None:
                     "component_stat_area_ids": "|".join(component_area_ids),
                     "aggregation_method": "sum-components",
                     "evidence_group_id": relationship["relationship_id"],
-                    "evidence_class": "official_register_attachment_exact",
+                    "evidence_class": "official_register_attachment_representative" if near_balance else "official_register_attachment_exact",
                     "review_status": "approved-high-confidence",
                     "note": relationship["relationship_note"],
                     "display_locality_code": host_code,
@@ -493,8 +495,8 @@ def main() -> None:
                     "display_locality_name_en": host_name_en,
                     "display_name_he": display_name_he,
                     "display_name_en": display_name_en,
-                    "notice_he": "",
-                    "notice_en": "",
+                    "notice_he": "תוצאה משותפת לפי מרשמי הקלפיות; אין תוצאות נפרדות ליישובים." if near_balance else "",
+                    "notice_en": "Combined result inferred from the polling registers; separate locality results are not available." if near_balance else "",
                 }
             )
 

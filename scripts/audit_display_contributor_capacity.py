@@ -333,6 +333,11 @@ def main() -> None:
         }
         for election in ELECTIONS
     }
+    k26_final_eligible = {
+        (clean(row["source_locality_code"]), ballot_id(row["source_kalpi"])): integer(row["eligible_voters"])
+        for row in read_csv(PROCESSED / "normalized" / "ballot_votes_wide" / "k26_ballot_votes.csv")
+        if clean(row["is_envelope"]).lower() == "false"
+    }
 
     claimed_areas: dict[str, set[str]] = defaultdict(set)
     audit_rows: list[dict[str, Any]] = []
@@ -379,9 +384,18 @@ def main() -> None:
             if planned_eligible != integer(policy["planned_eligible_voters"]):
                 raise ValueError(f"{display_id} planned eligible total changed")
             ambiguous_final_eligible = integer(policy["final_eligible_voters"])
-            preserved_eligible = eligible_voters - ambiguous_final_eligible
-            if preserved_eligible < 0:
-                raise ValueError(f"{display_id} has negative preserved eligible voters")
+        elif election == "K26" and source_ballots:
+            # Reviewed displays may have an explicit final ballot list but no
+            # single-area planned totals. Count the verified final rows directly.
+            source_keys = {(locality_code, ballot) for ballot in source_ballots}
+            missing = source_keys - k26_final_eligible.keys()
+            if missing:
+                raise ValueError(f"{display_id} capacity audit lacks final ballots: {sorted(missing)}")
+            ambiguous_final_eligible = sum(
+                k26_final_eligible[key] for key in source_keys
+            )
+        if ambiguous_final_eligible > eligible_voters:
+            raise ValueError(f"{display_id} has negative preserved eligible voters")
         base_contributor_capacity = sum(
             integer(base_by_area[election][area_id]["eligible_voters"])
             for area_id in contributor_ids
