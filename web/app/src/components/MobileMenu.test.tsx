@@ -63,6 +63,7 @@ describe('MobileMenu', () => {
     expect(html).toContain('href="https://yoavfried.com/"')
     expect(html).toContain("Yoav Fried&#x27;s portfolio")
     expect(html).toContain('Project repository and data downloads')
+    expect(html).toContain('lucide-code-xml')
     expect(html).toContain('width="22" height="22"')
   })
 })

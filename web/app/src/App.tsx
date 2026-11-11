@@ -1,4 +1,4 @@
-import { Database, House, Languages, Shield } from 'lucide-react'
+import { CodeXml, House, Languages, Shield } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { AccessibilityWidget } from './components/AccessibilityWidget'
 import { ControlPanel } from './components/ControlPanel'
@@ -589,7 +589,7 @@ export default function App() {
             aria-label={translate(language, 'repositoryAction')}
             title={translate(language, 'repositoryAction')}
           >
-            <Database size={19} strokeWidth={2} aria-hidden="true" />
+            <CodeXml size={19} strokeWidth={2} aria-hidden="true" />
           </a>
           <a
             className="header-icon-link"

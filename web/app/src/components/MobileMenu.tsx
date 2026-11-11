@@ -1,4 +1,4 @@
-import { CircleDot, Database, House, Layers, Map, Menu, Shapes, Shield, X } from 'lucide-react'
+import { CircleDot, CodeXml, House, Layers, Map, Menu, Shapes, Shield, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { PartyMapDisplayMode } from '../domain/partyMap'
 import type {
@@ -264,7 +264,7 @@ export function MobileMenu({
               <span>{translate(language, 'portfolioAction')}</span>
             </a>
             <a href="https://github.com/Yoavfried/israel-election-map" target="_blank" rel="noreferrer">
-              <Database size={18} strokeWidth={2} aria-hidden="true" />
+              <CodeXml size={18} strokeWidth={2} aria-hidden="true" />
               <span>{translate(language, 'repositoryAction')}</span>
             </a>
             <a href={`${import.meta.env.BASE_URL}privacy.html?lang=${language}`}>
